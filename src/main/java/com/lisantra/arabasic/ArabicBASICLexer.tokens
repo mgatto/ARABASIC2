@@ -1,0 +1,15 @@
+T__0=1
+T__1=2
+T__2=3
+T__3=4
+ID=5
+VAR=6
+STRING=7
+INT=8
+REAL=9
+NEWLINE=10
+WS=11
+'LET'=1
+'let'=2
+'='=3
+'#'=4
