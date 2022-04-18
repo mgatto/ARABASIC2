@@ -1,0 +1,11 @@
+T__0=1
+T__1=2
+Comment=3
+Identifier=4
+String=5
+Integer=6
+Real=7
+EOL=8
+WS=9
+'LET'=1
+'='=2

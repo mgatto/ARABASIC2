@@ -1,2 +1,3 @@
-# ARABASIC2
+# ArabicBASIC
+
 A standalone interpreter for Arabic BASIC 

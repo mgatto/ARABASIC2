@@ -1,5 +1,5 @@
-package com.lisantra.arabasic; // Generated from
-                               // /Users/mgatto/Development/cs-361/ARABASIC2/src/main/antlr4/ArabicBASIC.g4 by ANTLR 4.9.2
+package com.lisantra.arabicbasic; // Generated from
+// /Users/mgatto/Development/cs-361/ARABASIC2/src/main/antlr4/ArabicBASIC.g4 by ANTLR 4.9.2
 
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
@@ -19,7 +19,7 @@ public class ArabicBASICBaseVisitor<T> extends AbstractParseTreeVisitor<T>
    * ctx}.
    */
   @Override
-  public T visitStart(ArabicBASICParser.StartContext ctx) {
+  public T visitProgram(ArabicBASICParser.ProgramContext ctx) {
     return visitChildren(ctx);
   }
   /**
@@ -39,16 +39,6 @@ public class ArabicBASICBaseVisitor<T> extends AbstractParseTreeVisitor<T>
    * ctx}.
    */
   @Override
-  public T visitNull_statement(ArabicBASICParser.Null_statementContext ctx) {
-    return visitChildren(ctx);
-  }
-  /**
-   * {@inheritDoc}
-   *
-   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
-   * ctx}.
-   */
-  @Override
   public T visitAssignment(ArabicBASICParser.AssignmentContext ctx) {
     return visitChildren(ctx);
   }
@@ -59,7 +49,47 @@ public class ArabicBASICBaseVisitor<T> extends AbstractParseTreeVisitor<T>
    * ctx}.
    */
   @Override
-  public T visitComment(ArabicBASICParser.CommentContext ctx) {
+  public T visitBlank(ArabicBASICParser.BlankContext ctx) {
+    return visitChildren(ctx);
+  }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * ctx}.
+   */
+  @Override
+  public T visitName(ArabicBASICParser.NameContext ctx) {
+    return visitChildren(ctx);
+  }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * ctx}.
+   */
+  @Override
+  public T visitInt(ArabicBASICParser.IntContext ctx) {
+    return visitChildren(ctx);
+  }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * ctx}.
+   */
+  @Override
+  public T visitText(ArabicBASICParser.TextContext ctx) {
+    return visitChildren(ctx);
+  }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * ctx}.
+   */
+  @Override
+  public T visitFloat(ArabicBASICParser.FloatContext ctx) {
     return visitChildren(ctx);
   }
 }
