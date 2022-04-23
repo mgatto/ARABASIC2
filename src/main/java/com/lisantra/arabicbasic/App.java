@@ -27,6 +27,11 @@ public class App implements Callable<Integer> {
   private String writingSystem = "Arabic";
   // or Latin for later expansion to alternative Arabic writing systems
 
+  @CommandLine.Option(
+      names = {"-d", "--debug"},
+      description = "Print out the symbol table after running an ArabicBASIC script")
+  private boolean showDebug = false;
+
   @Override
   public Integer call() throws Exception { // your business logic goes here...
     // create an input stream from the string
