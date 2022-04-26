@@ -3,10 +3,11 @@ package com.lisantra.arabicbasic;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import picocli.CommandLine;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(
@@ -28,6 +29,14 @@ public class App implements Callable<Integer> {
   // or Latin for later expansion to alternative Arabic writing systems
 
   @CommandLine.Option(
+      names = {"-m", "--mode"},
+      description = "interpret or compile (LLVM's IR, .NET IR, Java bytecode, WASM)")
+  private String mode = "interpret";
+
+  // valid only for compile
+  private String output = "";
+
+  @CommandLine.Option(
       names = {"-d", "--debug"},
       description = "Print out the symbol table after running an ArabicBASIC script")
   private boolean showDebug = false;
@@ -40,10 +49,10 @@ public class App implements Callable<Integer> {
     ArabicBASICParser parser = new ArabicBASICParser(new CommonTokenStream(lexer));
     ParseTree programTree = parser.program();
 
-    ParseTreeWalker walker = new ParseTreeWalker();
-    walker.walk(new CustomListener(), programTree);
+    Map<String, Object> symbolTable = new HashMap<>();
 
-    System.out.println();
+    CustomVisitor interpreter = new CustomVisitor(symbolTable, true);
+    interpreter.visit(programTree);
     /*
     try {
     } catch (IOException e) {

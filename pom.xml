@@ -27,11 +27,11 @@
             <id>native</id>
             <build>
                 <plugins>
-                    <plugin>
+                    <!--<plugin>
                         <groupId>org.graalvm.buildtools</groupId>
                         <artifactId>native-maven-plugin</artifactId>
                         <version>0.9.7.1</version>
-                        <!-- <version>${native.maven.plugin.version}</version>-->
+                        <version>${native.maven.plugin.version}</version>
                         <extensions>true</extensions>
                         <executions>
                             <execution>
@@ -50,9 +50,9 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <!-- ... -->
+
                         </configuration>
-                    </plugin>
+                    </plugin>-->
                 </plugins>
             </build>
         </profile>
@@ -123,19 +123,19 @@
                     </archive>
                 </configuration>
             </plugin>
-            <plugin>
+            <!--<plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
                 <version>0.9.7.1</version>
                 <configuration>
                     <imageName>${project.artifactId}</imageName>
                     <mainClass>com.lisantra.arabicbasic.App</mainClass>
-                    <!-- <mainClass>${exec.mainClass}</mainClass>-->
+                    <mainClass>${exec.mainClass}</mainClass>
                     <buildArgs>
-                        <buildArg>--no-fallback</buildArg>
+                        <buildArg>no-fallback</buildArg>
                     </buildArgs>
                 </configuration>
-            </plugin>
+            </plugin>-->
         </plugins>
     </build>
 </project>

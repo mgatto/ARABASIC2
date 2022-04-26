@@ -1,5 +1,5 @@
 package com.lisantra.arabicbasic; // Generated from
-// /Users/mgatto/Development/cs-361/ARABASIC2/src/main/antlr4/ArabicBASIC.g4 by ANTLR 4.9.2
+                                  // /Users/mgatto/Development/cs-361/ARABASIC2/src/main/antlr4/ArabicBASIC.g4 by ANTLR 4.9.2
 
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -40,6 +40,106 @@ public interface ArabicBASICVisitor<T> extends ParseTreeVisitor<T> {
    */
   T visitBlank(ArabicBASICParser.BlankContext ctx);
   /**
+   * Visit a parse tree produced by the {@code arrayCreate} labeled alternative in {@link
+   * ArabicBASICParser#expression}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitArrayCreate(ArabicBASICParser.ArrayCreateContext ctx);
+  /**
+   * Visit a parse tree produced by the {@code addsub} labeled alternative in {@link
+   * ArabicBASICParser#expression}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitAddsub(ArabicBASICParser.AddsubContext ctx);
+  /**
+   * Visit a parse tree produced by the {@code term} labeled alternative in {@link
+   * ArabicBASICParser#expression}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitTerm(ArabicBASICParser.TermContext ctx);
+  /**
+   * Visit a parse tree produced by the {@code arrayAccess} labeled alternative in {@link
+   * ArabicBASICParser#expression}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitArrayAccess(ArabicBASICParser.ArrayAccessContext ctx);
+  /**
+   * Visit a parse tree produced by the {@code unary} labeled alternative in {@link
+   * ArabicBASICParser#expression}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitUnary(ArabicBASICParser.UnaryContext ctx);
+  /**
+   * Visit a parse tree produced by the {@code nested} labeled alternative in {@link
+   * ArabicBASICParser#expression}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitNested(ArabicBASICParser.NestedContext ctx);
+  /**
+   * Visit a parse tree produced by the {@code exponentation} labeled alternative in {@link
+   * ArabicBASICParser#expression}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitExponentation(ArabicBASICParser.ExponentationContext ctx);
+  /**
+   * Visit a parse tree produced by the {@code muldiv} labeled alternative in {@link
+   * ArabicBASICParser#expression}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitMuldiv(ArabicBASICParser.MuldivContext ctx);
+  /**
+   * Visit a parse tree produced by the {@code size} labeled alternative in {@link
+   * ArabicBASICParser#array_size}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitSize(ArabicBASICParser.SizeContext ctx);
+  /**
+   * Visit a parse tree produced by {@link ArabicBASICParser#array_creation}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitArray_creation(ArabicBASICParser.Array_creationContext ctx);
+  /**
+   * Visit a parse tree produced by {@link ArabicBASICParser#array_expression}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitArray_expression(ArabicBASICParser.Array_expressionContext ctx);
+  /**
+   * Visit a parse tree produced by {@link ArabicBASICParser#array_access}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitArray_access(ArabicBASICParser.Array_accessContext ctx);
+  /**
+   * Visit a parse tree produced by {@link ArabicBASICParser#block}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitBlock(ArabicBASICParser.BlockContext ctx);
+  /**
    * Visit a parse tree produced by the {@code name} labeled alternative in {@link
    * ArabicBASICParser#variable}.
    *
@@ -48,13 +148,13 @@ public interface ArabicBASICVisitor<T> extends ParseTreeVisitor<T> {
    */
   T visitName(ArabicBASICParser.NameContext ctx);
   /**
-   * Visit a parse tree produced by the {@code int} labeled alternative in {@link
+   * Visit a parse tree produced by the {@code numeric} labeled alternative in {@link
    * ArabicBASICParser#variable}.
    *
    * @param ctx the parse tree
    * @return the visitor result
    */
-  T visitInt(ArabicBASICParser.IntContext ctx);
+  T visitNumeric(ArabicBASICParser.NumericContext ctx);
   /**
    * Visit a parse tree produced by the {@code text} labeled alternative in {@link
    * ArabicBASICParser#variable}.
@@ -64,11 +164,10 @@ public interface ArabicBASICVisitor<T> extends ParseTreeVisitor<T> {
    */
   T visitText(ArabicBASICParser.TextContext ctx);
   /**
-   * Visit a parse tree produced by the {@code float} labeled alternative in {@link
-   * ArabicBASICParser#variable}.
+   * Visit a parse tree produced by {@link ArabicBASICParser#number}.
    *
    * @param ctx the parse tree
    * @return the visitor result
    */
-  T visitFloat(ArabicBASICParser.FloatContext ctx);
+  T visitNumber(ArabicBASICParser.NumberContext ctx);
 }
