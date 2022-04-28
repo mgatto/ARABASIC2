@@ -49,7 +49,7 @@ public class App implements Callable<Integer> {
     ArabicBASICParser parser = new ArabicBASICParser(new CommonTokenStream(lexer));
     ParseTree programTree = parser.program();
 
-    Map<String, Object> symbolTable = new HashMap<>();
+    Map<String, Value<?>> symbolTable = new HashMap<>();
 
     CustomVisitor interpreter = new CustomVisitor(symbolTable, true);
     interpreter.visit(programTree);
@@ -60,6 +60,7 @@ public class App implements Callable<Integer> {
         return;
     }*/
 
+    if (showDebug) System.out.println(symbolTable);
     System.out.println("Ran ArabicBASIC script");
     return 0;
   }

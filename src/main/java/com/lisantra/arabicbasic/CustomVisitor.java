@@ -40,7 +40,6 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
 
     /* this covers both creation and updating */
     symbolTable.put(id, val);
-    if (showDebug) System.out.println(symbolTable);
 
     return val;
   }
