@@ -9,6 +9,7 @@ statement:  COMMENT //declarative_statement
             ;
 assignment: 'LET' IDENTIFIER '=' expression EOL; // Sequence with Terminator pattern
 blank: WS* EOL;
+array_creation: 'DIM' IDENTIFIER '(' array_size ')' EOL;
 
 //ANTLR4 does left recursion!
 // list the rules from highest -> lowest precedence
@@ -26,8 +27,7 @@ expression: // left=expression OP1 right=expression
             // | Array_Create | Array_Read ; supercede all these with Expression
             | '(' expression ')'                         #nested
             ;
-array_size: INTEGER #size; //can expand it from Integer --> Expression(Numerical), maybe catch string "size" in the parser.
-array_creation: 'DIM' IDENTIFIER '(' array_size ')';
+array_size: INTEGER; //can expand it from Integer --> Expression(Numerical), maybe catch string "size" in the parser.
 array_expression: 'ARRAY' '(' array_size ')';
 array_access: IDENTIFIER '(' INTEGER ')';
 //TODO I'm not sure I can restrict types within the Grammar...
@@ -41,6 +41,7 @@ variable: IDENTIFIER    #name
         | number        #numeric
         | STRING        #text
         ;
+//TODO I really need to distinguish int and float here, but the generated methods are only visitNumeric and visitNumber!
 number: INTEGER
         | REAL
         ;

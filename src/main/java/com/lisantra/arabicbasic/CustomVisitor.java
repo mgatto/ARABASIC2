@@ -1,5 +1,7 @@
 package com.lisantra.arabicbasic;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
@@ -159,5 +161,25 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
 
   public Value<String> visitText(ArabicBASICParser.TextContext ctx) {
     return new Value<>(ctx.STRING().getText(), "String");
+  }
+
+  public Void visitArray_creation(ArabicBASICParser.Array_creationContext ctx) {
+    if (showDebug) System.out.println("I visited Array Creation");
+
+    // 1. get identifier
+    String id = ctx.IDENTIFIER().getText();
+
+    // 2. get array_size
+    Integer size = (Integer) visit(ctx.array_size());
+
+    // 3. wrap in Value
+    Value<List<?>> arr = new Value<>(new ArrayList<>(size), "Array");
+    symbolTable.put(id, arr);
+
+    return null;
+  }
+
+  public Integer visitSize(ArabicBASICParser.SizeContext ctx) {
+    return Integer.valueOf(ctx.INTEGER().getText());
   }
 }
