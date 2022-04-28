@@ -3,10 +3,10 @@ package com.lisantra.arabicbasic;
 import java.util.Map;
 
 public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
-  private final Map<String, Object> symbolTable;
+  private final Map<String, Value<?>> symbolTable;
   private final boolean showDebug;
 
-  public CustomVisitor(Map<String, Object> symbolTable, boolean showDebug) {
+  public CustomVisitor(Map<String, Value<?>> symbolTable, boolean showDebug) {
     super();
     this.symbolTable = symbolTable;
     this.showDebug = showDebug;
@@ -35,54 +35,130 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     if (showDebug) System.out.println("I visited Assignment");
 
     String id = ctx.IDENTIFIER().getText();
-    Object val = visit(ctx.expression());
+    Value<?> val = (Value) visit(ctx.expression());
     // If val is another variable, the value is returned == copy by value
 
     /* this covers both creation and updating */
     symbolTable.put(id, val);
-    //    if (!symbolTable.containsKey(id)) {}
-
     if (showDebug) System.out.println(symbolTable);
 
     return val;
   }
 
-  public Integer visitAddsub(ArabicBASICParser.AddsubContext ctx) {
-    // TODO ensure left is an int | Integer
-    Object left = visit(ctx.expression(0));
-    Object right = visit(ctx.expression(1));
+  public Value<?> visitNested(ArabicBASICParser.NestedContext ctx) {
+    return (Value) visit(ctx.expression());
 
-    // TODO ensure left is an int | Integer
-    if (!(left instanceof Integer && right instanceof Integer)) {
-      // TODO throw language exception
-    }
-
-    // TODO the casting seems amateurish?
-    if (ctx.op.getText().equals("+")) {
-      // TODO can use getType() if I specify the operators as terminals
-      return (Integer) left + (Integer) right;
-    }
-    return (Integer) left - (Integer) right;
+    //    return visitChildren(ctx);
   }
 
-  // eventually, return the Value class from the Symbol table?
-  public Object visitName(ArabicBASICParser.NameContext ctx) {
+  public Value<?> visitUnary(ArabicBASICParser.UnaryContext ctx) {
+    Double exprVal = 0.0;
+    Value<?> expr = (Value) visit(ctx.expression());
+    if ((expr.getVal() instanceof Double)) {
+      exprVal = (Double) expr.getVal();
+    } else {
+      // TODO throw an exception
+    }
+
+    // TODO this may only be necessary if there is a variable in the expression
+    Value<Double> newExpr = new Value<Double>(-exprVal, "Double");
+    // has to be a copy, else it mutates the original like this A = 1, X=-A
+    // actually negates A retroactively
+    return newExpr;
+  }
+
+  public Value<Double> visitAddSub(ArabicBASICParser.AddSubContext ctx) {
+    // TODO ensure left is a numeric
+    // TODO treat all numbers as Double in this Java code?
+    Value left = (Value) visit(ctx.expression(0));
+    Value right = (Value) visit(ctx.expression(1));
+
+    // this workaround stuff feels really bunk and lame to me
+    Double leftVal = 0.0;
+    Double rightVal = 0.0;
+
+    // ensure both terms are addable
+    if (left.getVal() instanceof Double) {
+      leftVal = (Double) left.getVal();
+    } else {
+      // TODO throw error (language exception)
+    }
+
+    if (right.getVal() instanceof Double) {
+      rightVal = (Double) right.getVal();
+    } else {
+      // TODO throw error (language exception)
+    }
+
+    // TODO can use getType() if I specify the operators as terminals
+    if (ctx.op.getText().equals("+")) {
+      return new Value<>(leftVal + rightVal, "Double");
+      // No widening: just consider every number a Double [whichever subclass of number is wider,
+      // then the result should be that.]
+    }
+    return new Value<>(leftVal - rightVal, "Double");
+  }
+
+  public Value<?> visitMulDiv(ArabicBASICParser.MulDivContext ctx) {
+    // TODO ensure left is a numeric
+    // TODO treat all numbers as Double in this Java code?
+    Value left = (Value) visit(ctx.expression(0));
+    Value right = (Value) visit(ctx.expression(1));
+
+    // this workaround stuff feels really bunk and lame to me
+    Double leftVal = 0.0;
+    Double rightVal = 0.0;
+
+    // ensure both terms are addable
+    if (left.getVal() instanceof Double) {
+      leftVal = (Double) left.getVal();
+    } else {
+      // TODO throw error (language exception)
+    }
+
+    if (right.getVal() instanceof Double) {
+      rightVal = (Double) right.getVal();
+    } else {
+      // TODO throw error (language exception)
+    }
+
+    // TODO can use getType() if I specify the operators as terminals
+    if (ctx.op.getText().equals("*")) {
+      return new Value<>(leftVal * rightVal, "Double");
+      // No widening: just consider every number a Double [whichever subclass of number is wider,
+      // then the result should be that.]
+    }
+
+    if (rightVal == 0) {
+      // TODO throw a divide by zero error
+    }
+    return new Value<>(leftVal / rightVal, "Double");
+  }
+
+  /**
+   * @param ctx
+   * @return the value associated with the var name
+   */
+  public Value<?> visitName(ArabicBASICParser.NameContext ctx) {
     if (showDebug) System.out.println("I visited Identifier");
 
     String id = ctx.IDENTIFIER().getText();
-
-    /* return the value associated with the var name */
-    if (symbolTable.containsKey(id)) {
-      // TODO what to return? It could be int, float or string or array?
-      return symbolTable.get(id);
-    } else {
-      // TODO provoke an error?
+    if (!symbolTable.containsKey(id)) {
+      // TODO provoke an error
     }
 
-    return new Object(); // TODO this seems bunk
+    // The symbol table's value is of custom type Value
+    return symbolTable.get(id);
   }
 
-  public Integer visitNumber(ArabicBASICParser.NumberContext ctx) {
-    return Integer.valueOf(ctx.INTEGER().getText());
+  public Value<Double> visitNumber(ArabicBASICParser.NumberContext ctx) {
+    // TODO it could be either an Integer or Float; all get treated as Double anyways, but
+    // let's track the original type
+
+    return new Value<>(Double.valueOf(ctx.INTEGER().getText()), "Double");
+  }
+
+  public Value<String> visitText(ArabicBASICParser.TextContext ctx) {
+    return new Value<>(ctx.STRING().getText(), "String");
   }
 }
