@@ -51,7 +51,7 @@ public class App implements Callable<Integer> {
 
     Map<String, Value<?>> symbolTable = new LinkedHashMap<>();
 
-    CustomVisitor interpreter = new CustomVisitor(symbolTable, true);
+    CustomVisitor interpreter = new CustomVisitor(symbolTable, showDebug);
     interpreter.visit(programTree);
     /*
     try {
