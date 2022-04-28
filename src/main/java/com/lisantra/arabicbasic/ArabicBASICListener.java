@@ -1,5 +1,5 @@
 package com.lisantra.arabicbasic; // Generated from
-                                  // /Users/mgatto/Development/cs-361/ARABASIC2/src/main/antlr4/ArabicBASIC.g4 by ANTLR 4.9.2
+                                  // /Users/mgatto/Development/cs-361/ARABASIC2/src/main/antlr4/ArabicBASIC.g4 by ANTLR 4.10.1
 
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -71,20 +71,6 @@ public interface ArabicBASICListener extends ParseTreeListener {
    */
   void exitArrayCreate(ArabicBASICParser.ArrayCreateContext ctx);
   /**
-   * Enter a parse tree produced by the {@code addsub} labeled alternative in {@link
-   * ArabicBASICParser#expression}.
-   *
-   * @param ctx the parse tree
-   */
-  void enterAddsub(ArabicBASICParser.AddsubContext ctx);
-  /**
-   * Exit a parse tree produced by the {@code addsub} labeled alternative in {@link
-   * ArabicBASICParser#expression}.
-   *
-   * @param ctx the parse tree
-   */
-  void exitAddsub(ArabicBASICParser.AddsubContext ctx);
-  /**
    * Enter a parse tree produced by the {@code term} labeled alternative in {@link
    * ArabicBASICParser#expression}.
    *
@@ -98,6 +84,20 @@ public interface ArabicBASICListener extends ParseTreeListener {
    * @param ctx the parse tree
    */
   void exitTerm(ArabicBASICParser.TermContext ctx);
+  /**
+   * Enter a parse tree produced by the {@code addSub} labeled alternative in {@link
+   * ArabicBASICParser#expression}.
+   *
+   * @param ctx the parse tree
+   */
+  void enterAddSub(ArabicBASICParser.AddSubContext ctx);
+  /**
+   * Exit a parse tree produced by the {@code addSub} labeled alternative in {@link
+   * ArabicBASICParser#expression}.
+   *
+   * @param ctx the parse tree
+   */
+  void exitAddSub(ArabicBASICParser.AddSubContext ctx);
   /**
    * Enter a parse tree produced by the {@code arrayAccess} labeled alternative in {@link
    * ArabicBASICParser#expression}.
@@ -155,19 +155,19 @@ public interface ArabicBASICListener extends ParseTreeListener {
    */
   void exitExponentation(ArabicBASICParser.ExponentationContext ctx);
   /**
-   * Enter a parse tree produced by the {@code muldiv} labeled alternative in {@link
+   * Enter a parse tree produced by the {@code mulDiv} labeled alternative in {@link
    * ArabicBASICParser#expression}.
    *
    * @param ctx the parse tree
    */
-  void enterMuldiv(ArabicBASICParser.MuldivContext ctx);
+  void enterMulDiv(ArabicBASICParser.MulDivContext ctx);
   /**
-   * Exit a parse tree produced by the {@code muldiv} labeled alternative in {@link
+   * Exit a parse tree produced by the {@code mulDiv} labeled alternative in {@link
    * ArabicBASICParser#expression}.
    *
    * @param ctx the parse tree
    */
-  void exitMuldiv(ArabicBASICParser.MuldivContext ctx);
+  void exitMulDiv(ArabicBASICParser.MulDivContext ctx);
   /**
    * Enter a parse tree produced by the {@code size} labeled alternative in {@link
    * ArabicBASICParser#array_size}.

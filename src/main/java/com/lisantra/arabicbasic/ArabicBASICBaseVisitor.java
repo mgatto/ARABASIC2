@@ -1,5 +1,5 @@
 package com.lisantra.arabicbasic; // Generated from
-                                  // /Users/mgatto/Development/cs-361/ARABASIC2/src/main/antlr4/ArabicBASIC.g4 by ANTLR 4.9.2
+                                  // /Users/mgatto/Development/cs-361/ARABASIC2/src/main/antlr4/ArabicBASIC.g4 by ANTLR 4.10.1
 
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
@@ -69,7 +69,7 @@ public class ArabicBASICBaseVisitor<T> extends AbstractParseTreeVisitor<T>
    * ctx}.
    */
   @Override
-  public T visitAddsub(ArabicBASICParser.AddsubContext ctx) {
+  public T visitTerm(ArabicBASICParser.TermContext ctx) {
     return visitChildren(ctx);
   }
   /**
@@ -79,7 +79,7 @@ public class ArabicBASICBaseVisitor<T> extends AbstractParseTreeVisitor<T>
    * ctx}.
    */
   @Override
-  public T visitTerm(ArabicBASICParser.TermContext ctx) {
+  public T visitAddSub(ArabicBASICParser.AddSubContext ctx) {
     return visitChildren(ctx);
   }
   /**
@@ -129,7 +129,7 @@ public class ArabicBASICBaseVisitor<T> extends AbstractParseTreeVisitor<T>
    * ctx}.
    */
   @Override
-  public T visitMuldiv(ArabicBASICParser.MuldivContext ctx) {
+  public T visitMulDiv(ArabicBASICParser.MulDivContext ctx) {
     return visitChildren(ctx);
   }
   /**

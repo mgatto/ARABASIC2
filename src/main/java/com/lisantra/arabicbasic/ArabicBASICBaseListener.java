@@ -1,5 +1,5 @@
 package com.lisantra.arabicbasic; // Generated from
-                                  // /Users/mgatto/Development/cs-361/ARABASIC2/src/main/antlr4/ArabicBASIC.g4 by ANTLR 4.9.2
+                                  // /Users/mgatto/Development/cs-361/ARABASIC2/src/main/antlr4/ArabicBASIC.g4 by ANTLR 4.10.1
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -86,20 +86,6 @@ public class ArabicBASICBaseListener implements ArabicBASICListener {
    * <p>The default implementation does nothing.
    */
   @Override
-  public void enterAddsub(ArabicBASICParser.AddsubContext ctx) {}
-  /**
-   * {@inheritDoc}
-   *
-   * <p>The default implementation does nothing.
-   */
-  @Override
-  public void exitAddsub(ArabicBASICParser.AddsubContext ctx) {}
-  /**
-   * {@inheritDoc}
-   *
-   * <p>The default implementation does nothing.
-   */
-  @Override
   public void enterTerm(ArabicBASICParser.TermContext ctx) {}
   /**
    * {@inheritDoc}
@@ -108,6 +94,20 @@ public class ArabicBASICBaseListener implements ArabicBASICListener {
    */
   @Override
   public void exitTerm(ArabicBASICParser.TermContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterAddSub(ArabicBASICParser.AddSubContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitAddSub(ArabicBASICParser.AddSubContext ctx) {}
   /**
    * {@inheritDoc}
    *
@@ -170,14 +170,14 @@ public class ArabicBASICBaseListener implements ArabicBASICListener {
    * <p>The default implementation does nothing.
    */
   @Override
-  public void enterMuldiv(ArabicBASICParser.MuldivContext ctx) {}
+  public void enterMulDiv(ArabicBASICParser.MulDivContext ctx) {}
   /**
    * {@inheritDoc}
    *
    * <p>The default implementation does nothing.
    */
   @Override
-  public void exitMuldiv(ArabicBASICParser.MuldivContext ctx) {}
+  public void exitMulDiv(ArabicBASICParser.MulDivContext ctx) {}
   /**
    * {@inheritDoc}
    *

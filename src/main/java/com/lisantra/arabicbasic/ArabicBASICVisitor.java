@@ -1,5 +1,5 @@
 package com.lisantra.arabicbasic; // Generated from
-                                  // /Users/mgatto/Development/cs-361/ARABASIC2/src/main/antlr4/ArabicBASIC.g4 by ANTLR 4.9.2
+                                  // /Users/mgatto/Development/cs-361/ARABASIC2/src/main/antlr4/ArabicBASIC.g4 by ANTLR 4.10.1
 
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -48,14 +48,6 @@ public interface ArabicBASICVisitor<T> extends ParseTreeVisitor<T> {
    */
   T visitArrayCreate(ArabicBASICParser.ArrayCreateContext ctx);
   /**
-   * Visit a parse tree produced by the {@code addsub} labeled alternative in {@link
-   * ArabicBASICParser#expression}.
-   *
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  T visitAddsub(ArabicBASICParser.AddsubContext ctx);
-  /**
    * Visit a parse tree produced by the {@code term} labeled alternative in {@link
    * ArabicBASICParser#expression}.
    *
@@ -63,6 +55,14 @@ public interface ArabicBASICVisitor<T> extends ParseTreeVisitor<T> {
    * @return the visitor result
    */
   T visitTerm(ArabicBASICParser.TermContext ctx);
+  /**
+   * Visit a parse tree produced by the {@code addSub} labeled alternative in {@link
+   * ArabicBASICParser#expression}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitAddSub(ArabicBASICParser.AddSubContext ctx);
   /**
    * Visit a parse tree produced by the {@code arrayAccess} labeled alternative in {@link
    * ArabicBASICParser#expression}.
@@ -96,13 +96,13 @@ public interface ArabicBASICVisitor<T> extends ParseTreeVisitor<T> {
    */
   T visitExponentation(ArabicBASICParser.ExponentationContext ctx);
   /**
-   * Visit a parse tree produced by the {@code muldiv} labeled alternative in {@link
+   * Visit a parse tree produced by the {@code mulDiv} labeled alternative in {@link
    * ArabicBASICParser#expression}.
    *
    * @param ctx the parse tree
    * @return the visitor result
    */
-  T visitMuldiv(ArabicBASICParser.MuldivContext ctx);
+  T visitMulDiv(ArabicBASICParser.MulDivContext ctx);
   /**
    * Visit a parse tree produced by the {@code size} labeled alternative in {@link
    * ArabicBASICParser#array_size}.
