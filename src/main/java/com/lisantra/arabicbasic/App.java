@@ -6,7 +6,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import picocli.CommandLine;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -49,7 +49,7 @@ public class App implements Callable<Integer> {
     ArabicBASICParser parser = new ArabicBASICParser(new CommonTokenStream(lexer));
     ParseTree programTree = parser.program();
 
-    Map<String, Value<?>> symbolTable = new HashMap<>();
+    Map<String, Value<?>> symbolTable = new LinkedHashMap<>();
 
     CustomVisitor interpreter = new CustomVisitor(symbolTable, true);
     interpreter.visit(programTree);
