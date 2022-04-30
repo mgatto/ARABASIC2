@@ -4,15 +4,15 @@ package com.lisantra.arabicbasic;
 
 // TOSO abstract this and make concrete subclasses: Array | ContainerVariable, SimpleVariable
 
-public class Variable<T> {
+public class Variable {
   private final Symbol symbol;
-  private Value<T> value;
+  private Value value;
 
   /**
    * @param symbol
    * @param value
    */
-  public Variable(Symbol symbol, Value<T> value) {
+  public Variable(Symbol symbol, Value value) {
     this.symbol = symbol;
     this.value = value;
   }
@@ -27,21 +27,19 @@ public class Variable<T> {
   /**
    * @return
    */
-  public Value<T> getValue() {
+  public Value<?> getValue() {
     return value;
   }
 
   /**
    * @param value
    */
-  public void setValue(Value<T> value) {
+  public void setValue(Value value) {
     this.value = value;
   }
 
   @Override
   public String toString() {
-    // TODO replace with just symbol and it's new toString() method is automatically called in a
-    // String context
-    return " [is a " + symbol.getClass().getSimpleName() + "] having " + value.getVal();
+    return value.getVal().toString();
   }
 }

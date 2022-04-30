@@ -1,9 +1,6 @@
 package com.lisantra.arabicbasic;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
   private final Map<String, Variable> symbolTable;
@@ -40,10 +37,25 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     String id = ctx.IDENTIFIER().getText();
 
     // really should be an enum?
-    Symbol s = new SimpleSymbol(id);
+    Symbol s = new VariableSymbol(id);
+
     /* If val is another variable [A = B], then a new value is returned; is "copy by value" */
-    Value<Object> val = (Value) visit(ctx.expression());
-    Variable<?> var = new Variable<Object>(s, val);
+    Value<?> val = (Value) visit(ctx.expression());
+    Variable var = null;
+
+    switch (val.getOriginalType()) {
+      case "String":
+        var = new StringVariable(s, val);
+        break;
+
+      case "Integer":
+      case "Real":
+        var = new NumericVariable(s, val);
+        break;
+
+      default:
+        System.out.println("Value's original type was " + val.getOriginalType());
+    }
 
     /* this covers both creation and updating */
     symbolTable.put(id, var);
@@ -60,11 +72,11 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     Integer idx = (Integer) visit(ctx.arrayIndex()); // later, visitArrayIndex()
 
     // get the stored Variable associated with id
-    Variable<?> existingArray = symbolTable.get(id);
+    ArrayVariable existingArray = (ArrayVariable) symbolTable.get(id);
 
     // visit expression to get value to insert
-    Value<Object> wrapperOfvalToInsert = (Value) visit(ctx.expression());
-    Object valToInsert = wrapperOfvalToInsert.getVal(); // this should be Double or String
+    Value<?> wrapperOfValToInsert = (Value) visit(ctx.expression());
+    Object valToInsert = wrapperOfValToInsert.getVal(); // this should be Double or String
 
     // TODO check type of value to insert
     // check the Value's originalType? or the Value's attr of element_type?
@@ -81,10 +93,10 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
       // update
       targetArray.set(idx, valToInsert); // TODO enforce consistent typing of elements
     } catch (IndexOutOfBoundsException idxe) {
-      /* add new element */
-      // TODO check size vs index
-      int numberOfElements = targetArray.size();
-      if (idx > numberOfElements) {
+      /* add new element and enforce array capacity */
+      int numberOfElements = existingArray.getUpperBound(); //  targetArray.size();
+
+      if (idx >= numberOfElements) {
         System.out.println(symbolTable);
         throw new ArrayIndexOutOfBoundsException(
             "You tried to add a new element at position: "
@@ -106,88 +118,77 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
   }
 
   public Value<?> visitUnary(ArabicBASICParser.UnaryContext ctx) {
-    Double exprVal = 0.0;
+    Value<Double> expr = (Value<Double>) visit(ctx.expression());
+    Double exprVal = makeNumber(expr);
 
-    Value<?> expr = (Value) visit(ctx.expression());
-    if ((expr.getVal() instanceof Double)) {
-      exprVal = (Double) expr.getVal();
-    } else {
-      // TODO throw an exception
-      // can only negate numbers
-    }
-
-    // TODO this may only be necessary if there is a variable in the expression
-    // has to be a copy, else it mutates the original like this A = 1, X=-A
-    //   actually negates A retroactively
-    return new Value<Double>(-exprVal, "Double");
+    // Copy by value here may only be necessary if there is a variable in the expression.
+    // Otherwise, it mutates the original like this A = 1, X=-A and negates A retroactively.
+    return new Value<>(-exprVal, expr.getOriginalType());
   }
 
   public Value<Double> visitAddSub(ArabicBASICParser.AddSubContext ctx) {
     // TODO ensure left is a numeric
     // TODO treat all numbers as Double in this Java code?
-    Value left = (Value) visit(ctx.expression(0));
-    Value right = (Value) visit(ctx.expression(1));
+    Value<Double> left = (Value<Double>) visit(ctx.expression(0));
+    Value<Double> right = (Value<Double>) visit(ctx.expression(1));
 
-    // this workaround stuff feels really bunk and lame to me
-    Double leftVal = 0.0;
-    Double rightVal = 0.0;
+    // ensure both terms are addable/subtractable
+    Double leftVal = makeNumber(left);
+    Double rightVal = makeNumber(right);
 
-    // ensure both terms are addable
-    if (left.getVal() instanceof Double) {
-      leftVal = (Double) left.getVal();
-    } else {
-      // TODO throw error (language exception)
-    }
-
-    if (right.getVal() instanceof Double) {
-      rightVal = (Double) right.getVal();
-    } else {
-      // TODO throw error (language exception)
-    }
+    String resultType = getResultType(left, right);
 
     // TODO can use getType() if I specify the operators as terminals
     if (ctx.op.getText().equals("+")) {
-      return new Value<>(leftVal + rightVal, "Double");
-      // No widening: just consider every number a Double [whichever subclass of number is wider,
-      // then the result should be that.]
+      return new Value<>(leftVal + rightVal, resultType);
     }
-    return new Value<>(leftVal - rightVal, "Double");
+
+    return new Value<>(leftVal - rightVal, resultType);
+  }
+
+  private Double makeNumber(Value<Double> val) {
+    if (val.getVal() instanceof Double) {
+      return val.getVal();
+    } else {
+      throw new IllegalArgumentException(
+          "Only numbers can be operated on here. You tried to use: '" + val.getVal() + "'");
+    }
+  }
+
+  private String getResultType(Value<Double> left, Value<Double> right) {
+    // what if left and right have different original types? Widen the result
+    String resultType;
+    String leftType = left.getOriginalType();
+    String rightType = right.getOriginalType();
+
+    if (Objects.equals(leftType, "Integer") && leftType.equals(rightType)) {
+      resultType = "Integer";
+    } else {
+      resultType = "Float";
+    }
+
+    return resultType;
   }
 
   public Value<?> visitMulDiv(ArabicBASICParser.MulDivContext ctx) {
-    // TODO ensure left is a numeric
-    // TODO treat all numbers as Double in this Java code?
     Value left = (Value) visit(ctx.expression(0));
     Value right = (Value) visit(ctx.expression(1));
 
-    // this workaround stuff feels really bunk and lame to me
-    Double leftVal = 0.0;
-    Double rightVal = 0.0;
+    Double leftVal = makeNumber(left);
+    Double rightVal = makeNumber(right);
 
-    // ensure both terms are addable
-    if (left.getVal() instanceof Double) {
-      leftVal = (Double) left.getVal();
-    } else {
-      // TODO throw error (language exception)
-    }
-
-    if (right.getVal() instanceof Double) {
-      rightVal = (Double) right.getVal();
-    } else {
-      // TODO throw error (language exception)
-    }
+    String resultType = getResultType(left, right);
 
     // TODO can use getType() if I specify the operators as terminals
     if (ctx.op.getText().equals("*")) {
-      return new Value<>(leftVal * rightVal, "Double");
-      // No widening: just consider every number a Double [whichever subclass of number is wider,
-      // then the result should be that.]
+      return new Value<>(leftVal * rightVal, resultType);
     }
 
     if (rightVal == 0) {
-      // TODO throw a divide by zero error
+      throw new ArithmeticException("Cannot divide by zero");
     }
-    return new Value<>(leftVal / rightVal, "Double");
+
+    return new Value<>(leftVal / rightVal, resultType);
   }
 
   /**
@@ -256,20 +257,20 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
   public Void visitArrayCreation(ArabicBASICParser.ArrayCreationContext ctx) {
     if (showDebug) System.out.println("I visited Array Creation");
 
+    // 2. get array_size
+    Integer size = (Integer) visit(ctx.arraySize());
+
     // 1. get identifier
     String id = ctx.IDENTIFIER().getText();
-    Symbol s = new ArraySymbol(id);
+    Symbol s = new VariableSymbol(id);
 
     // TODO probably should decide the type here for the Generic! Double or String
     //    No, probably not! An empty array is OK!
 
-    // 2. get array_size
-    Integer size = (Integer) visit(ctx.arraySize());
     // 3. wrap in Value
     Value<List<?>> arr = new Value<>(new ArrayList<>(size), "Array");
-    // TODO set attribute for size...or just use ArrayList.size()?
 
-    Variable<?> var = new Variable<>(s, arr);
+    Variable var = new ArrayVariable(s, arr);
     symbolTable.put(id, var);
     return null;
   }
