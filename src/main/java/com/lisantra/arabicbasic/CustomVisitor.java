@@ -3,6 +3,7 @@ package com.lisantra.arabicbasic;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
   private final Map<String, Variable> symbolTable;
@@ -193,16 +194,16 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
    * @param ctx
    * @return the value associated with the var name
    */
-  public Variable<?> visitName(ArabicBASICParser.NameContext ctx) {
+  public Value<?> visitName(ArabicBASICParser.NameContext ctx) {
     if (showDebug) System.out.println("I visited Identifier");
 
     String id = ctx.IDENTIFIER().getText();
     if (!symbolTable.containsKey(id)) {
-      // TODO provoke an error
+      throw new NoSuchElementException("Variable '" + id + "' has not yet been declared.");
     }
 
     // The symbol table's value is of custom type Value
-    return symbolTable.get(id);
+    return symbolTable.get(id).getValue();
   }
 
   public Value<Double> visitNumeric(ArabicBASICParser.NumericContext ctx) {
