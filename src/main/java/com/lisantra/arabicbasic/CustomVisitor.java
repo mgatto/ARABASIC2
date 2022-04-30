@@ -33,39 +33,91 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     return visitChildren(ctx);
   }
 
-  public Object visitAssignment(ArabicBASICParser.AssignmentContext ctx) {
-    if (showDebug) System.out.println("I visited Assignment");
+  public Void visitVariableAssignment(ArabicBASICParser.VariableAssignmentContext ctx) {
+    if (showDebug) System.out.println("I visited Simple Assignment");
 
     String id = ctx.IDENTIFIER().getText();
-    Value<?> val = (Value) visit(ctx.expression());
-    // If val is another variable, the value is returned == copy by value
+
+    // really should be an enum?
+    Symbol s = new SimpleSymbol(id);
+    /* If val is another variable [A = B], then a new value is returned; is "copy by value" */
+    Value<Object> val = (Value) visit(ctx.expression());
+    Variable<?> var = new Variable<Object>(s, val);
 
     /* this covers both creation and updating */
-    symbolTable.put(id, val);
+    symbolTable.put(id, var);
+    return null;
+  }
 
-    return val;
+  public Void visitArrayAssignment(ArabicBASICParser.ArrayAssignmentContext ctx) {
+    if (showDebug) System.out.println("I visited Array Assignment");
+
+    // get identifier
+    String id = ctx.IDENTIFIER().getText(); // we don't need to create a new symbol
+
+    // get index
+    Integer idx = (Integer) visit(ctx.arraySize()); // later, visitArrayIndex()
+
+    // get the stored Variable associated with id
+    Variable<?> existingArray = symbolTable.get(id);
+
+    // visit expression to get value to insert
+    Value<Object> wrapperOfvalToInsert = (Value) visit(ctx.expression());
+    Object valToInsert = wrapperOfvalToInsert.getVal(); // this should be Double or String
+
+    // TODO check type of value to insert
+    // check the Value's originalType? or the Value's attr of element_type?
+    // Type erasure means I probably can't get List<Integer> for example...
+
+    // insert a value at the index; this call looks wierd
+    List targetArray = (ArrayList) existingArray.getValue().getVal();
+
+    // TODO must test for existing index; add() for new element, and set() for updating
+    // TODO will I need to reinsert this, or is it enough to "update" the List reference var?
+    try {
+      // could just try to get it and deal with exception? expensive in resources (?)
+      Object existingElement = targetArray.get(idx);
+      // update
+      targetArray.set(idx, valToInsert); // TODO enforce consistent typing of elements
+    } catch (IndexOutOfBoundsException idxe) {
+      /* add new element */
+      // TODO check size vs index
+      int numberOfElements = targetArray.size();
+      if (idx > numberOfElements) {
+        throw new ArrayIndexOutOfBoundsException(
+            "You tried to add a new element at position: "
+                + idx
+                + ", but the array '"
+                + id
+                + "' has only "
+                + numberOfElements
+                + " elements");
+      }
+      targetArray.add(idx, valToInsert);
+    }
+
+    return null;
   }
 
   public Value<?> visitNested(ArabicBASICParser.NestedContext ctx) {
     return (Value) visit(ctx.expression());
-
-    //    return visitChildren(ctx);
   }
 
   public Value<?> visitUnary(ArabicBASICParser.UnaryContext ctx) {
     Double exprVal = 0.0;
+
     Value<?> expr = (Value) visit(ctx.expression());
     if ((expr.getVal() instanceof Double)) {
       exprVal = (Double) expr.getVal();
     } else {
       // TODO throw an exception
+      // can only negate numbers
     }
 
     // TODO this may only be necessary if there is a variable in the expression
-    Value<Double> newExpr = new Value<Double>(-exprVal, "Double");
     // has to be a copy, else it mutates the original like this A = 1, X=-A
     // actually negates A retroactively
-    return newExpr;
+    return new Value<Double>(-exprVal, "Double");
   }
 
   public Value<Double> visitAddSub(ArabicBASICParser.AddSubContext ctx) {

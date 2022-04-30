@@ -29,6 +29,16 @@ public class ArabicBASICBaseVisitor<T> extends AbstractParseTreeVisitor<T>
    * ctx}.
    */
   @Override
+  public T visitBlock(ArabicBASICParser.BlockContext ctx) {
+    return visitChildren(ctx);
+  }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * ctx}.
+   */
+  @Override
   public T visitStatement(ArabicBASICParser.StatementContext ctx) {
     return visitChildren(ctx);
   }
@@ -39,7 +49,27 @@ public class ArabicBASICBaseVisitor<T> extends AbstractParseTreeVisitor<T>
    * ctx}.
    */
   @Override
-  public T visitAssignment(ArabicBASICParser.AssignmentContext ctx) {
+  public T visitVariableAssignment(ArabicBASICParser.VariableAssignmentContext ctx) {
+    return visitChildren(ctx);
+  }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * ctx}.
+   */
+  @Override
+  public T visitArrayAssignment(ArabicBASICParser.ArrayAssignmentContext ctx) {
+    return visitChildren(ctx);
+  }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * ctx}.
+   */
+  @Override
+  public T visitArrayCreation(ArabicBASICParser.ArrayCreationContext ctx) {
     return visitChildren(ctx);
   }
   /**
@@ -50,16 +80,6 @@ public class ArabicBASICBaseVisitor<T> extends AbstractParseTreeVisitor<T>
    */
   @Override
   public T visitBlank(ArabicBASICParser.BlankContext ctx) {
-    return visitChildren(ctx);
-  }
-  /**
-   * {@inheritDoc}
-   *
-   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
-   * ctx}.
-   */
-  @Override
-  public T visitArrayCreate(ArabicBASICParser.ArrayCreateContext ctx) {
     return visitChildren(ctx);
   }
   /**
@@ -139,47 +159,7 @@ public class ArabicBASICBaseVisitor<T> extends AbstractParseTreeVisitor<T>
    * ctx}.
    */
   @Override
-  public T visitSize(ArabicBASICParser.SizeContext ctx) {
-    return visitChildren(ctx);
-  }
-  /**
-   * {@inheritDoc}
-   *
-   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
-   * ctx}.
-   */
-  @Override
-  public T visitArray_creation(ArabicBASICParser.Array_creationContext ctx) {
-    return visitChildren(ctx);
-  }
-  /**
-   * {@inheritDoc}
-   *
-   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
-   * ctx}.
-   */
-  @Override
-  public T visitArray_expression(ArabicBASICParser.Array_expressionContext ctx) {
-    return visitChildren(ctx);
-  }
-  /**
-   * {@inheritDoc}
-   *
-   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
-   * ctx}.
-   */
-  @Override
-  public T visitArray_access(ArabicBASICParser.Array_accessContext ctx) {
-    return visitChildren(ctx);
-  }
-  /**
-   * {@inheritDoc}
-   *
-   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
-   * ctx}.
-   */
-  @Override
-  public T visitBlock(ArabicBASICParser.BlockContext ctx) {
+  public T visitArraySize(ArabicBASICParser.ArraySizeContext ctx) {
     return visitChildren(ctx);
   }
   /**
@@ -210,16 +190,6 @@ public class ArabicBASICBaseVisitor<T> extends AbstractParseTreeVisitor<T>
    */
   @Override
   public T visitText(ArabicBASICParser.TextContext ctx) {
-    return visitChildren(ctx);
-  }
-  /**
-   * {@inheritDoc}
-   *
-   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
-   * ctx}.
-   */
-  @Override
-  public T visitNumber(ArabicBASICParser.NumberContext ctx) {
     return visitChildren(ctx);
   }
 }

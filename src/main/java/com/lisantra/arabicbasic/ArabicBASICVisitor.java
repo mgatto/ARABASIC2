@@ -19,6 +19,13 @@ public interface ArabicBASICVisitor<T> extends ParseTreeVisitor<T> {
    */
   T visitProgram(ArabicBASICParser.ProgramContext ctx);
   /**
+   * Visit a parse tree produced by {@link ArabicBASICParser#block}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitBlock(ArabicBASICParser.BlockContext ctx);
+  /**
    * Visit a parse tree produced by {@link ArabicBASICParser#statement}.
    *
    * @param ctx the parse tree
@@ -26,12 +33,26 @@ public interface ArabicBASICVisitor<T> extends ParseTreeVisitor<T> {
    */
   T visitStatement(ArabicBASICParser.StatementContext ctx);
   /**
-   * Visit a parse tree produced by {@link ArabicBASICParser#assignment}.
+   * Visit a parse tree produced by {@link ArabicBASICParser#variableAssignment}.
    *
    * @param ctx the parse tree
    * @return the visitor result
    */
-  T visitAssignment(ArabicBASICParser.AssignmentContext ctx);
+  T visitVariableAssignment(ArabicBASICParser.VariableAssignmentContext ctx);
+  /**
+   * Visit a parse tree produced by {@link ArabicBASICParser#arrayAssignment}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitArrayAssignment(ArabicBASICParser.ArrayAssignmentContext ctx);
+  /**
+   * Visit a parse tree produced by {@link ArabicBASICParser#arrayCreation}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitArrayCreation(ArabicBASICParser.ArrayCreationContext ctx);
   /**
    * Visit a parse tree produced by {@link ArabicBASICParser#blank}.
    *
@@ -39,14 +60,6 @@ public interface ArabicBASICVisitor<T> extends ParseTreeVisitor<T> {
    * @return the visitor result
    */
   T visitBlank(ArabicBASICParser.BlankContext ctx);
-  /**
-   * Visit a parse tree produced by the {@code arrayCreate} labeled alternative in {@link
-   * ArabicBASICParser#expression}.
-   *
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  T visitArrayCreate(ArabicBASICParser.ArrayCreateContext ctx);
   /**
    * Visit a parse tree produced by the {@code term} labeled alternative in {@link
    * ArabicBASICParser#expression}.
@@ -104,41 +117,12 @@ public interface ArabicBASICVisitor<T> extends ParseTreeVisitor<T> {
    */
   T visitMulDiv(ArabicBASICParser.MulDivContext ctx);
   /**
-   * Visit a parse tree produced by the {@code size} labeled alternative in {@link
-   * ArabicBASICParser#array_size}.
+   * Visit a parse tree produced by {@link ArabicBASICParser#arraySize}.
    *
    * @param ctx the parse tree
    * @return the visitor result
    */
-  T visitSize(ArabicBASICParser.SizeContext ctx);
-  /**
-   * Visit a parse tree produced by {@link ArabicBASICParser#array_creation}.
-   *
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  T visitArray_creation(ArabicBASICParser.Array_creationContext ctx);
-  /**
-   * Visit a parse tree produced by {@link ArabicBASICParser#array_expression}.
-   *
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  T visitArray_expression(ArabicBASICParser.Array_expressionContext ctx);
-  /**
-   * Visit a parse tree produced by {@link ArabicBASICParser#array_access}.
-   *
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  T visitArray_access(ArabicBASICParser.Array_accessContext ctx);
-  /**
-   * Visit a parse tree produced by {@link ArabicBASICParser#block}.
-   *
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  T visitBlock(ArabicBASICParser.BlockContext ctx);
+  T visitArraySize(ArabicBASICParser.ArraySizeContext ctx);
   /**
    * Visit a parse tree produced by the {@code name} labeled alternative in {@link
    * ArabicBASICParser#variable}.
@@ -163,11 +147,4 @@ public interface ArabicBASICVisitor<T> extends ParseTreeVisitor<T> {
    * @return the visitor result
    */
   T visitText(ArabicBASICParser.TextContext ctx);
-  /**
-   * Visit a parse tree produced by {@link ArabicBASICParser#number}.
-   *
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  T visitNumber(ArabicBASICParser.NumberContext ctx);
 }
