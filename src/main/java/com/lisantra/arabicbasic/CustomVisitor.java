@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
-  private final Map<String, Value<?>> symbolTable;
+  private final Map<String, Variable> symbolTable;
   private final boolean showDebug;
 
-  public CustomVisitor(Map<String, Value<?>> symbolTable, boolean showDebug) {
+  public CustomVisitor(Map<String, Variable> symbolTable, boolean showDebug) {
     super();
     this.symbolTable = symbolTable;
     this.showDebug = showDebug;
@@ -116,7 +116,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
 
     // TODO this may only be necessary if there is a variable in the expression
     // has to be a copy, else it mutates the original like this A = 1, X=-A
-    // actually negates A retroactively
+    //   actually negates A retroactively
     return new Value<Double>(-exprVal, "Double");
   }
 
@@ -192,7 +192,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
    * @param ctx
    * @return the value associated with the var name
    */
-  public Value<?> visitName(ArabicBASICParser.NameContext ctx) {
+  public Variable<?> visitName(ArabicBASICParser.NameContext ctx) {
     if (showDebug) System.out.println("I visited Identifier");
 
     String id = ctx.IDENTIFIER().getText();
@@ -204,7 +204,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     return symbolTable.get(id);
   }
 
-  public Value<Double> visitNumber(ArabicBASICParser.NumberContext ctx) {
+  public Value<Double> visitNumeric(ArabicBASICParser.NumericContext ctx) {
     // TODO it could be either an Integer or Float; all get treated as Double anyways, but
     // let's track the original type
 
@@ -215,23 +215,28 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     return new Value<>(ctx.STRING().getText(), "String");
   }
 
-  public Void visitArray_creation(ArabicBASICParser.Array_creationContext ctx) {
+  public Void visitArrayCreation(ArabicBASICParser.ArrayCreationContext ctx) {
     if (showDebug) System.out.println("I visited Array Creation");
 
     // 1. get identifier
     String id = ctx.IDENTIFIER().getText();
+    Symbol s = new ContainerSymbol(id); // the type enum-ish seems redundant!
+
+    // TODO probably should decide the type here for the Generic! Double or String
+    //    No, probably not! An empty array is OK!
 
     // 2. get array_size
-    Integer size = (Integer) visit(ctx.array_size());
-
+    Integer size = (Integer) visit(ctx.arraySize());
     // 3. wrap in Value
     Value<List<?>> arr = new Value<>(new ArrayList<>(size), "Array");
-    symbolTable.put(id, arr);
+    // TODO set attribute for size...or just use ArrayList.size()?
 
+    Variable<?> var = new Variable<>(s, arr);
+    symbolTable.put(id, var);
     return null;
   }
 
-  public Integer visitSize(ArabicBASICParser.SizeContext ctx) {
+  public Integer visitArraySize(ArabicBASICParser.ArraySizeContext ctx) {
     return Integer.valueOf(ctx.INTEGER().getText());
   }
 }
