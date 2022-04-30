@@ -206,10 +206,13 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
   }
 
   public Value<Double> visitNumeric(ArabicBASICParser.NumericContext ctx) {
-    // TODO it could be either an Integer or Float; all get treated as Double anyways, but
-    // let's track the original type
-
-    return new Value<>(Double.valueOf(ctx.INTEGER().getText()), "Double");
+    // all get treated as Double anyways, but let's track the original type
+    //  ...this is why I had a "number" rule in the grammar...
+    if (null != ctx.INTEGER()) {
+      return new Value<>(Double.valueOf(ctx.INTEGER().getText()), "Integer");
+    } else {
+      return new Value<>(Double.valueOf(ctx.REAL().getText()), "Real");
+    }
   }
 
   public Value<String> visitText(ArabicBASICParser.TextContext ctx) {
