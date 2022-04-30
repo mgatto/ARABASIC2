@@ -206,6 +206,39 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     return symbolTable.get(id).getValue();
   }
 
+  @Override
+  public Value<?> visitArrayAccess(ArabicBASICParser.ArrayAccessContext ctx) {
+    if (showDebug) System.out.println("I visited array access");
+
+    String id = ctx.IDENTIFIER().getText();
+    if (!symbolTable.containsKey(id)) {
+      throw new NoSuchElementException("Variable '" + id + "' has not yet been declared.");
+    }
+
+    // get index
+    Integer idx = (Integer) visit(ctx.arrayIndex());
+
+    Value<?> val = symbolTable.get(id).getValue();
+    List targetArray = (ArrayList) val.getVal();
+
+    // TODO check size vs index
+    int numberOfElements = targetArray.size();
+    if (idx > numberOfElements) {
+      System.out.println(symbolTable);
+      throw new ArrayIndexOutOfBoundsException(
+          "You tried to add a new element at position: "
+              + idx
+              + ", but the array '"
+              + id
+              + "' has only "
+              + numberOfElements
+              + " elements");
+    }
+
+    String elementsType = val.getOriginalType();
+    return new Value<>(targetArray.get(idx), elementsType);
+  }
+
   public Value<Double> visitNumeric(ArabicBASICParser.NumericContext ctx) {
     // all get treated as Double anyways, but let's track the original type
     //  ...this is why I had a "number" rule in the grammar...
@@ -225,7 +258,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
 
     // 1. get identifier
     String id = ctx.IDENTIFIER().getText();
-    Symbol s = new ContainerSymbol(id);
+    Symbol s = new ArraySymbol(id);
 
     // TODO probably should decide the type here for the Generic! Double or String
     //    No, probably not! An empty array is OK!
@@ -242,6 +275,10 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
   }
 
   public Integer visitArraySize(ArabicBASICParser.ArraySizeContext ctx) {
+    return Integer.valueOf(ctx.INTEGER().getText());
+  }
+
+  public Integer visitArrayIndex(ArabicBASICParser.ArrayIndexContext ctx) {
     return Integer.valueOf(ctx.INTEGER().getText());
   }
 }

@@ -19,7 +19,7 @@ blank: WS* EOL;
 // list the rules from highest -> lowest precedence
 expression: // left=expression OP1 right=expression
 //             arrayExpression                           #arrayCreate |
-            IDENTIFIER '(' INTEGER ')'                  #arrayAccess
+            IDENTIFIER '(' arrayIndex ')'                  #arrayAccess
             | '-' expression                            #unary
             | <assoc=right>expression'^' expression     #exponentation
             | expression op=('*' | '/') expression      #mulDiv
@@ -30,7 +30,7 @@ expression: // left=expression OP1 right=expression
             // | array_indexing
             | '(' expression ')'                         #nested
             ;
-arrayIndex: INTEGER;
+arrayIndex: INTEGER; // expression's left recursion will break if I put "expression" here...
 arraySize: INTEGER; //can expand it from Integer --> Expression(Numerical), maybe catch string "size" in the parser.
 /*arraySize:  INTEGER                             #simpleSize
             | low=INTEGER 'TO' high=INTEGER     #offsetPairSize

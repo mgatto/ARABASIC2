@@ -679,8 +679,8 @@ public class ArabicBASICParser extends Parser {
       return getToken(ArabicBASICParser.IDENTIFIER, 0);
     }
 
-    public TerminalNode INTEGER() {
-      return getToken(ArabicBASICParser.INTEGER, 0);
+    public ArrayIndexContext arrayIndex() {
+      return getRuleContext(ArrayIndexContext.class, 0);
     }
 
     public ArrayAccessContext(ExpressionContext ctx) {
@@ -801,7 +801,7 @@ public class ArabicBASICParser extends Parser {
       int _alt;
       enterOuterAlt(_localctx, 1);
       {
-        setState(79);
+        setState(80);
         _errHandler.sync(this);
         switch (getInterpreter().adaptivePredict(_input, 3, _ctx)) {
           case 1:
@@ -815,7 +815,7 @@ public class ArabicBASICParser extends Parser {
               setState(69);
               match(T__2);
               setState(70);
-              match(INTEGER);
+              arrayIndex();
               setState(71);
               match(T__3);
             }
@@ -825,9 +825,9 @@ public class ArabicBASICParser extends Parser {
               _localctx = new UnaryContext(_localctx);
               _ctx = _localctx;
               _prevctx = _localctx;
-              setState(72);
-              match(SUB);
               setState(73);
+              match(SUB);
+              setState(74);
               expression(6);
             }
             break;
@@ -836,7 +836,7 @@ public class ArabicBASICParser extends Parser {
               _localctx = new TermContext(_localctx);
               _ctx = _localctx;
               _prevctx = _localctx;
-              setState(74);
+              setState(75);
               variable();
             }
             break;
@@ -845,17 +845,17 @@ public class ArabicBASICParser extends Parser {
               _localctx = new NestedContext(_localctx);
               _ctx = _localctx;
               _prevctx = _localctx;
-              setState(75);
-              match(T__2);
               setState(76);
-              expression(0);
+              match(T__2);
               setState(77);
+              expression(0);
+              setState(78);
               match(T__3);
             }
             break;
         }
         _ctx.stop = _input.LT(-1);
-        setState(92);
+        setState(93);
         _errHandler.sync(this);
         _alt = getInterpreter().adaptivePredict(_input, 5, _ctx);
         while (_alt != 2 && _alt != org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER) {
@@ -863,7 +863,7 @@ public class ArabicBASICParser extends Parser {
             if (_parseListeners != null) triggerExitRuleEvent();
             _prevctx = _localctx;
             {
-              setState(90);
+              setState(91);
               _errHandler.sync(this);
               switch (getInterpreter().adaptivePredict(_input, 4, _ctx)) {
                 case 1:
@@ -871,12 +871,12 @@ public class ArabicBASICParser extends Parser {
                     _localctx =
                         new ExponentationContext(new ExpressionContext(_parentctx, _parentState));
                     pushNewRecursionContext(_localctx, _startState, RULE_expression);
-                    setState(81);
+                    setState(82);
                     if (!(precpred(_ctx, 5)))
                       throw new FailedPredicateException(this, "precpred(_ctx, 5)");
-                    setState(82);
-                    match(T__5);
                     setState(83);
+                    match(T__5);
+                    setState(84);
                     expression(5);
                   }
                   break;
@@ -884,10 +884,10 @@ public class ArabicBASICParser extends Parser {
                   {
                     _localctx = new MulDivContext(new ExpressionContext(_parentctx, _parentState));
                     pushNewRecursionContext(_localctx, _startState, RULE_expression);
-                    setState(84);
+                    setState(85);
                     if (!(precpred(_ctx, 4)))
                       throw new FailedPredicateException(this, "precpred(_ctx, 4)");
-                    setState(85);
+                    setState(86);
                     ((MulDivContext) _localctx).op = _input.LT(1);
                     _la = _input.LA(1);
                     if (!(_la == MUL || _la == DIV)) {
@@ -897,7 +897,7 @@ public class ArabicBASICParser extends Parser {
                       _errHandler.reportMatch(this);
                       consume();
                     }
-                    setState(86);
+                    setState(87);
                     expression(5);
                   }
                   break;
@@ -905,10 +905,10 @@ public class ArabicBASICParser extends Parser {
                   {
                     _localctx = new AddSubContext(new ExpressionContext(_parentctx, _parentState));
                     pushNewRecursionContext(_localctx, _startState, RULE_expression);
-                    setState(87);
+                    setState(88);
                     if (!(precpred(_ctx, 3)))
                       throw new FailedPredicateException(this, "precpred(_ctx, 3)");
-                    setState(88);
+                    setState(89);
                     ((AddSubContext) _localctx).op = _input.LT(1);
                     _la = _input.LA(1);
                     if (!(_la == ADD || _la == SUB)) {
@@ -918,14 +918,14 @@ public class ArabicBASICParser extends Parser {
                       _errHandler.reportMatch(this);
                       consume();
                     }
-                    setState(89);
+                    setState(90);
                     expression(4);
                   }
                   break;
               }
             }
           }
-          setState(94);
+          setState(95);
           _errHandler.sync(this);
           _alt = getInterpreter().adaptivePredict(_input, 5, _ctx);
         }
@@ -968,7 +968,7 @@ public class ArabicBASICParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(95);
+        setState(96);
         match(INTEGER);
       }
     } catch (RecognitionException re) {
@@ -1009,7 +1009,7 @@ public class ArabicBASICParser extends Parser {
     try {
       enterOuterAlt(_localctx, 1);
       {
-        setState(97);
+        setState(98);
         match(INTEGER);
       }
     } catch (RecognitionException re) {
@@ -1099,14 +1099,14 @@ public class ArabicBASICParser extends Parser {
     enterRule(_localctx, 20, RULE_variable);
     int _la;
     try {
-      setState(102);
+      setState(103);
       _errHandler.sync(this);
       switch (_input.LA(1)) {
         case IDENTIFIER:
           _localctx = new NameContext(_localctx);
           enterOuterAlt(_localctx, 1);
           {
-            setState(99);
+            setState(100);
             match(IDENTIFIER);
           }
           break;
@@ -1115,7 +1115,7 @@ public class ArabicBASICParser extends Parser {
           _localctx = new NumericContext(_localctx);
           enterOuterAlt(_localctx, 2);
           {
-            setState(100);
+            setState(101);
             _la = _input.LA(1);
             if (!(_la == INTEGER || _la == REAL)) {
               _errHandler.recoverInline(this);
@@ -1130,7 +1130,7 @@ public class ArabicBASICParser extends Parser {
           _localctx = new TextContext(_localctx);
           enterOuterAlt(_localctx, 3);
           {
-            setState(101);
+            setState(102);
             match(STRING);
           }
           break;
@@ -1168,7 +1168,7 @@ public class ArabicBASICParser extends Parser {
   }
 
   public static final String _serializedATN =
-      "\u0004\u0001\u0011i\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"
+      "\u0004\u0001\u0011j\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"
           + "\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0002"
           + "\u0005\u0007\u0005\u0002\u0006\u0007\u0006\u0002\u0007\u0007\u0007\u0002"
           + "\b\u0007\b\u0002\t\u0007\t\u0002\n\u0007\n\u0001\u0000\u0001\u0000\u0001"
@@ -1180,18 +1180,18 @@ public class ArabicBASICParser extends Parser {
           + "\u0001\u0005\u0001\u0005\u0001\u0005\u0001\u0005\u0001\u0006\u0005\u0006"
           + "=\b\u0006\n\u0006\f\u0006@\t\u0006\u0001\u0006\u0001\u0006\u0001\u0007"
           + "\u0001\u0007\u0001\u0007\u0001\u0007\u0001\u0007\u0001\u0007\u0001\u0007"
-          + "\u0001\u0007\u0001\u0007\u0001\u0007\u0001\u0007\u0001\u0007\u0003\u0007"
-          + "P\b\u0007\u0001\u0007\u0001\u0007\u0001\u0007\u0001\u0007\u0001\u0007"
-          + "\u0001\u0007\u0001\u0007\u0001\u0007\u0001\u0007\u0005\u0007[\b\u0007"
-          + "\n\u0007\f\u0007^\t\u0007\u0001\b\u0001\b\u0001\t\u0001\t\u0001\n\u0001"
-          + "\n\u0001\n\u0003\ng\b\n\u0001\n\u0000\u0001\u000e\u000b\u0000\u0002\u0004"
-          + "\u0006\b\n\f\u000e\u0010\u0012\u0014\u0000\u0003\u0001\u0000\f\r\u0001"
-          + "\u0000\u000e\u000f\u0001\u0000\n\u000bk\u0000\u0016\u0001\u0000\u0000"
-          + "\u0000\u0002\u001c\u0001\u0000\u0000\u0000\u0004$\u0001\u0000\u0000\u0000"
-          + "\u0006&\u0001\u0000\u0000\u0000\b,\u0001\u0000\u0000\u0000\n4\u0001\u0000"
-          + "\u0000\u0000\f>\u0001\u0000\u0000\u0000\u000eO\u0001\u0000\u0000\u0000"
-          + "\u0010_\u0001\u0000\u0000\u0000\u0012a\u0001\u0000\u0000\u0000\u0014f"
-          + "\u0001\u0000\u0000\u0000\u0016\u0017\u0003\u0002\u0001\u0000\u0017\u0018"
+          + "\u0001\u0007\u0001\u0007\u0001\u0007\u0001\u0007\u0001\u0007\u0001\u0007"
+          + "\u0003\u0007Q\b\u0007\u0001\u0007\u0001\u0007\u0001\u0007\u0001\u0007"
+          + "\u0001\u0007\u0001\u0007\u0001\u0007\u0001\u0007\u0001\u0007\u0005\u0007"
+          + "\\\b\u0007\n\u0007\f\u0007_\t\u0007\u0001\b\u0001\b\u0001\t\u0001\t\u0001"
+          + "\n\u0001\n\u0001\n\u0003\nh\b\n\u0001\n\u0000\u0001\u000e\u000b\u0000"
+          + "\u0002\u0004\u0006\b\n\f\u000e\u0010\u0012\u0014\u0000\u0003\u0001\u0000"
+          + "\f\r\u0001\u0000\u000e\u000f\u0001\u0000\n\u000bl\u0000\u0016\u0001\u0000"
+          + "\u0000\u0000\u0002\u001c\u0001\u0000\u0000\u0000\u0004$\u0001\u0000\u0000"
+          + "\u0000\u0006&\u0001\u0000\u0000\u0000\b,\u0001\u0000\u0000\u0000\n4\u0001"
+          + "\u0000\u0000\u0000\f>\u0001\u0000\u0000\u0000\u000eP\u0001\u0000\u0000"
+          + "\u0000\u0010`\u0001\u0000\u0000\u0000\u0012b\u0001\u0000\u0000\u0000\u0014"
+          + "g\u0001\u0000\u0000\u0000\u0016\u0017\u0003\u0002\u0001\u0000\u0017\u0018"
           + "\u0005\u0000\u0000\u0001\u0018\u0001\u0001\u0000\u0000\u0000\u0019\u001b"
           + "\u0003\u0004\u0002\u0000\u001a\u0019\u0001\u0000\u0000\u0000\u001b\u001e"
           + "\u0001\u0000\u0000\u0000\u001c\u001a\u0001\u0000\u0000\u0000\u001c\u001d"
@@ -1212,22 +1212,22 @@ public class ArabicBASICParser extends Parser {
           + "\u0000><\u0001\u0000\u0000\u0000>?\u0001\u0000\u0000\u0000?A\u0001\u0000"
           + "\u0000\u0000@>\u0001\u0000\u0000\u0000AB\u0005\u0010\u0000\u0000B\r\u0001"
           + "\u0000\u0000\u0000CD\u0006\u0007\uffff\uffff\u0000DE\u0005\b\u0000\u0000"
-          + "EF\u0005\u0003\u0000\u0000FG\u0005\n\u0000\u0000GP\u0005\u0004\u0000\u0000"
-          + "HI\u0005\u000f\u0000\u0000IP\u0003\u000e\u0007\u0006JP\u0003\u0014\n\u0000"
-          + "KL\u0005\u0003\u0000\u0000LM\u0003\u000e\u0007\u0000MN\u0005\u0004\u0000"
-          + "\u0000NP\u0001\u0000\u0000\u0000OC\u0001\u0000\u0000\u0000OH\u0001\u0000"
-          + "\u0000\u0000OJ\u0001\u0000\u0000\u0000OK\u0001\u0000\u0000\u0000P\\\u0001"
-          + "\u0000\u0000\u0000QR\n\u0005\u0000\u0000RS\u0005\u0006\u0000\u0000S[\u0003"
-          + "\u000e\u0007\u0005TU\n\u0004\u0000\u0000UV\u0007\u0000\u0000\u0000V[\u0003"
-          + "\u000e\u0007\u0005WX\n\u0003\u0000\u0000XY\u0007\u0001\u0000\u0000Y[\u0003"
-          + "\u000e\u0007\u0004ZQ\u0001\u0000\u0000\u0000ZT\u0001\u0000\u0000\u0000"
-          + "ZW\u0001\u0000\u0000\u0000[^\u0001\u0000\u0000\u0000\\Z\u0001\u0000\u0000"
-          + "\u0000\\]\u0001\u0000\u0000\u0000]\u000f\u0001\u0000\u0000\u0000^\\\u0001"
-          + "\u0000\u0000\u0000_`\u0005\n\u0000\u0000`\u0011\u0001\u0000\u0000\u0000"
-          + "ab\u0005\n\u0000\u0000b\u0013\u0001\u0000\u0000\u0000cg\u0005\b\u0000"
-          + "\u0000dg\u0007\u0002\u0000\u0000eg\u0005\t\u0000\u0000fc\u0001\u0000\u0000"
-          + "\u0000fd\u0001\u0000\u0000\u0000fe\u0001\u0000\u0000\u0000g\u0015\u0001"
-          + "\u0000\u0000\u0000\u0007\u001c$>OZ\\f";
+          + "EF\u0005\u0003\u0000\u0000FG\u0003\u0010\b\u0000GH\u0005\u0004\u0000\u0000"
+          + "HQ\u0001\u0000\u0000\u0000IJ\u0005\u000f\u0000\u0000JQ\u0003\u000e\u0007"
+          + "\u0006KQ\u0003\u0014\n\u0000LM\u0005\u0003\u0000\u0000MN\u0003\u000e\u0007"
+          + "\u0000NO\u0005\u0004\u0000\u0000OQ\u0001\u0000\u0000\u0000PC\u0001\u0000"
+          + "\u0000\u0000PI\u0001\u0000\u0000\u0000PK\u0001\u0000\u0000\u0000PL\u0001"
+          + "\u0000\u0000\u0000Q]\u0001\u0000\u0000\u0000RS\n\u0005\u0000\u0000ST\u0005"
+          + "\u0006\u0000\u0000T\\\u0003\u000e\u0007\u0005UV\n\u0004\u0000\u0000VW"
+          + "\u0007\u0000\u0000\u0000W\\\u0003\u000e\u0007\u0005XY\n\u0003\u0000\u0000"
+          + "YZ\u0007\u0001\u0000\u0000Z\\\u0003\u000e\u0007\u0004[R\u0001\u0000\u0000"
+          + "\u0000[U\u0001\u0000\u0000\u0000[X\u0001\u0000\u0000\u0000\\_\u0001\u0000"
+          + "\u0000\u0000][\u0001\u0000\u0000\u0000]^\u0001\u0000\u0000\u0000^\u000f"
+          + "\u0001\u0000\u0000\u0000_]\u0001\u0000\u0000\u0000`a\u0005\n\u0000\u0000"
+          + "a\u0011\u0001\u0000\u0000\u0000bc\u0005\n\u0000\u0000c\u0013\u0001\u0000"
+          + "\u0000\u0000dh\u0005\b\u0000\u0000eh\u0007\u0002\u0000\u0000fh\u0005\t"
+          + "\u0000\u0000gd\u0001\u0000\u0000\u0000ge\u0001\u0000\u0000\u0000gf\u0001"
+          + "\u0000\u0000\u0000h\u0015\u0001\u0000\u0000\u0000\u0007\u001c$>P[]g";
   public static final ATN _ATN = new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 
   static {
