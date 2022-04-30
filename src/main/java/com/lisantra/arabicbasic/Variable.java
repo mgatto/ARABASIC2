@@ -42,6 +42,6 @@ public class Variable<T> {
   public String toString() {
     // TODO replace with just symbol and it's new toString() method is automatically called in a
     // String context
-    return "" + symbol.getName() + " (" + symbol.getClass() + ") " + " = " + value.getVal();
+    return " [is a " + symbol.getClass().getSimpleName() + "] having " + value.getVal();
   }
 }

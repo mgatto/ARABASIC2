@@ -84,6 +84,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
       // TODO check size vs index
       int numberOfElements = targetArray.size();
       if (idx > numberOfElements) {
+        System.out.println(symbolTable);
         throw new ArrayIndexOutOfBoundsException(
             "You tried to add a new element at position: "
                 + idx
@@ -220,7 +221,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
 
     // 1. get identifier
     String id = ctx.IDENTIFIER().getText();
-    Symbol s = new ContainerSymbol(id); // the type enum-ish seems redundant!
+    Symbol s = new ContainerSymbol(id);
 
     // TODO probably should decide the type here for the Generic! Double or String
     //    No, probably not! An empty array is OK!
