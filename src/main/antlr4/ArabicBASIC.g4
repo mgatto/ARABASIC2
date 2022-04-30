@@ -4,14 +4,14 @@ program: block EOF;
 block: statement*;
 statement:  COMMENT
             | blank
-            | variableAssignment
+            | simpleAssignment
             | arrayAssignment
             | arrayCreation
 //            | print
             ;
 
 //TODO LET is actually a variable declaration
-variableAssignment: 'LET' IDENTIFIER '=' expression EOL; // Sequence with Terminator pattern
+simpleAssignment: 'LET' IDENTIFIER '=' expression EOL; // Sequence with Terminator pattern
 arrayAssignment: IDENTIFIER '(' arrayIndex ')' '=' expression EOL; //TODO visitor implementation will check for type consistency in array elements
 arrayCreation: 'DIM' IDENTIFIER '(' arraySize ')' EOL;
 blank: WS* EOL;

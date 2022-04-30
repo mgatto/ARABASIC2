@@ -34,7 +34,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     return visitChildren(ctx);
   }
 
-  public Void visitVariableAssignment(ArabicBASICParser.VariableAssignmentContext ctx) {
+  public Void visitSimpleAssignment(ArabicBASICParser.SimpleAssignmentContext ctx) {
     if (showDebug) System.out.println("I visited Simple Assignment");
 
     String id = ctx.IDENTIFIER().getText();
@@ -57,7 +57,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     String id = ctx.IDENTIFIER().getText(); // we don't need to create a new symbol
 
     // get index
-    Integer idx = (Integer) visit(ctx.arraySize()); // later, visitArrayIndex()
+    Integer idx = (Integer) visit(ctx.arrayIndex()); // later, visitArrayIndex()
 
     // get the stored Variable associated with id
     Variable<?> existingArray = symbolTable.get(id);

@@ -33,12 +33,12 @@ public interface ArabicBASICVisitor<T> extends ParseTreeVisitor<T> {
    */
   T visitStatement(ArabicBASICParser.StatementContext ctx);
   /**
-   * Visit a parse tree produced by {@link ArabicBASICParser#variableAssignment}.
+   * Visit a parse tree produced by {@link ArabicBASICParser#simpleAssignment}.
    *
    * @param ctx the parse tree
    * @return the visitor result
    */
-  T visitVariableAssignment(ArabicBASICParser.VariableAssignmentContext ctx);
+  T visitSimpleAssignment(ArabicBASICParser.SimpleAssignmentContext ctx);
   /**
    * Visit a parse tree produced by {@link ArabicBASICParser#arrayAssignment}.
    *
@@ -116,6 +116,13 @@ public interface ArabicBASICVisitor<T> extends ParseTreeVisitor<T> {
    * @return the visitor result
    */
   T visitMulDiv(ArabicBASICParser.MulDivContext ctx);
+  /**
+   * Visit a parse tree produced by {@link ArabicBASICParser#arrayIndex}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitArrayIndex(ArabicBASICParser.ArrayIndexContext ctx);
   /**
    * Visit a parse tree produced by {@link ArabicBASICParser#arraySize}.
    *

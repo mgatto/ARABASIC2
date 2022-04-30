@@ -49,7 +49,7 @@ public class ArabicBASICBaseVisitor<T> extends AbstractParseTreeVisitor<T>
    * ctx}.
    */
   @Override
-  public T visitVariableAssignment(ArabicBASICParser.VariableAssignmentContext ctx) {
+  public T visitSimpleAssignment(ArabicBASICParser.SimpleAssignmentContext ctx) {
     return visitChildren(ctx);
   }
   /**
@@ -150,6 +150,16 @@ public class ArabicBASICBaseVisitor<T> extends AbstractParseTreeVisitor<T>
    */
   @Override
   public T visitMulDiv(ArabicBASICParser.MulDivContext ctx) {
+    return visitChildren(ctx);
+  }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * ctx}.
+   */
+  @Override
+  public T visitArrayIndex(ArabicBASICParser.ArrayIndexContext ctx) {
     return visitChildren(ctx);
   }
   /**
