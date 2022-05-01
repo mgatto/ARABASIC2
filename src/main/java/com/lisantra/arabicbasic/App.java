@@ -43,29 +43,20 @@ public class App implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception { // your business logic goes here...
+    Map<String, Variable> symbolTable = new LinkedHashMap<>();
+    // TODO rename to (Global?)Scope ?
+
     // create an input stream from the string
     ArabicBASICLexer lexer = new ArabicBASICLexer(CharStreams.fromPath(file.toPath()));
-    //    CommonTokenStream tokens = new CommonTokenStream(lexer);
     ArabicBASICParser parser = new ArabicBASICParser(new CommonTokenStream(lexer));
     ParseTree programTree = parser.program();
 
-    // TODO I need to add some attributes about the var, in addition to the value's attributes
-    // new Variable class
-    //    Map<String, Object<Value, Map<String, String>>> symbolTable = new LinkedHashMap<>();
-    //    Map<Symbol, List<Value<?>>> symbolTable = new MultiMap<>();
-    Map<String, Variable> symbolTable = new LinkedHashMap<>();
-
     CustomVisitor interpreter = new CustomVisitor(symbolTable, showDebug);
     interpreter.visit(programTree);
-    /*
-    try {
-    } catch (IOException e) {
-        e.printStackTrace();
-        return;
-    }*/
 
     if (showDebug) System.out.println(symbolTable);
-    System.out.println("Ran ArabicBASIC script");
+    if (showDebug) System.out.println("Finished running ArabicBASIC script");
+
     return 0;
   }
 
