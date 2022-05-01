@@ -9,7 +9,7 @@
     </properties>
     <groupId>com.lisantra.arabicbasic</groupId>
     <artifactId>ArabicBASIC</artifactId>
-    <version>0.1-alpha</version>
+    <version>0.2-alpha</version>
     <dependencies>
         <dependency>
             <groupId>org.antlr</groupId>
@@ -116,6 +116,8 @@
                         <!-- This tells Maven to include all dependencies -->
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
+                    <!--                    <finalName>${project.build.finalName}</finalName>-->
+                    <!--                    <appendAssemblyId>false</appendAssemblyId>-->
                     <archive>
                         <manifest>
                             <mainClass>com.lisantra.arabicbasic.App</mainClass>
