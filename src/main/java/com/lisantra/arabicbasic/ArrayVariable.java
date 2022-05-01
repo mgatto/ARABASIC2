@@ -1,7 +1,5 @@
 package com.lisantra.arabicbasic;
 
-import java.util.ArrayList;
-
 // TODO maybe THIS should be parameterized with the type of the Value's val or type of it's
 // elements if ArrayList
 public class ArrayVariable extends Variable {
@@ -14,7 +12,6 @@ public class ArrayVariable extends Variable {
    */
   public ArrayVariable(Symbol symbol, Value value) {
     super(symbol, value);
-    this.upperBound = ((ArrayList<?>) value.getVal()).size() - 1;
   }
 
   /**
@@ -39,7 +36,7 @@ public class ArrayVariable extends Variable {
     if (symbolType == "ArraySymbol") {
       sb.append("of capacity: " + (getUpperBound() - 1));
     }
-    sb.append("] having \" + value.getVal()");
+    sb.append("] having " + this.getValue().getVal());
 
     return sb.toString();
   }

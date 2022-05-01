@@ -65,14 +65,16 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
   public Void visitArrayAssignment(ArabicBASICParser.ArrayAssignmentContext ctx) {
     if (showDebug) System.out.println("I visited Array Assignment");
 
-    // get identifier
     String id = ctx.IDENTIFIER().getText(); // we don't need to create a new symbol
+    Integer index = (Integer) visit(ctx.arrayIndex()); // later, visitArrayIndex()
 
-    // get index
-    Integer idx = (Integer) visit(ctx.arrayIndex()); // later, visitArrayIndex()
-
-    // get the stored Variable associated with id
-    ArrayVariable existingArray = (ArrayVariable) symbolTable.get(id);
+    // get the widened, stored Variable associated with id. It should be an Array,
+    // better to not cast it and test for class type
+    Variable existingArray = symbolTable.get(id);
+    if (!existingArray.getClass().getSimpleName().equals("ArrayVariable")) {
+      throw new IllegalArgumentException(id + " is not an Array");
+    } else {
+    }
 
     // visit expression to get value to insert
     Value<?> wrapperOfValToInsert = (Value) visit(ctx.expression());
@@ -83,31 +85,31 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     // Type erasure means I probably can't get List<Integer> for example...
 
     // insert a value at the index; this call looks wierd
-    List targetArray = (ArrayList) existingArray.getValue().getVal();
+    ArrayList targetArray = (ArrayList) existingArray.getValue().getVal();
 
     // TODO must test for existing index; add() for new element, and set() for updating
     // TODO will I need to reinsert this, or is it enough to "update" the List reference var?
     try {
       // could just try to get it and deal with exception? expensive in resources (?)
-      Object existingElement = targetArray.get(idx);
+      Object existingElement = targetArray.get(index);
       // update
-      targetArray.set(idx, valToInsert); // TODO enforce consistent typing of elements
+      targetArray.set(index, valToInsert); // TODO enforce consistent typing of elements
     } catch (IndexOutOfBoundsException idxe) {
       /* add new element and enforce array capacity */
-      int numberOfElements = existingArray.getUpperBound(); //  targetArray.size();
+      int maxIndex = ((ArrayVariable) existingArray).getUpperBound(); //  targetArray.size();
 
-      if (idx >= numberOfElements) {
+      if (index > maxIndex) {
         System.out.println(symbolTable);
         throw new ArrayIndexOutOfBoundsException(
             "You tried to add a new element at position: "
-                + idx
+                + index
                 + ", but the array '"
                 + id
                 + "' has only "
-                + numberOfElements
+                + maxIndex
                 + " elements");
       }
-      targetArray.add(idx, valToInsert);
+      targetArray.add(index, valToInsert);
     }
 
     return null;
@@ -270,7 +272,9 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     // 3. wrap in Value
     Value<List<?>> arr = new Value<>(new ArrayList<>(size), "Array");
 
-    Variable var = new ArrayVariable(s, arr);
+    ArrayVariable var = new ArrayVariable(s, arr);
+    var.setUpperBound((size > 0) ? size - 1 : 0);
+
     symbolTable.put(id, var);
     return null;
   }
