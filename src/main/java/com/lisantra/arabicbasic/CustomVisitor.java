@@ -166,13 +166,13 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     if (Objects.equals(leftType, "Integer") && leftType.equals(rightType)) {
       resultType = "Integer";
     } else {
-      resultType = "Float";
+      resultType = "Real";
     }
 
     return resultType;
   }
 
-  public Value<?> visitMulDiv(ArabicBASICParser.MulDivContext ctx) {
+  public Value<Double> visitMulDiv(ArabicBASICParser.MulDivContext ctx) {
     Value left = (Value) visit(ctx.expression(0));
     Value right = (Value) visit(ctx.expression(1));
 
@@ -283,7 +283,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     // TODO probably should decide the type here for the Generic! Double or String
     //    No, probably not! An empty array is OK!
 
-    // 3. wrap in Value
+    // 3. wrap in Value; the type of List's elements are unknowable at this stage.
     Value<List<?>> arr = new Value<>(new ArrayList<>(size), "Array");
 
     ArrayVariable var = new ArrayVariable(s, arr);
