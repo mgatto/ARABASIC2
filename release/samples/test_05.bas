@@ -8,3 +8,4 @@ LET E = -(3+1)
 LET F = (A + B) * 2
 LET G = -2 - -4
 LET NESTED = (D + (3 * G) / 3) + 2
+LET A = 22
