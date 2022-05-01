@@ -193,6 +193,20 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     return new Value<>(leftVal / rightVal, resultType);
   }
 
+  public Value<Double> visitExponentation(ArabicBASICParser.ExponentationContext ctx) {
+    Value<Double> base = (Value<Double>) visit(ctx.expression(0));
+    Value<Double> exponent = (Value<Double>) visit(ctx.expression(1));
+
+    Double basePrimitive = makeNumber(base);
+    Double exponentPrimitive = makeNumber(exponent);
+
+    String resultType = getResultType(base, exponent);
+
+    // Copy by value here may only be necessary if there is a variable in the expression.
+    // Otherwise, it mutates the original like this A = 1, X=-A and negates A retroactively.
+    return new Value<Double>(Math.pow(basePrimitive, exponentPrimitive), resultType);
+  }
+
   /**
    * @param ctx
    * @return the value associated with the var name
