@@ -183,6 +183,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
 
     // TODO can use getType() if I specify the operators as terminals
     if (ctx.op.getText().equals("*")) {
+      // TODO use Guava's "int mustNotOverflow = IntMath.checkedMultiply(x, y);"
       return new Value<>(leftVal * rightVal, resultType);
     }
 
@@ -285,6 +286,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
 
     // 3. wrap in Value; the type of List's elements are unknowable at this stage.
     Value<List<?>> arr = new Value<>(new ArrayList<>(size), "Array");
+    // TODO switch to primitive "array"
 
     ArrayVariable var = new ArrayVariable(s, arr);
     var.setUpperBound((size > 0) ? size - 1 : 0);

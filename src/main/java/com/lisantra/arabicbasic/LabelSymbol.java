@@ -1,7 +1,13 @@
 package com.lisantra.arabicbasic;
 
-// meant to be a block marker...not sure I'll keep it?
+/** Marks a symbol as block name. */
 public class LabelSymbol extends Symbol {
+
+  /**
+   * Constructor.
+   *
+   * @param name The name of the label.
+   */
   public LabelSymbol(String name) {
     super(name);
   }

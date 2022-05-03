@@ -7,28 +7,36 @@ public class ArrayVariable extends Variable {
   private int upperBound;
 
   /**
-   * @param symbol
-   * @param value
+   * Constructor
+   *
+   * @param symbol Name of the array.
+   * @param value Content of the array.
    */
   public ArrayVariable(Symbol symbol, Value value) {
     super(symbol, value);
   }
 
   /**
-   * @return
+   * @return int the max index of the array
    */
   public int getUpperBound() {
     return upperBound;
   }
 
+  /**
+   *
+   * @param upperBound
+   */
   public void setUpperBound(int upperBound) {
     this.upperBound = upperBound;
   }
 
+  /**
+   * @return A printout of the array's name and its capacity.
+   */
   @Override
   public String toString() {
     // TODO replace with just symbol and it's new toString() method is automatically called in a
-    // String context
 
     String symbolType = this.getSymbol().getClass().getSimpleName();
 

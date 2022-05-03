@@ -41,6 +41,12 @@ public class App implements Callable<Integer> {
       description = "Print out the symbol table after running an ArabicBASIC script")
   private boolean showDebug = false;
 
+  /**
+   * Runs the main interpreter from the command line.
+   *
+   * @return
+   * @throws Exception
+   */
   @Override
   public Integer call() throws Exception { // your business logic goes here...
     Map<String, Variable> symbolTable = new LinkedHashMap<>();
@@ -60,6 +66,11 @@ public class App implements Callable<Integer> {
     return 0;
   }
 
+  /**
+   * Main entry point.
+   *
+   * @param args Array of command-line arguments
+   */
   public static void main(String... args) {
     int exitCode = new CommandLine(new App()).execute(args);
     System.exit(exitCode);

@@ -1,11 +1,15 @@
 package com.lisantra.arabicbasic;
 
-// import static org.graalvm.compiler.nodeinfo.InputType.Value;
-
-// TOSO abstract this and make concrete subclasses: Array | ContainerVariable, SimpleVariable
-
+/** */
 public class Variable {
+  /**
+   *
+   */
   private final Symbol symbol;
+
+  /**
+   *
+   */
   private Value value;
 
   /**
@@ -38,6 +42,9 @@ public class Variable {
     this.value = value;
   }
 
+  /**
+   * @return
+   */
   @Override
   public String toString() {
     return value.getVal().toString();
