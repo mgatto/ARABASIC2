@@ -5,7 +5,7 @@ package com.lisantra.arabicbasic;
  */
 public class Value<T> {
   private T val;
-  final String originalType;
+  private String originalType;
 
   /**
    * Constructor.
@@ -39,6 +39,15 @@ public class Value<T> {
    */
   public String getOriginalType() {
     return originalType;
+  }
+
+  /**
+   * Needed for updating an Array's element type
+   *
+   * @return
+   */
+  public void setOriginalType(String type) {
+    originalType = type;
   }
 
   /**

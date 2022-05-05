@@ -85,7 +85,9 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     // Type erasure means I probably can't get List<Integer> for example...
 
     // insert a value at the index; this call looks wierd
-    ArrayList targetArray = (ArrayList) existingArray.getValue().getVal();
+    Value arrayValue = existingArray.getValue();
+    arrayValue.setOriginalType(wrapperOfValToInsert.getOriginalType());
+    ArrayList targetArray = (ArrayList) arrayValue.getVal();
 
     // TODO must test for existing index; add() for new element, and set() for updating
     // TODO will I need to reinsert this, or is it enough to "update" the List reference var?
@@ -105,9 +107,8 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
                 + index
                 + ", but the array '"
                 + id
-                + "' has only "
-                + maxIndex
-                + " elements");
+                + "' only has elements from position 0 to position "
+                + maxIndex);
       }
       targetArray.add(index, valToInsert);
     }
@@ -209,6 +210,8 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
   }
 
   /**
+   * Resolves a symbol into its value
+   *
    * @param ctx
    * @return the value associated with the var name
    */
@@ -240,6 +243,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     List targetArray = (ArrayList) val.getVal();
 
     // TODO check size vs index
+    // TODO use upperBound instead of size()
     int numberOfElements = targetArray.size();
     if (idx > numberOfElements) {
       System.out.println(symbolTable);
@@ -248,12 +252,15 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
               + idx
               + ", but the array '"
               + id
-              + "' has only "
-              + numberOfElements
-              + " elements");
+              + "' only has elements from position 0 to position "
+              + numberOfElements);
     }
 
     String elementsType = val.getOriginalType();
+
+    //    System.out.println(targetArray.get(idx));
+    //    System.out.println(elementsType);
+
     return new Value<>(targetArray.get(idx), elementsType);
   }
 
