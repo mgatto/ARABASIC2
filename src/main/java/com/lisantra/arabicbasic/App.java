@@ -55,6 +55,8 @@ public class App implements Callable<Integer> {
     // create an input stream from the string
     ArabicBASICLexer lexer = new ArabicBASICLexer(CharStreams.fromPath(file.toPath()));
     ArabicBASICParser parser = new ArabicBASICParser(new CommonTokenStream(lexer));
+    parser.setErrorHandler(new HaltErrorStrategy());
+
     ParseTree programTree = parser.program();
 
     CustomVisitor interpreter = new CustomVisitor(symbolTable, showDebug);
