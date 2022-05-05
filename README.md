@@ -41,7 +41,7 @@ language features it demonstrates.
 In your favorite terminal, navigate to the where you saved the JAR file, and copy this command:
 
 ```
-java -cp ArabicBASIC-0.2-alpha.jar com.lisantra.arabicbasic.App -d ./samples/test_01_assignment.bas 
+java -cp ArabicBASIC-0.2.1-alpha.jar com.lisantra.arabicbasic.App -d ./samples/test_01_assignment.bas 
 ```
 
 The `-d` flag turns on debug mode. This flag is also available as `--debug`.
@@ -49,7 +49,7 @@ The `-d` flag turns on debug mode. This flag is also available as `--debug`.
 To see a list of all modes, not all of which are functional in this ALPHA release, run this command with the `-h` flag:
 
 ```
-java -cp ArabicBASIC-0.2-alpha.jar com.lisantra.arabicbasic.App -h
+java -cp ArabicBASIC-0.2.1-alpha.jar com.lisantra.arabicbasic.App -h
 ```
 
 
