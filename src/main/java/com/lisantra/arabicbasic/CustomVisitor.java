@@ -3,12 +3,12 @@ package com.lisantra.arabicbasic;
 import java.util.*;
 
 public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
-  private final Map<String, Variable> symbolTable;
+  private final Map<String, Variable> globalScope;
   private final boolean showDebug;
 
-  public CustomVisitor(Map<String, Variable> symbolTable, boolean showDebug) {
+  public CustomVisitor(Map<String, Variable> globalScope, boolean showDebug) {
     super();
-    this.symbolTable = symbolTable;
+    this.globalScope = globalScope;
     this.showDebug = showDebug;
   }
 
@@ -58,19 +58,19 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     }
 
     /* this covers both creation and updating */
-    symbolTable.put(id, var);
+    globalScope.put(id, var);
     return null;
   }
 
   public Void visitArrayAssignment(ArabicBASICParser.ArrayAssignmentContext ctx) {
     if (showDebug) System.out.println("I visited Array Assignment");
 
-    String id = ctx.IDENTIFIER().getText(); // we don't need to create a new symbol
+    String id = ctx.IDENTIFIER().getSymbol().getText(); // we don't need to create a new symbol
     Integer index = (Integer) visit(ctx.arrayIndex()); // later, visitArrayIndex()
 
     // get the widened, stored Variable associated with id. It should be an Array,
     // better to not cast it and test for class type
-    Variable existingArray = symbolTable.get(id);
+    Variable existingArray = globalScope.get(id);
     if (!existingArray.getClass().getSimpleName().equals("ArrayVariable")) {
       throw new IllegalArgumentException(id + " is not an Array");
     } else {
@@ -101,7 +101,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
       int maxIndex = ((ArrayVariable) existingArray).getUpperBound(); //  targetArray.size();
 
       if (index > maxIndex) {
-        System.out.println(symbolTable);
+        System.out.println(globalScope);
         throw new ArrayIndexOutOfBoundsException(
             "You tried to add a new element at position: "
                 + index
@@ -219,12 +219,12 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     if (showDebug) System.out.println("I visited Identifier");
 
     String id = ctx.IDENTIFIER().getText();
-    if (!symbolTable.containsKey(id)) {
+    if (!globalScope.containsKey(id)) {
       throw new NoSuchElementException("Variable '" + id + "' has not yet been declared.");
     }
 
     // The symbol table's value is of custom type Value
-    return symbolTable.get(id).getValue();
+    return globalScope.get(id).getValue();
   }
 
   @Override
@@ -232,21 +232,21 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     if (showDebug) System.out.println("I visited array access");
 
     String id = ctx.IDENTIFIER().getText();
-    if (!symbolTable.containsKey(id)) {
+    if (!globalScope.containsKey(id)) {
       throw new NoSuchElementException("Variable '" + id + "' has not yet been declared.");
     }
 
     // get index
     Integer idx = (Integer) visit(ctx.arrayIndex());
 
-    Value<?> val = symbolTable.get(id).getValue();
+    Value<?> val = globalScope.get(id).getValue();
     List targetArray = (ArrayList) val.getVal();
 
     // TODO check size vs index
     // TODO use upperBound instead of size()
     int numberOfElements = targetArray.size();
     if (idx > numberOfElements) {
-      System.out.println(symbolTable);
+      System.out.println(globalScope);
       throw new ArrayIndexOutOfBoundsException(
           "You tried to add a new element at position: "
               + idx
@@ -298,7 +298,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     ArrayVariable var = new ArrayVariable(s, arr);
     var.setUpperBound((size > 0) ? size - 1 : 0);
 
-    symbolTable.put(id, var);
+    globalScope.put(id, var);
     return null;
   }
 

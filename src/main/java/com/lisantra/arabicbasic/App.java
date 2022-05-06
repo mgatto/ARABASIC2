@@ -2,6 +2,7 @@ package com.lisantra.arabicbasic;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.misc.MultiMap;
 import org.antlr.v4.runtime.tree.ParseTree;
 import picocli.CommandLine;
 
@@ -49,10 +50,13 @@ public class App implements Callable<Integer> {
    */
   @Override
   public Integer call() throws Exception {
-    Map<String, Variable> symbolTable = new LinkedHashMap<>();
-    // TODO rename to (Global?)Scope ? NO, actually it needs to be separate! A symbol table with ALL
-    // symbols
-    // and a scope table for holding current state of all variables!
+    /* we need separate tables: one for symbols and the other for variable states only = scope */
+    /* since BASIC scope is global, we don't need a stack, and a HashMap is great for fast lookup */
+    Map<String, Variable> globalScope = new LinkedHashMap<>();
+    // TODO wrap in a class: Scope {}? and provide methods like resolve() and define()?
+    // If so, then remember that Scope has one Symbol table (and there can be  )
+
+    MultiMap<String, Symbol> symbolTable = new MultiMap<>();
 
     // create an input stream from the string
     ArabicBASICLexer lexer = new ArabicBASICLexer(CharStreams.fromPath(file.toPath()));
@@ -70,7 +74,7 @@ public class App implements Callable<Integer> {
       ParseTree programTree = parser.program();
 
       /* Instantiate my visitor class, which is the actual interpreter */
-      CustomVisitor interpreter = new CustomVisitor(symbolTable, showDebug);
+      CustomVisitor interpreter = new CustomVisitor(globalScope, showDebug);
 
       /* Cause the interpreter to walk the parse tree */
       interpreter.visit(programTree);
@@ -79,7 +83,7 @@ public class App implements Callable<Integer> {
       return 1;
     }
 
-    if (showDebug) System.out.println(symbolTable);
+    if (showDebug) System.out.println(globalScope);
     if (showDebug) System.out.println("Finished running ArabicBASIC script");
 
     return 0;
