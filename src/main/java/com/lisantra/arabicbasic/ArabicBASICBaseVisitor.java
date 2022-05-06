@@ -79,6 +79,16 @@ public class ArabicBASICBaseVisitor<T> extends AbstractParseTreeVisitor<T>
    * ctx}.
    */
   @Override
+  public T visitConditionalBlock(ArabicBASICParser.ConditionalBlockContext ctx) {
+    return visitChildren(ctx);
+  }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * ctx}.
+   */
+  @Override
   public T visitBlank(ArabicBASICParser.BlankContext ctx) {
     return visitChildren(ctx);
   }
@@ -170,6 +180,56 @@ public class ArabicBASICBaseVisitor<T> extends AbstractParseTreeVisitor<T>
    */
   @Override
   public T visitArraySize(ArabicBASICParser.ArraySizeContext ctx) {
+    return visitChildren(ctx);
+  }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * ctx}.
+   */
+  @Override
+  public T visitLogicalBoolean(ArabicBASICParser.LogicalBooleanContext ctx) {
+    return visitChildren(ctx);
+  }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * ctx}.
+   */
+  @Override
+  public T visitAtomicBoolean(ArabicBASICParser.AtomicBooleanContext ctx) {
+    return visitChildren(ctx);
+  }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * ctx}.
+   */
+  @Override
+  public T visitComparitiveBoolean(ArabicBASICParser.ComparitiveBooleanContext ctx) {
+    return visitChildren(ctx);
+  }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * ctx}.
+   */
+  @Override
+  public T visitNegatingBoolean(ArabicBASICParser.NegatingBooleanContext ctx) {
+    return visitChildren(ctx);
+  }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * ctx}.
+   */
+  @Override
+  public T visitNestedBoolean(ArabicBASICParser.NestedBooleanContext ctx) {
     return visitChildren(ctx);
   }
   /**

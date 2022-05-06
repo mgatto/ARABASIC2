@@ -309,4 +309,71 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
   public Integer visitArrayIndex(ArabicBASICParser.ArrayIndexContext ctx) {
     return Integer.valueOf(ctx.INTEGER().getText());
   }
+
+  public Void visitConditionalBlock(ArabicBASICParser.ConditionalBlockContext ctx) {
+    /* determine state of the ArabicBASIC test expression */
+    Boolean condition = (Boolean) visit(ctx.booleanExpression());
+
+    /* how many blocks are here? */
+    int blockCount = ctx.block().size();
+    if (showDebug) System.out.println("There are " + blockCount + " blocks in this IF statement.");
+    /* with named keyword tokens, I can do this:
+    if (ctx.start.getType() == YourLexer.BOOL) {
+      // it's a BOOL token
+    }
+    or this (this is python?) myLexer.getVocabulary.getSymbolicName(myTerminalNode.getSymbol.getType)
+    Those vocabulary methods seem to be the preferred way get at the tokens in Antlr 4.5, and tokenNames appears to be deprecated.
+
+    ctx.start.getLine();
+    */
+
+    if (showDebug)
+      System.out.println("condition: " + ctx.booleanExpression().getText() + " is " + condition);
+    // This is VERY specific to a simple IF/optional ELSE statement
+    if (condition) {
+      visit(ctx.block(0));
+    } else if (blockCount == 2) {
+      // if condition is false, and there is an else block, then visit it.
+      visit(ctx.block(1));
+    }
+
+    // TODO how can I tell in ANTLR4 if there is a specific, optional token I need
+    //    ctx.getText() contains "ELSE"? or by naming the token?
+    return null;
+  }
+
+  @Override
+  public Boolean visitComparitiveBoolean(ArabicBASICParser.ComparitiveBooleanContext ctx) {
+    // TODO bad for assuming a type already...
+    Value<Double> left = (Value<Double>) visit(ctx.booleanExpression(0));
+    Value<Double> right = (Value<Double>) visit(ctx.booleanExpression(1));
+
+    System.out.println("left: " + left.getVal() + ctx.comp.getText() + "right: " + right.getVal());
+
+    if (ctx.comp.getText().equals("=")) {
+      // TODO deal with string comparisons!
+      return Objects.equals(left.getVal(), right.getVal());
+    } else if (ctx.comp.getText().equals("<>")) {
+      return !Objects.equals(left.getVal(), right.getVal());
+    } else if (ctx.comp.getText().equals(">")) {
+      return left.getVal() > right.getVal();
+    } else if (ctx.comp.getText().equals(">=")) {
+      return left.getVal() >= right.getVal();
+    } else if (ctx.comp.getText().equals("<")) {
+      return left.getVal() < right.getVal();
+    } else if (ctx.comp.getText().equals("<=")) {
+      return left.getVal() <= right.getVal();
+    } else {
+      // TODO throw error
+    }
+
+    return false;
+  }
+
+  @Override
+  public Value<?> visitAtomicBoolean(ArabicBASICParser.AtomicBooleanContext ctx) {
+    /* it could be visitName(), visitNumeric() or visitText() */
+    //    Object x = visit(ctx.variable(ctx));
+    return (Value) visitChildren(ctx);
+  }
 }
