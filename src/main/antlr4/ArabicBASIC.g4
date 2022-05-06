@@ -2,81 +2,52 @@ grammar ArabicBASIC;
 
 program: block EOF;
 block: statement*;
-statement:  COMMENT
-            | blank
-            | simpleAssignment
-            | arrayAssignment
-            | arrayCreation
-//            | print
+statement:  COMMENT // doesn't need EOL
+            | blank // doesn't need EOL
+            | simpleAssignment EOL
+            | arrayAssignment EOL
+            | arrayCreation EOL
+            | conditionalBlock EOL
             ;
-
-//TODO LET is actually a variable declaration
-simpleAssignment: 'LET' IDENTIFIER '=' expression EOL; // Sequence with Terminator pattern
-arrayAssignment: IDENTIFIER '(' arrayIndex ')' '=' expression EOL; //TODO visitor implementation will check for type consistency in array elements
-arrayCreation: 'DIM' IDENTIFIER '(' arraySize ')' EOL;
+simpleAssignment: 'LET' IDENTIFIER '=' expression; // Sequence with Terminator pattern
+arrayAssignment: IDENTIFIER '(' arrayIndex ')' '=' expression; //TODO visitor implementation will check for type consistency in array elements
+arrayCreation: 'DIM' IDENTIFIER '(' arraySize ')';
+conditionalBlock: 'IF' booleanExpression 'THEN' EOL block ('ELSE' EOL block)? 'END IF'; //multiline is mandatory here
 blank: WS* EOL;
-
-// list the rules from highest -> lowest precedence
-expression: // left=expression OP1 right=expression
-//             arrayExpression                           #arrayCreate |
-            IDENTIFIER '(' arrayIndex ')'                  #arrayAccess
+expression: // list the rules from highest -> lowest precedence
+            IDENTIFIER '(' arrayIndex ')'               #arrayAccess
             | '-' expression                            #unary
             | <assoc=right>expression'^' expression     #exponentation
             | expression op=('*' | '/') expression      #mulDiv
             | expression op=('+' | '-') expression      #addSub
-            //sub doesn't go well with negating a number
             //TODO get rid of  "Variable" = too many layers of abstraction
             | variable                                  #term
-            // | array_indexing
             | '(' expression ')'                         #nested
             ;
 arrayIndex: INTEGER; // expression's left recursion will break if I put "expression" here...
 arraySize: INTEGER; //can expand it from Integer --> Expression(Numerical), maybe catch string "size" in the parser.
-/*arraySize:  INTEGER                             #simpleSize
-            | low=INTEGER 'TO' high=INTEGER     #offsetPairSize
+booleanExpression: // does not support "expression" in the terms because of left recursion?
+            'NOT' booleanExpression                                                          #negatingBoolean
+            | booleanExpression comp=('>' | '<' | '<='| '>='| '='| '<>') booleanExpression   #comparitiveBoolean
+            | booleanExpression logic=('AND' | 'OR') booleanExpression                       #logicalBoolean
+            | variable                                                                       #atomicBoolean   //variable: "Like in C, any non-zero value is interpreted as True"
+            | '(' booleanExpression ')'                                                      #nestedBoolean
             ;
-*/
-//arrayExpression: 'ARRAY' '(' arraySize ')';
-//TODO also accept a range: (2 TO 10) which just sets index offsets;
-// here, the array has 9 indices, labeled "2" through "10".
-// This would be an excellent use case for Value::attributes
-
-//TODO I'm not sure I can restrict types within the Grammar...
-//TODO array initialization as in FreeBASIC
-//array_of_strings: '{' String (',' String)* '}';
-//array_of_integers: '{'Integer (',' Integer)* '}';
-//array_of_floats: '{'Real (',' Real)* '}';
-
 variable: IDENTIFIER        #name
         | (INTEGER | REAL)  #numeric
         | STRING            #text
         ;
-
-COMMENT: ('//' | 'REM') ~[\r\n]* EOL;
+COMMENT: ('//' | 'REM') ~[\r\n]* EOL -> channel(HIDDEN);
 //Comment: '#' ~[EOL]+ EOL ;//-> skip; for some reason, this rull really didn't work at all!
 IDENTIFIER: [A-Z]+ [A-Z0-9_]*; //TODO replace with Arabic UNICODE after Latin script testing
 STRING: '"' [ a-zA-Z]* '"';  //TODO basically any printable char other than "
 INTEGER: '0' | [1-9] DIGIT*; //TODO replace with Arabic UNICODE //'-'?
-//TODO enforce some int size limit in the parser
 REAL:  DIGIT '.' DIGIT+; //'-'?
 MUL: '*';
 DIV: '/';
 ADD: '+';
 SUB: '-';
-EOL: '\r'? '\n' | '\u2028'; // end of statement marker
+EOL: ('\r'? '\n' | '\u2028'); // end of statement marker
 WS: [ \t] -> skip; //TODO replace with unicode whitespace class minus NEWLINE
-fragment DIGIT : [0-9] ; // not a token by itself
+fragment DIGIT : [0-9] ; // fragment is not a token itself, but a non-atomic component of tokens
 fragment LETTER: [a-zA-Z];
-
-//INT: [\u06F0-\u06F09]; // Arabic only
-//NUMBER : ('0' .. '9') + ('.' ('0' .. '9') +)? ;
-//NEWLINE: [\n\r\u2028]; // r = u000A;  b = u000D
-//UNICODE_ID : [\p{Alpha}\p{General_Category=Other_Letter}] [\p{Alnum}\p{General_Category=Other_Letter}]* ; // match full Unicode alphabetic ids
-//UNICODE_WS : [\p{White_Space}] -> skip; // match all Unicode whitespace
-/*statement:  declarative_statement
-            | imperative_statement
-            | null_statement
-            ;
-declarative_statement: null_statement;
-imperative_statement: assignment | print | arrayCreation;
-*/
