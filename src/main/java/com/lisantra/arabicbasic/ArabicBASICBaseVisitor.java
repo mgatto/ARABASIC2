@@ -169,7 +169,7 @@ public class ArabicBASICBaseVisitor<T> extends AbstractParseTreeVisitor<T>
    * ctx}.
    */
   @Override
-  public T visitArrayIndex(ArabicBASICParser.ArrayIndexContext ctx) {
+  public T visitSubscript(ArabicBASICParser.SubscriptContext ctx) {
     return visitChildren(ctx);
   }
   /**

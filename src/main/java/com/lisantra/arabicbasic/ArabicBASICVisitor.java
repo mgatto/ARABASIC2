@@ -124,12 +124,12 @@ public interface ArabicBASICVisitor<T> extends ParseTreeVisitor<T> {
    */
   T visitMulDiv(ArabicBASICParser.MulDivContext ctx);
   /**
-   * Visit a parse tree produced by {@link ArabicBASICParser#arrayIndex}.
+   * Visit a parse tree produced by {@link ArabicBASICParser#subscript}.
    *
    * @param ctx the parse tree
    * @return the visitor result
    */
-  T visitArrayIndex(ArabicBASICParser.ArrayIndexContext ctx);
+  T visitSubscript(ArabicBASICParser.SubscriptContext ctx);
   /**
    * Visit a parse tree produced by {@link ArabicBASICParser#arraySize}.
    *

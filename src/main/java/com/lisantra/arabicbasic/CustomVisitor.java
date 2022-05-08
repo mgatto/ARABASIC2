@@ -1,5 +1,7 @@
 package com.lisantra.arabicbasic;
 
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 import java.util.*;
 
 public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
@@ -66,7 +68,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     if (showDebug) System.out.println("I visited Array Assignment");
 
     String id = ctx.IDENTIFIER().getSymbol().getText(); // we don't need to create a new symbol
-    Integer index = (Integer) visit(ctx.arrayIndex()); // later, visitArrayIndex()
+    Integer index = (Integer) visit(ctx.subscript());
 
     // get the widened, stored Variable associated with id. It should be an Array,
     // better to not cast it and test for class type
@@ -237,7 +239,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     }
 
     // get index
-    Integer idx = (Integer) visit(ctx.arrayIndex());
+    Integer idx = (Integer) visit(ctx.subscript());
 
     Value<?> val = globalScope.get(id).getValue();
     List targetArray = (ArrayList) val.getVal();
@@ -306,8 +308,34 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     return Integer.valueOf(ctx.INTEGER().getText());
   }
 
-  public Integer visitArrayIndex(ArabicBASICParser.ArrayIndexContext ctx) {
-    return Integer.valueOf(ctx.INTEGER().getText());
+  public Integer visitSubscript(ArabicBASICParser.SubscriptContext ctx) {
+    // OK, there are no children to visit, so work with the Terminals...
+    Integer index = null;
+
+    TerminalNode subscriptName = ctx.IDENTIFIER();
+    TerminalNode subscriptInt = ctx.INTEGER();
+
+    if (subscriptInt != null) {
+      index = Integer.valueOf(subscriptInt.getText());
+    } else if (subscriptName != null) {
+      String id = subscriptName.getText();
+      if (!globalScope.containsKey(id)) {
+        throw new NoSuchElementException("Variable '" + id + "' has not yet been declared.");
+      }
+
+      // The symbol table's value is of custom type Value
+      Value<?> indexVal = globalScope.get(id).getValue();
+
+      /* validate that it's an integer */
+      if (!indexVal.getOriginalType().equals("Integer")) {
+        throw new IllegalArgumentException(
+            ctx.getText() + " is not a valid number for accessing an array element");
+      }
+
+      index = ((Double) indexVal.getVal()).intValue();
+    }
+
+    return index;
   }
 
   public Void visitConditionalBlock(ArabicBASICParser.ConditionalBlockContext ctx) {
