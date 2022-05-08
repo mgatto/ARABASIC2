@@ -30,11 +30,12 @@ subscript:  INTEGER
 // expression's left recursion will break if I put "expression" here...
 arraySize: INTEGER; //can expand it from Integer --> Expression(Numerical), maybe catch string "size" in the parser.
 booleanExpression: // does not support "expression" in the terms because of left recursion?
-            'NOT' booleanExpression                                                          #negatingBoolean
-            | booleanExpression comp=('>' | '<' | '<='| '>='| '='| '<>') booleanExpression   #comparitiveBoolean
-            | booleanExpression logic=('AND' | 'OR') booleanExpression                       #logicalBoolean
-            | variable                                                                       #atomicBoolean   //variable: "Like in C, any non-zero value is interpreted as True"
-            | '(' booleanExpression ')'                                                      #nestedBoolean
+             booleanExpression comp=('>' | '<' | '<='| '>='| '='| '<>') booleanExpression   #comparitiveBoolean
+            | 'NOT' booleanExpression                                                       #negatingBoolean
+            | booleanExpression 'AND' booleanExpression                                     #logicalAnd
+            | booleanExpression 'OR' booleanExpression                                      #logicalOr
+            | variable                                                                      #atomicBoolean   //variable: "Like in C, any non-zero value is interpreted as True"
+            | '(' booleanExpression ')'                                                     #nestedBoolean
             ;
 variable: IDENTIFIER        #name
         | (INTEGER | REAL)  #numeric
@@ -45,14 +46,14 @@ IDENTIFIER: [A-Z]+ [A-Z0-9_]*; //TODO replace with Arabic UNICODE after Latin sc
 STRING: '"' [ a-zA-Z]* '"';  //TODO basically any printable char other than "
 INTEGER: '0' | [1-9] DIGIT*; //TODO replace with Arabic UNICODE //'-'?
 REAL:  DIGIT '.' DIGIT+; //'-'?
-MUL: '*';
-DIV: '/';
-ADD: '+';
-SUB: '-';
-BOOL_AND: 'AND'; //define tokens so I can check their type later
-BOOL_OR: 'OR';
-ELSE: 'ELSE';
-ELSE_IF: 'ELSE IF';
+//MUL: '*';
+//DIV: '/';
+//ADD: '+';
+//SUB: '-';
+//BOOL_AND: 'AND'; //define tokens so I can check their type later
+//BOOL_OR: 'OR';
+//ELSE: 'ELSE';
+//ELSE_IF: 'ELSE IF';
 EOL: ('\r'? '\n' | '\u2028'); // end of statement marker
 WS: [ \t] -> skip; //TODO replace with unicode whitespace class minus NEWLINE
 fragment DIGIT : [0-9] ; // fragment is not a token itself, but a non-atomic component of tokens

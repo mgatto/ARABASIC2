@@ -189,16 +189,6 @@ public class ArabicBASICBaseVisitor<T> extends AbstractParseTreeVisitor<T>
    * ctx}.
    */
   @Override
-  public T visitLogicalBoolean(ArabicBASICParser.LogicalBooleanContext ctx) {
-    return visitChildren(ctx);
-  }
-  /**
-   * {@inheritDoc}
-   *
-   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
-   * ctx}.
-   */
-  @Override
   public T visitAtomicBoolean(ArabicBASICParser.AtomicBooleanContext ctx) {
     return visitChildren(ctx);
   }
@@ -209,7 +199,27 @@ public class ArabicBASICBaseVisitor<T> extends AbstractParseTreeVisitor<T>
    * ctx}.
    */
   @Override
+  public T visitLogicalAnd(ArabicBASICParser.LogicalAndContext ctx) {
+    return visitChildren(ctx);
+  }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * ctx}.
+   */
+  @Override
   public T visitComparitiveBoolean(ArabicBASICParser.ComparitiveBooleanContext ctx) {
+    return visitChildren(ctx);
+  }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * ctx}.
+   */
+  @Override
+  public T visitLogicalOr(ArabicBASICParser.LogicalOrContext ctx) {
     return visitChildren(ctx);
   }
   /**

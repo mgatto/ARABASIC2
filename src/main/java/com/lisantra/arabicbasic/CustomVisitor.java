@@ -340,7 +340,18 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
 
   public Void visitConditionalBlock(ArabicBASICParser.ConditionalBlockContext ctx) {
     /* determine state of the ArabicBASIC test expression */
-    Boolean condition = (Boolean) visit(ctx.booleanExpression());
+
+    // TODO may need Apache Commons library BooleanUtils class
+    Boolean condition = null;
+    Object conditionalExpr =
+        visit(ctx.booleanExpression()); // it could be Boolean or Value from atomicBoolean rule
+    if (conditionalExpr instanceof Boolean) {
+      condition = (Boolean) conditionalExpr;
+    //special condition for an atomic of a constant or variable all by itself in the condition
+    } else if (conditionalExpr instanceof Value) {
+      // any non-null value true; else we'd get an undefined exception
+      condition = true;
+    }
 
     /* how many blocks are here? */
     int blockCount = ctx.block().size();
@@ -358,7 +369,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     if (showDebug)
       System.out.println("condition: " + ctx.booleanExpression().getText() + " is " + condition);
     // This is VERY specific to a simple IF/optional ELSE statement
-    if (condition) {
+    if (Boolean.TRUE.equals(condition)) {
       visit(ctx.block(0));
     } else if (blockCount == 2) {
       // if condition is false, and there is an else block, then visit it.
@@ -398,6 +409,23 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     return false;
   }
 
+  @Override
+  public Boolean visitNestedBoolean(ArabicBASICParser.NestedBooleanContext ctx) {
+    return (Boolean) visit(ctx.booleanExpression());
+  }
+
+  @Override
+  public Boolean visitNegatingBoolean(ArabicBASICParser.NegatingBooleanContext ctx) {
+    Boolean test = (Boolean) visit(ctx.booleanExpression());
+    return !test; // TODO should I copy by value? or does it even matter?
+  }
+
+  /**
+   * Tests only for existence; a variable is defined or a constant (which is always true)
+   *
+   * @param ctx
+   * @return
+   */
   @Override
   public Value<?> visitAtomicBoolean(ArabicBASICParser.AtomicBooleanContext ctx) {
     /* it could be visitName(), visitNumeric() or visitText() */

@@ -138,14 +138,6 @@ public interface ArabicBASICVisitor<T> extends ParseTreeVisitor<T> {
    */
   T visitArraySize(ArabicBASICParser.ArraySizeContext ctx);
   /**
-   * Visit a parse tree produced by the {@code logicalBoolean} labeled alternative in {@link
-   * ArabicBASICParser#booleanExpression}.
-   *
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  T visitLogicalBoolean(ArabicBASICParser.LogicalBooleanContext ctx);
-  /**
    * Visit a parse tree produced by the {@code atomicBoolean} labeled alternative in {@link
    * ArabicBASICParser#booleanExpression}.
    *
@@ -154,6 +146,14 @@ public interface ArabicBASICVisitor<T> extends ParseTreeVisitor<T> {
    */
   T visitAtomicBoolean(ArabicBASICParser.AtomicBooleanContext ctx);
   /**
+   * Visit a parse tree produced by the {@code logicalAnd} labeled alternative in {@link
+   * ArabicBASICParser#booleanExpression}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitLogicalAnd(ArabicBASICParser.LogicalAndContext ctx);
+  /**
    * Visit a parse tree produced by the {@code comparitiveBoolean} labeled alternative in {@link
    * ArabicBASICParser#booleanExpression}.
    *
@@ -161,6 +161,14 @@ public interface ArabicBASICVisitor<T> extends ParseTreeVisitor<T> {
    * @return the visitor result
    */
   T visitComparitiveBoolean(ArabicBASICParser.ComparitiveBooleanContext ctx);
+  /**
+   * Visit a parse tree produced by the {@code logicalOr} labeled alternative in {@link
+   * ArabicBASICParser#booleanExpression}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitLogicalOr(ArabicBASICParser.LogicalOrContext ctx);
   /**
    * Visit a parse tree produced by the {@code negatingBoolean} labeled alternative in {@link
    * ArabicBASICParser#booleanExpression}.
