@@ -295,7 +295,13 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     //    No, probably not! An empty array is OK!
 
     // 3. wrap in Value; the type of List's elements are unknowable at this stage.
-    Value<List<?>> arr = new Value<>(new ArrayList<>(size), "Array");
+    List<Value<?>> newArray = new ArrayList<>(size);
+    for (int i = 0; i < size; i++) {
+      // add blank Value as placeholder
+      newArray.add(new Value<>(null, ""));
+    }
+
+    Value<List<?>> arr = new Value<>(newArray, "Array");
     // TODO switch to primitive "array"
 
     ArrayVariable var = new ArrayVariable(s, arr);
@@ -392,7 +398,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
       System.out.println(
           "left: " + left.getVal() + " " + ctx.comp.getText() + " right: " + right.getVal());
 
-    //TODO What if one is a string and the other term is not? Check for this!
+    // TODO What if one is a string and the other term is not? Check for this!
 
     Integer strComparison = null;
     if (Objects.equals(left.getOriginalType(), "String")
