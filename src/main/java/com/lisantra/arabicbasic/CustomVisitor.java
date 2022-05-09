@@ -347,7 +347,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
         visit(ctx.booleanExpression()); // it could be Boolean or Value from atomicBoolean rule
     if (conditionalExpr instanceof Boolean) {
       condition = (Boolean) conditionalExpr;
-    //special condition for an atomic of a constant or variable all by itself in the condition
+      // special condition for an atomic of a constant or variable all by itself in the condition
     } else if (conditionalExpr instanceof Value) {
       // any non-null value true; else we'd get an undefined exception
       condition = true;
@@ -387,7 +387,9 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     Value<Double> left = (Value<Double>) visit(ctx.booleanExpression(0));
     Value<Double> right = (Value<Double>) visit(ctx.booleanExpression(1));
 
-    System.out.println("left: " + left.getVal() + ctx.comp.getText() + "right: " + right.getVal());
+    if (showDebug)
+      System.out.println(
+          "left: " + left.getVal() + " " + ctx.comp.getText() + " right: " + right.getVal());
 
     if (ctx.comp.getText().equals("=")) {
       // TODO deal with string comparisons!
@@ -407,6 +409,29 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     }
 
     return false;
+  }
+
+  @Override
+  public Boolean visitLogicalAnd(ArabicBASICParser.LogicalAndContext ctx) {
+    // TODO what if
+    Boolean left = (Boolean) visit(ctx.booleanExpression(0));
+    Boolean right = (Boolean) visit(ctx.booleanExpression(1));
+
+    if (showDebug) System.out.println(left);
+    if (showDebug) System.out.println(right);
+
+    return (left && right);
+  }
+
+  @Override
+  public Boolean visitLogicalOr(ArabicBASICParser.LogicalOrContext ctx) {
+    Boolean left = (Boolean) visit(ctx.booleanExpression(0));
+    Boolean right = (Boolean) visit(ctx.booleanExpression(1));
+
+    if (showDebug) System.out.println(left);
+    if (showDebug) System.out.println(right);
+
+    return (left || right);
   }
 
   @Override
@@ -430,6 +455,8 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
   public Value<?> visitAtomicBoolean(ArabicBASICParser.AtomicBooleanContext ctx) {
     /* it could be visitName(), visitNumeric() or visitText() */
     //    Object x = visit(ctx.variable(ctx));
+    // TODO how to tell if it should return a value or be evaulated as a Boolean??
+
     return (Value) visitChildren(ctx);
   }
 }
