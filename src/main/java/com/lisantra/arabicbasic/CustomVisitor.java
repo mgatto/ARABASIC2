@@ -2,6 +2,7 @@ package com.lisantra.arabicbasic;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.text.Collator;
 import java.util.*;
 
 public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
@@ -391,18 +392,47 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
       System.out.println(
           "left: " + left.getVal() + " " + ctx.comp.getText() + " right: " + right.getVal());
 
+    //TODO What if one is a string and the other term is not? Check for this!
+
+    Integer strComparison = null;
+    if (Objects.equals(left.getOriginalType(), "String")
+        && Objects.equals(right.getOriginalType(), "String")) {
+      Collator englishCollator = Collator.getInstance(new Locale("en", "US"));
+      strComparison = englishCollator.compare(left.getVal(), right.getVal());
+    }
+
     if (ctx.comp.getText().equals("=")) {
       // TODO deal with string comparisons!
       return Objects.equals(left.getVal(), right.getVal());
     } else if (ctx.comp.getText().equals("<>")) {
       return !Objects.equals(left.getVal(), right.getVal());
     } else if (ctx.comp.getText().equals(">")) {
+      if (strComparison != null) {
+        if (strComparison > 1) return true;
+        return false;
+      }
+
       return left.getVal() > right.getVal();
     } else if (ctx.comp.getText().equals(">=")) {
+      if (strComparison != null) {
+        if (strComparison > 0) return true;
+        return false;
+      }
+
       return left.getVal() >= right.getVal();
     } else if (ctx.comp.getText().equals("<")) {
+      if (strComparison != null) {
+        if (strComparison < 0) return true;
+        return false;
+      }
+
       return left.getVal() < right.getVal();
     } else if (ctx.comp.getText().equals("<=")) {
+      if (strComparison != null) {
+        if (strComparison < 1) return true;
+        return false;
+      }
+
       return left.getVal() <= right.getVal();
     } else {
       // TODO throw error
