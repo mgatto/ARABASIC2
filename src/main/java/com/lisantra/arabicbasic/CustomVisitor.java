@@ -495,4 +495,36 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
 
     return (Value) visitChildren(ctx);
   }
+
+  @Override
+  public Void visitPrint(ArabicBASICParser.PrintContext ctx) {
+    // loop through how many expressions there are
+    int exprCount = ctx.expression().size();
+    for (int i = 0; i < exprCount; i++) {
+      Value<?> exprToPrint = (Value) visit(ctx.expression(i));
+
+      // Pad output with spacing depending on type of separator
+      // there will always be size - 1 spacers
+      String spacingSeparator = " ";
+      int spacerCount = ctx.spacer.size();
+      if (i < spacerCount) {
+        String spacingController = ctx.spacer.get(i).getText();
+        if (Objects.equals(spacingController, ";")) spacingSeparator = "";
+      }
+
+      Object boxedPrimitive = exprToPrint.getVal();
+      if (Objects.equals(exprToPrint.getOriginalType(), "Integer")) {
+        // reformat integers; below feels a bit overdone...
+        boxedPrimitive = ((Double) exprToPrint.getVal()).intValue();
+      } else if (Objects.equals(exprToPrint.getOriginalType(), "String")) {
+        //  if it's a string, strip the quotes
+        boxedPrimitive = ((String) boxedPrimitive).replaceAll("^\"|\"$", "");
+      }
+
+      System.out.print(boxedPrimitive + spacingSeparator);
+    }
+
+    System.out.println(); // print blank line following any output
+    return null;
+  }
 }

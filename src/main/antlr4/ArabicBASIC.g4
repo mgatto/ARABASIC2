@@ -2,20 +2,22 @@ grammar ArabicBASIC;
 
 program: block EOF;
 block: statement*;
-statement:  COMMENT // doesn't need EOL
+statement:  COMMENT // shouldn't have EOL because it's a terminal
             | blank // doesn't need EOL
             | simpleAssignment EOL
             | arrayAssignment EOL
             | arrayCreation EOL
             | conditionalBlock EOL
+            | print EOL
             ;
 simpleAssignment: 'LET' IDENTIFIER '=' expression; // Sequence with Terminator pattern
 arrayAssignment: IDENTIFIER '(' subscript ')' '=' expression; //TODO visitor implementation will check for type consistency in array elements
 arrayCreation: 'DIM' IDENTIFIER '(' arraySize ')';
 conditionalBlock: 'IF' booleanExpression 'THEN' EOL block ('ELSE' EOL block)? 'END IF'; //multiline is mandatory here
+print: 'PRINT' expression (spacer+=(',' | ';') expression)*;
 blank: WS* EOL;
 expression: // list the rules from highest -> lowest precedence
-            IDENTIFIER '(' subscript ')'               #arrayAccess
+            IDENTIFIER '(' subscript ')'                #arrayAccess
             | '-' expression                            #unary
             | <assoc=right>expression'^' expression     #exponentation
             | expression op=('*' | '/') expression      #mulDiv
@@ -43,7 +45,9 @@ variable: IDENTIFIER        #name
         ;
 COMMENT: ('//' | 'REM') ~[\r\n]* EOL -> channel(HIDDEN);
 IDENTIFIER: [A-Z]+ [A-Z0-9_]*; //TODO replace with Arabic UNICODE after Latin script testing
-STRING: '"' [ a-zA-Z]* '"';  //TODO basically any printable char other than "
+//STRING: '"' [ a-zA-Z]* '"';  //TODO basically any printable char other than "
+//STRING : '"' .*? '"' ; // match anything in "..."
+STRING: '"' (~'"'|'\\"')* '"';
 INTEGER: '0' | [1-9] DIGIT*; //TODO replace with Arabic UNICODE //'-'?
 REAL:  DIGIT '.' DIGIT+; //'-'?
 //MUL: '*';
