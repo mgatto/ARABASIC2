@@ -1,10 +1,10 @@
 package com.lisantra.arabicbasic;
 
 /**
- * @param <T>
+ *
  */
-public class Value<T> {
-  private T val;
+public class Value {
+  private Object val;
   private String originalType;
 
   /**
@@ -13,7 +13,7 @@ public class Value<T> {
    * @param val
    * @param originalType
    */
-  public Value(T val, String originalType) {
+  public Value(Object val, String originalType) {
     this.val = val;
     this.originalType = originalType; // TODO this really should be an enum
   }
@@ -21,14 +21,14 @@ public class Value<T> {
   /**
    * @return
    */
-  public T getVal() {
+  public Object getVal() {
     return val;
   }
 
   /**
    * @param val
    */
-  public void setVal(T val) {
+  public void setVal(Object val) {
     this.val = val;
   }
 
