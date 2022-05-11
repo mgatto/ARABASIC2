@@ -68,6 +68,13 @@ public interface ArabicBASICVisitor<T> extends ParseTreeVisitor<T> {
    */
   T visitPrint(ArabicBASICParser.PrintContext ctx);
   /**
+   * Visit a parse tree produced by {@link ArabicBASICParser#input}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitInput(ArabicBASICParser.InputContext ctx);
+  /**
    * Visit a parse tree produced by {@link ArabicBASICParser#blank}.
    *
    * @param ctx the parse tree

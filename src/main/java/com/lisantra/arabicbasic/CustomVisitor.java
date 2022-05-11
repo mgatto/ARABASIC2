@@ -1,7 +1,11 @@
 package com.lisantra.arabicbasic;
 
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.Collator;
 import java.util.*;
 
@@ -525,6 +529,65 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     }
 
     System.out.println(); // print blank line following any output
+    return null;
+  }
+
+  @Override
+  public Void visitInput(ArabicBASICParser.InputContext ctx) {
+    /* TODO Maybe a "next?" default non-first prompt would be nice? */
+
+    //    if (showDebug) System.out.println(ctx.prompt.getText());
+
+    ListIterator<Token> varTokenIter = ctx.var.listIterator();
+    while (varTokenIter.hasNext()) {
+      if (showDebug) System.out.println(varTokenIter.nextIndex());
+
+      // the prompt should apply to each variable in the list, but only printed once
+      if (ctx.prompt != null && varTokenIter.nextIndex() == 0) {
+        System.out.print(ctx.prompt.getText() + " ");
+      } else {
+        // if no prompt, default to "?"
+        System.out.print("? ");
+      }
+
+      Double numericalInput = null;
+      String textInput = null;
+      String id = varTokenIter.next().getText();
+      Symbol s = new VariableSymbol(id);
+      Variable variable = null;
+
+      try {
+        // get line input
+        BufferedReader reader =
+            new BufferedReader(new InputStreamReader(System.in)); // using java.io.*
+        String input = reader.readLine(); // it reads everything into string
+        // or, String str = System.console().readLine();
+
+        // try to convert to float?
+        try {
+          numericalInput = Double.valueOf(input);
+          // make Value and Variable here
+          Value<Double> val = new Value<>(numericalInput, "Real"); // TODO might have been an int!!
+          variable = new NumericVariable(s, val);
+        } catch (NumberFormatException ne) {
+          // keep it as a string
+          textInput = input;
+          // make Value and Variable here
+          Value<String> val = new Value<>(textInput, "String");
+          variable = new StringVariable(s, val);
+        }
+
+        globalScope.put(id, variable);
+
+      } catch (IOException e) {
+        System.out.println(e.toString());
+      }
+    }
+
+    //    ctx.spacer.getText();
+    // loop the "var"s and do virtual assignments based on read in input
+    // in loop , do the scan/buffered input reader
+
     return null;
   }
 }

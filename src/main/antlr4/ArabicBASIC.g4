@@ -9,12 +9,14 @@ statement:  COMMENT // shouldn't have EOL because it's a terminal
             | arrayCreation EOL
             | conditionalBlock EOL
             | print EOL
+            | input EOL
             ;
 simpleAssignment: 'LET' IDENTIFIER '=' expression; // Sequence with Terminator pattern
 arrayAssignment: IDENTIFIER '(' subscript ')' '=' expression; //TODO visitor implementation will check for type consistency in array elements
 arrayCreation: 'DIM' IDENTIFIER '(' arraySize ')';
 conditionalBlock: 'IF' booleanExpression 'THEN' EOL block ('ELSE' EOL block)? 'END IF'; //multiline is mandatory here
 print: 'PRINT' expression (spacer+=(',' | ';') expression)*;
+input: 'INPUT' (prompt=STRING (spacer=(',' | ';')))? var+=IDENTIFIER (',' var+=IDENTIFIER)*;
 blank: WS* EOL;
 expression: // list the rules from highest -> lowest precedence
             IDENTIFIER '(' subscript ')'                #arrayAccess
