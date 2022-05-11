@@ -540,7 +540,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
 
     ListIterator<Token> varTokenIter = ctx.var.listIterator();
     while (varTokenIter.hasNext()) {
-      if (showDebug) System.out.println(varTokenIter.nextIndex());
+      //      if (showDebug) System.out.println(varTokenIter.nextIndex());
 
       // the prompt should apply to each variable in the list, but only printed once
       if (ctx.prompt != null && varTokenIter.nextIndex() == 0) {
@@ -550,7 +550,8 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
         System.out.print("? ");
       }
 
-      Double numericalInput = null;
+      Integer intInput = null;
+      Double floatInput = null;
       String textInput = null;
       String id = varTokenIter.next().getText();
       Symbol s = new VariableSymbol(id);
@@ -563,18 +564,27 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
         String input = reader.readLine(); // it reads everything into string
         // or, String str = System.console().readLine();
 
-        // try to convert to float?
+        // Nested exceptions and use of exceptions like this is considered bad style.
         try {
-          numericalInput = Double.valueOf(input);
-          // make Value and Variable here
-          Value<Double> val = new Value<>(numericalInput, "Real"); // TODO might have been an int!!
+          intInput = Integer.parseInt(input);
+          Value<Integer> val = new Value<>(intInput, "Integer");
           variable = new NumericVariable(s, val);
-        } catch (NumberFormatException ne) {
-          // keep it as a string
-          textInput = input;
-          // make Value and Variable here
-          Value<String> val = new Value<>(textInput, "String");
-          variable = new StringVariable(s, val);
+
+        } catch (NumberFormatException ne0) {
+          // try to get float/real
+          try {
+            floatInput = Double.parseDouble(input);
+            // make Value and Variable here
+            Value<Double> val = new Value<>(floatInput, "Real");
+            variable = new NumericVariable(s, val);
+
+          } catch (IllegalArgumentException e) {
+            // keep it as a string
+            textInput = input;
+            // make Value and Variable here
+            Value<String> val = new Value<>(textInput, "String");
+            variable = new StringVariable(s, val);
+          }
         }
 
         globalScope.put(id, variable);
