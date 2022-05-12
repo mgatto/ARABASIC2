@@ -58,14 +58,6 @@ public class Value {
    */
   @Override
   public String toString() {
-    return "Value{"
-        // + "val="
-        + val
-        // + ", type='"
-        // + originalType
-        // + '\''
-        // + ", attributes="
-        // + attributes
-        + '}';
+    return "Value={ type=<" + originalType + "> content=<" + val + "> }";
   }
 }

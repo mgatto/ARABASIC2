@@ -88,8 +88,8 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     }
 
     // visit expression to get value to insert
-    Value wrapperOfValToInsert = (Value) visit(ctx.expression());
-    Object valToInsert = wrapperOfValToInsert.getVal(); // this should be Double or String
+    Value newElement = (Value) visit(ctx.expression());
+    Object valToInsert = newElement.getVal(); // this should be Double or String
 
     // TODO check type of value to insert
     // check the Value's originalType? or the Value's attr of element_type?
@@ -97,7 +97,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
 
     // insert a value at the index; this call looks wierd
     Value arrayValue = existingArray.getValue();
-    arrayValue.setOriginalType(wrapperOfValToInsert.getOriginalType());
+    arrayValue.setOriginalType(newElement.getOriginalType());
     ArrayList targetArray = (ArrayList) arrayValue.getVal();
 
     // TODO must test for existing index; add() for new element, and set() for updating
