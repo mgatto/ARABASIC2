@@ -142,6 +142,16 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     Value left = (Value) visit(ctx.expression(0));
     Value right = (Value) visit(ctx.expression(1));
 
+    // Are we operating on strings? Only valid for "+"
+    if (Objects.equals(left.getOriginalType(), "String")
+        && Objects.equals(right.getOriginalType(), "String")) {
+      if (ctx.op.getText().equals("+")) {
+        return new Value((String) left.getVal() + (String) right.getVal(), "String");
+      } else {
+        throw new IllegalArgumentException("Strings may not be subtracted.");
+      }
+    }
+
     // ensure both terms are addable/subtractable
     Double leftVal = makeNumber(left);
     Double rightVal = makeNumber(right);
