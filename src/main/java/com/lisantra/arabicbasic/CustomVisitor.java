@@ -530,15 +530,13 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
       if (Objects.equals(exprToPrint.getOriginalType(), "Integer")) {
         // reformat integers; below feels a bit overdone...
         boxedPrimitive = ((Double) exprToPrint.getVal()).intValue();
-      } else if (Objects.equals(exprToPrint.getOriginalType(), "String")) {
-        //  if it's a string, strip the quotes
-        boxedPrimitive = ((String) boxedPrimitive).replaceAll("^\"|\"$", "");
       }
 
       System.out.print(boxedPrimitive + spacingSeparator);
     }
 
-    System.out.println(); // print blank line following any output
+    // print blank line following any output
+    System.out.println();
     return null;
   }
 

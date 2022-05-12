@@ -1,8 +1,6 @@
 package com.lisantra.arabicbasic;
 
-/**
- *
- */
+/** */
 public class Value {
   private Object val;
   private String originalType;
@@ -22,6 +20,11 @@ public class Value {
    * @return
    */
   public Object getVal() {
+    //  if it's a string, strip the quotes
+    if (val instanceof String) {
+      return ((String) val).replaceAll("^\"|\"$", "");
+    }
+
     return val;
   }
 
