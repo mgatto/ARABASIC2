@@ -47,7 +47,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     Symbol s = new VariableSymbol(id);
 
     /* If val is another variable [A = B], then a new value is returned; is "copy by value" */
-    Value<?> val = (Value) visit(ctx.expression());
+    Value val = (Value) visit(ctx.expression());
     Variable var = null;
 
     switch (val.getOriginalType()) {
@@ -84,7 +84,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     }
 
     // visit expression to get value to insert
-    Value<?> wrapperOfValToInsert = (Value) visit(ctx.expression());
+    Value wrapperOfValToInsert = (Value) visit(ctx.expression());
     Object valToInsert = wrapperOfValToInsert.getVal(); // this should be Double or String
 
     // TODO check type of value to insert
@@ -123,24 +123,34 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     return null;
   }
 
-  public Value<?> visitNested(ArabicBASICParser.NestedContext ctx) {
+  public Value visitNested(ArabicBASICParser.NestedContext ctx) {
     return (Value) visit(ctx.expression());
   }
 
-  public Value<?> visitUnary(ArabicBASICParser.UnaryContext ctx) {
-    Value<Double> expr = (Value<Double>) visit(ctx.expression());
+  public Value visitUnary(ArabicBASICParser.UnaryContext ctx) {
+    Value expr = (Value) visit(ctx.expression());
     Double exprVal = makeNumber(expr);
 
     // Copy by value here may only be necessary if there is a variable in the expression.
     // Otherwise, it mutates the original like this A = 1, X=-A and negates A retroactively.
-    return new Value<>(-exprVal, expr.getOriginalType());
+    return new Value(-exprVal, expr.getOriginalType());
   }
 
-  public Value<Double> visitAddSub(ArabicBASICParser.AddSubContext ctx) {
+  public Value visitAddSub(ArabicBASICParser.AddSubContext ctx) {
     // TODO ensure left is a numeric
     // TODO treat all numbers as Double in this Java code?
-    Value<Double> left = (Value<Double>) visit(ctx.expression(0));
-    Value<Double> right = (Value<Double>) visit(ctx.expression(1));
+    Value left = (Value) visit(ctx.expression(0));
+    Value right = (Value) visit(ctx.expression(1));
+
+    // Are we operating on strings? Only valid for "+"
+    if (Objects.equals(left.getOriginalType(), "String")
+        && Objects.equals(right.getOriginalType(), "String")) {
+      if (ctx.op.getText().equals("+")) {
+        return new Value((String) left.getVal() + (String) right.getVal(), "String");
+      } else {
+        throw new IllegalArgumentException("Strings may not be subtracted.");
+      }
+    }
 
     // ensure both terms are addable/subtractable
     Double leftVal = makeNumber(left);
@@ -150,22 +160,22 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
 
     // TODO can use getType() if I specify the operators as terminals
     if (ctx.op.getText().equals("+")) {
-      return new Value<>(leftVal + rightVal, resultType);
+      return new Value(leftVal + rightVal, resultType);
     }
 
-    return new Value<>(leftVal - rightVal, resultType);
+    return new Value(leftVal - rightVal, resultType);
   }
 
-  private Double makeNumber(Value<Double> val) {
+  private Double makeNumber(Value val) {
     if (val.getVal() instanceof Double) {
-      return val.getVal();
+      return (Double) val.getVal();
     } else {
       throw new IllegalArgumentException(
           "Only numbers can be operated on here. You tried to use: '" + val.getVal() + "'");
     }
   }
 
-  private String getResultType(Value<Double> left, Value<Double> right) {
+  private String getResultType(Value left, Value right) {
     // what if left and right have different original types? Widen the result
     String resultType;
     String leftType = left.getOriginalType();
@@ -180,7 +190,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     return resultType;
   }
 
-  public Value<Double> visitMulDiv(ArabicBASICParser.MulDivContext ctx) {
+  public Value visitMulDiv(ArabicBASICParser.MulDivContext ctx) {
     Value left = (Value) visit(ctx.expression(0));
     Value right = (Value) visit(ctx.expression(1));
 
@@ -192,19 +202,19 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     // TODO can use getType() if I specify the operators as terminals
     if (ctx.op.getText().equals("*")) {
       // TODO use Guava's "int mustNotOverflow = IntMath.checkedMultiply(x, y);"
-      return new Value<>(leftVal * rightVal, resultType);
+      return new Value(leftVal * rightVal, resultType);
     }
 
     if (rightVal == 0) {
       throw new ArithmeticException("Cannot divide by zero");
     }
 
-    return new Value<>(leftVal / rightVal, resultType);
+    return new Value(leftVal / rightVal, resultType);
   }
 
-  public Value<Double> visitExponentation(ArabicBASICParser.ExponentationContext ctx) {
-    Value<Double> base = (Value<Double>) visit(ctx.expression(0));
-    Value<Double> exponent = (Value<Double>) visit(ctx.expression(1));
+  public Value visitExponentation(ArabicBASICParser.ExponentationContext ctx) {
+    Value base = (Value) visit(ctx.expression(0));
+    Value exponent = (Value) visit(ctx.expression(1));
 
     Double basePrimitive = makeNumber(base);
     Double exponentPrimitive = makeNumber(exponent);
@@ -213,7 +223,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
 
     // Copy by value here may only be necessary if there is a variable in the expression.
     // Otherwise, it mutates the original like this A = 1, X=-A and negates A retroactively.
-    return new Value<Double>(Math.pow(basePrimitive, exponentPrimitive), resultType);
+    return new Value(Math.pow(basePrimitive, exponentPrimitive), resultType);
   }
 
   /**
@@ -222,7 +232,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
    * @param ctx
    * @return the value associated with the var name
    */
-  public Value<?> visitName(ArabicBASICParser.NameContext ctx) {
+  public Value visitName(ArabicBASICParser.NameContext ctx) {
     if (showDebug) System.out.println("I visited Identifier");
 
     String id = ctx.IDENTIFIER().getText();
@@ -235,7 +245,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
   }
 
   @Override
-  public Value<?> visitArrayAccess(ArabicBASICParser.ArrayAccessContext ctx) {
+  public Value visitArrayAccess(ArabicBASICParser.ArrayAccessContext ctx) {
     if (showDebug) System.out.println("I visited array access");
 
     String id = ctx.IDENTIFIER().getText();
@@ -246,7 +256,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     // get index
     Integer idx = (Integer) visit(ctx.subscript());
 
-    Value<?> val = globalScope.get(id).getValue();
+    Value val = globalScope.get(id).getValue();
     List targetArray = (ArrayList) val.getVal();
 
     // TODO check size vs index
@@ -268,21 +278,21 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     //    System.out.println(targetArray.get(idx));
     //    System.out.println(elementsType);
 
-    return new Value<>(targetArray.get(idx), elementsType);
+    return new Value(targetArray.get(idx), elementsType);
   }
 
-  public Value<Double> visitNumeric(ArabicBASICParser.NumericContext ctx) {
+  public Value visitNumeric(ArabicBASICParser.NumericContext ctx) {
     // all get treated as Double anyways, but let's track the original type
     //  ...this is why I had a "number" rule in the grammar...
     if (null != ctx.INTEGER()) {
-      return new Value<>(Double.valueOf(ctx.INTEGER().getText()), "Integer");
+      return new Value(Double.valueOf(ctx.INTEGER().getText()), "Integer");
     } else {
-      return new Value<>(Double.valueOf(ctx.REAL().getText()), "Real");
+      return new Value(Double.valueOf(ctx.REAL().getText()), "Real");
     }
   }
 
-  public Value<String> visitText(ArabicBASICParser.TextContext ctx) {
-    return new Value<>(ctx.STRING().getText(), "String");
+  public Value visitText(ArabicBASICParser.TextContext ctx) {
+    return new Value(ctx.STRING().getText(), "String");
   }
 
   public Void visitArrayCreation(ArabicBASICParser.ArrayCreationContext ctx) {
@@ -299,13 +309,13 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     //    No, probably not! An empty array is OK!
 
     // 3. wrap in Value; the type of List's elements are unknowable at this stage.
-    List<Value<?>> newArray = new ArrayList<>(size);
+    List<Value> newArray = new ArrayList<>(size);
     for (int i = 0; i < size; i++) {
       // add blank Value as placeholder
-      newArray.add(new Value<>(null, ""));
+      newArray.add(new Value(null, ""));
     }
 
-    Value<List<?>> arr = new Value<>(newArray, "Array");
+    Value arr = new Value(newArray, "Array");
     // TODO switch to primitive "array"
 
     ArrayVariable var = new ArrayVariable(s, arr);
@@ -335,7 +345,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
       }
 
       // The symbol table's value is of custom type Value
-      Value<?> indexVal = globalScope.get(id).getValue();
+      Value indexVal = globalScope.get(id).getValue();
 
       /* validate that it's an integer */
       if (!indexVal.getOriginalType().equals("Integer")) {
@@ -395,8 +405,8 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
   @Override
   public Boolean visitComparitiveBoolean(ArabicBASICParser.ComparitiveBooleanContext ctx) {
     // TODO bad for assuming a type already...
-    Value<Double> left = (Value<Double>) visit(ctx.booleanExpression(0));
-    Value<Double> right = (Value<Double>) visit(ctx.booleanExpression(1));
+    Value left = (Value) visit(ctx.booleanExpression(0));
+    Value right = (Value) visit(ctx.booleanExpression(1));
 
     if (showDebug)
       System.out.println(
@@ -422,28 +432,28 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
         return false;
       }
 
-      return left.getVal() > right.getVal();
+      return (Double) left.getVal() > (Double) right.getVal();
     } else if (ctx.comp.getText().equals(">=")) {
       if (strComparison != null) {
         if (strComparison > 0) return true;
         return false;
       }
 
-      return left.getVal() >= right.getVal();
+      return (Double) left.getVal() >= (Double) right.getVal();
     } else if (ctx.comp.getText().equals("<")) {
       if (strComparison != null) {
         if (strComparison < 0) return true;
         return false;
       }
 
-      return left.getVal() < right.getVal();
+      return (Double) left.getVal() < (Double) right.getVal();
     } else if (ctx.comp.getText().equals("<=")) {
       if (strComparison != null) {
         if (strComparison < 1) return true;
         return false;
       }
 
-      return left.getVal() <= right.getVal();
+      return (Double) left.getVal() <= (Double) right.getVal();
     } else {
       // TODO throw error
     }
@@ -492,7 +502,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
    * @return
    */
   @Override
-  public Value<?> visitAtomicBoolean(ArabicBASICParser.AtomicBooleanContext ctx) {
+  public Value visitAtomicBoolean(ArabicBASICParser.AtomicBooleanContext ctx) {
     /* it could be visitName(), visitNumeric() or visitText() */
     //    Object x = visit(ctx.variable(ctx));
     // TODO how to tell if it should return a value or be evaulated as a Boolean??
@@ -505,7 +515,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     // loop through how many expressions there are
     int exprCount = ctx.expression().size();
     for (int i = 0; i < exprCount; i++) {
-      Value<?> exprToPrint = (Value) visit(ctx.expression(i));
+      Value exprToPrint = (Value) visit(ctx.expression(i));
 
       // Pad output with spacing depending on type of separator
       // there will always be size - 1 spacers
@@ -520,15 +530,13 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
       if (Objects.equals(exprToPrint.getOriginalType(), "Integer")) {
         // reformat integers; below feels a bit overdone...
         boxedPrimitive = ((Double) exprToPrint.getVal()).intValue();
-      } else if (Objects.equals(exprToPrint.getOriginalType(), "String")) {
-        //  if it's a string, strip the quotes
-        boxedPrimitive = ((String) boxedPrimitive).replaceAll("^\"|\"$", "");
       }
 
       System.out.print(boxedPrimitive + spacingSeparator);
     }
 
-    System.out.println(); // print blank line following any output
+    // print blank line following any output
+    System.out.println();
     return null;
   }
 
@@ -567,7 +575,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
         // Nested exceptions and use of exceptions like this is considered bad style.
         try {
           intInput = Integer.parseInt(input);
-          Value<Integer> val = new Value<>(intInput, "Integer");
+          Value val = new Value(intInput, "Integer");
           variable = new NumericVariable(s, val);
 
         } catch (NumberFormatException ne0) {
@@ -575,14 +583,14 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
           try {
             floatInput = Double.parseDouble(input);
             // make Value and Variable here
-            Value<Double> val = new Value<>(floatInput, "Real");
+            Value val = new Value(floatInput, "Real");
             variable = new NumericVariable(s, val);
 
           } catch (IllegalArgumentException e) {
             // keep it as a string
             textInput = input;
             // make Value and Variable here
-            Value<String> val = new Value<>(textInput, "String");
+            Value val = new Value(textInput, "String");
             variable = new StringVariable(s, val);
           }
         }

@@ -2,14 +2,10 @@ package com.lisantra.arabicbasic;
 
 /** */
 public class Variable {
-  /**
-   *
-   */
+  /** */
   private final Symbol symbol;
 
-  /**
-   *
-   */
+  /** */
   private Value value;
 
   /**
@@ -31,7 +27,7 @@ public class Variable {
   /**
    * @return
    */
-  public Value<?> getValue() {
+  public Value getValue() {
     return value;
   }
 
