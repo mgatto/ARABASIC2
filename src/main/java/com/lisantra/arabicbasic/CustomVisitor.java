@@ -381,23 +381,46 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
   }
 
   public Void visitConditionalBlock(ArabicBASICParser.ConditionalBlockContext ctx) {
-    /* determine state of the ArabicBASIC test expression */
-
     // TODO may need Apache Commons library BooleanUtils class
     Boolean condition = null;
-    Object conditionalExpr =
-        visit(ctx.booleanExpression()); // it could be Boolean or Value from atomicBoolean rule
-    if (conditionalExpr instanceof Boolean) {
-      condition = (Boolean) conditionalExpr;
-      // special condition for an atomic of a constant or variable all by itself in the condition
-    } else if (conditionalExpr instanceof Value) {
-      // any non-null value true; else we'd get an undefined exception
-      condition = true;
-    }
+
+    // How many conditions to run?
+    int testCount = ctx.booleanExpression().size();
+    if (showDebug) System.out.println("There are " + testCount + " IFs and ELSE IFs.");
 
     /* how many blocks are here? */
     int blockCount = ctx.block().size();
     if (showDebug) System.out.println("There are " + blockCount + " blocks in this IF statement.");
+
+    for (int i = 0; i < testCount; i++) {
+      Object conditionalExpr =
+          visit(ctx.booleanExpression(i)); // it could be Boolean or Value from atomicBoolean rule
+      if (conditionalExpr instanceof Boolean) {
+        condition = (Boolean) conditionalExpr;
+        // special condition for an atomic of a constant or variable all by itself in the condition
+      } else if (conditionalExpr instanceof Value) {
+        // any non-null value true; else we'd get an undefined exception
+        condition = true;
+      }
+      if (showDebug)
+        System.out.println(
+            "condition #" + i + ": " + ctx.booleanExpression(i).getText() + " is " + condition);
+
+      if (Boolean.TRUE.equals(condition)) {
+        visit(ctx.block(i));
+        return null;
+      }
+    }
+
+    // HERE, all the conditions evaluated to false, so let's see if there is an ELSE
+    // this would be when
+    if (blockCount == testCount + 1) {
+      // if condition is false, and there is an else block, then visit it.
+      visit(ctx.block(blockCount - 1));
+    }
+
+    return null;
+
     /* with named keyword tokens, I can do this:
     if (ctx.start.getType() == YourLexer.BOOL) {
       // it's a BOOL token
@@ -407,20 +430,6 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
 
     ctx.start.getLine();
     */
-
-    if (showDebug)
-      System.out.println("condition: " + ctx.booleanExpression().getText() + " is " + condition);
-    // This is VERY specific to a simple IF/optional ELSE statement
-    if (Boolean.TRUE.equals(condition)) {
-      visit(ctx.block(0));
-    } else if (blockCount == 2) {
-      // if condition is false, and there is an else block, then visit it.
-      visit(ctx.block(1));
-    }
-
-    // TODO how can I tell in ANTLR4 if there is a specific, optional token I need
-    //    ctx.getText() contains "ELSE"? or by naming the token?
-    return null;
   }
 
   @Override
