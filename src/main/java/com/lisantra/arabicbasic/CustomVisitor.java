@@ -60,6 +60,10 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
         var = new NumericVariable(s, val);
         break;
 
+      case "Array":
+        var = new ArrayVariable(s, val);
+        break;
+
       default:
         System.out.println("Value's original type was " + val.getOriginalType());
     }
@@ -141,6 +145,23 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     // TODO treat all numbers as Double in this Java code?
     Value left = (Value) visit(ctx.expression(0));
     Value right = (Value) visit(ctx.expression(1));
+
+    // Can't rely on getOriginalType here...
+    if (left.getVal() instanceof ArrayList && right.getVal() instanceof ArrayList) {
+      if (ctx.op.getText().equals("+")) {
+        ArrayList<?> combined = new ArrayList<>();
+        //        System.out.println(combined);
+        combined.addAll((ArrayList) left.getVal());
+        //        System.out.println(combined);
+
+        combined.addAll((ArrayList) right.getVal());
+        //        System.out.println(combined);
+
+        return new Value(combined, "Array");
+      } else {
+        throw new IllegalArgumentException("Arrays may not be subtracted.");
+      }
+    }
 
     // Are we operating on strings? Only valid for "+"
     if (Objects.equals(left.getOriginalType(), "String")
