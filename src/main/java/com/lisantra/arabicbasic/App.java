@@ -15,12 +15,11 @@ import java.util.concurrent.Callable;
     name = "run",
     mixinStandardHelpOptions = true,
     version = "0.3",
+    resourceBundle = "Messages",
     description =
         "Runs a script written in ArabicBASIC and prints results of computations to STDOUT.")
 public class App implements Callable<Integer> {
-  @CommandLine.Parameters(
-      index = "0",
-      description = "The file containing ArabicBASIC lines of code.")
+  @CommandLine.Parameters(index = "0", descriptionKey = "fileParam")
   private File file;
 
   @CommandLine.Option(
@@ -96,7 +95,12 @@ public class App implements Callable<Integer> {
    * @param args Array of command-line arguments
    */
   public static void main(String... args) {
-    int exitCode = new CommandLine(new App()).execute(args);
+    CommandLine interpreter = new CommandLine(new App());
+
+    // alternate way to add resource bundles
+    // interpreter.setResourceBundle(ResourceBundle.getBundle("Messages"));
+
+    int exitCode = interpreter.execute(args);
     System.exit(exitCode);
   }
 }
