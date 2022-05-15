@@ -683,4 +683,40 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
 
     return null;
   }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * ctx}.
+   */
+  @Override
+  public Void visitWhileLoop(ArabicBASICParser.WhileLoopContext ctx) {
+    // assume true, so we can enter the loop; can be "Break"ed if condition evaluates to false
+    // before executing "block"
+    Boolean condition = true;
+
+    // it could be Boolean or Value from atomicBoolean rule
+    while (condition) {
+      Object conditionalExpr = visit(ctx.booleanExpression());
+      if (conditionalExpr instanceof Boolean) {
+        condition = (Boolean) conditionalExpr;
+      } else if (conditionalExpr instanceof Value) {
+        // special condition for an atomic of a constant or variable all by itself in the condition
+        // any non-null value true; else we'd get an undefined exception
+        condition = true;
+      }
+      if (showDebug)
+        System.out.println("condition: " + ctx.booleanExpression().getText() + " is " + condition);
+
+      if (Boolean.FALSE.equals(condition)) {
+        break;
+        // return null;
+      }
+
+      visit(ctx.block());
+    }
+
+    return null;
+  }
 }

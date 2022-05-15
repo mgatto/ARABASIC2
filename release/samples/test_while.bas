@@ -1,0 +1,5 @@
+LET X = 4
+WHILE X >= 1
+    PRINT X
+    LET X = X - 1
+END WHILE

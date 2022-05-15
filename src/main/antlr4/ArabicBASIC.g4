@@ -9,6 +9,7 @@ statement:  COMMENT // shouldn't have EOL because it's a terminal
             | arrayCreation EOL
             | conditionalBlock EOL
             | forLoop EOL
+            | whileLoop EOL
             | print EOL
             | input EOL
             // break EOL  how would Java code know if this is within a specific context?
@@ -18,6 +19,7 @@ arrayAssignment: IDENTIFIER '(' subscript ')' '=' expression; //TODO visitor imp
 arrayCreation: 'DIM' IDENTIFIER '(' arraySize ')';
 conditionalBlock: 'IF' tests+=booleanExpression 'THEN' EOL block ('ELSE IF' tests+=booleanExpression 'THEN' EOL block)* ('ELSE' EOL block)? 'END IF'; //multiline is mandatory here
 forLoop: 'FOR' control=IDENTIFIER '=' lower=INTEGER 'TO' upper=INTEGER ('STEP' '=' step=INTEGER)? EOL block 'NEXT';
+whileLoop: 'WHILE' test=booleanExpression EOL block  ('END WHILE' | 'WEND');
 print: 'PRINT' expression (spacer+=(',' | ';') expression)*;
 input: 'INPUT' (prompt=STRING (spacer=(',' | ';')))? var+=IDENTIFIER (',' var+=IDENTIFIER)*;
 blank: WS* EOL;
