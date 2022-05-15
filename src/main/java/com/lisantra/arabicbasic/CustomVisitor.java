@@ -638,4 +638,49 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
 
     return null;
   }
+
+  /** If val is another variable [A = B], then a new value is returned; is "copy by value" */
+  @Override
+  public Void visitForLoop(ArabicBASICParser.ForLoopContext ctx) {
+
+    int lower = Integer.parseInt(ctx.lower.getText());
+    int upper = Integer.parseInt(ctx.upper.getText());
+    // TODO if I decide to be not inclusive, then either subtract 1 here or change "while" below
+
+    int counter = lower;
+
+    int step = 1;
+    if (ctx.step != null) {
+      step = Integer.parseInt(ctx.step.getText());
+    }
+
+    if (showDebug) System.out.printf("lower=%d%n", lower);
+    if (showDebug) System.out.printf("upper=%d%n", upper);
+
+    // 1. instantiate control variable = "lower" and add it to var table
+    String id = ctx.control.getText();
+    Symbol s = new VariableSymbol(id);
+
+    // temp val using lower, which should be the same as counter...
+    Value controlVal = new Value((double) lower, "Integer");
+    Variable controlVar = new NumericVariable(s, controlVal);
+    //    globalScope.put(id, controlVar);
+
+    // Start Java while loop
+    // 2. if control var is less than "upper", then visit(block)
+    while (counter >= lower && counter <= upper) {
+      // 4.  store updated value
+      controlVal.setVal((double) counter);
+      globalScope.put(id, controlVar);
+
+      visit(ctx.block());
+
+      if (showDebug) System.out.printf("counter=%d%n", counter);
+
+      // 3. increment control var by 1 or step
+      counter += step;
+    }
+
+    return null;
+  }
 }

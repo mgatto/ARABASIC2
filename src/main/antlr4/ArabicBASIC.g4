@@ -8,13 +8,16 @@ statement:  COMMENT // shouldn't have EOL because it's a terminal
             | arrayAssignment EOL
             | arrayCreation EOL
             | conditionalBlock EOL
+            | forLoop EOL
             | print EOL
             | input EOL
+            // break EOL  how would Java code know if this is within a specific context?
             ;
 simpleAssignment: 'LET' IDENTIFIER '=' expression; // Sequence with Terminator pattern
 arrayAssignment: IDENTIFIER '(' subscript ')' '=' expression; //TODO visitor implementation will check for type consistency in array elements
 arrayCreation: 'DIM' IDENTIFIER '(' arraySize ')';
 conditionalBlock: 'IF' tests+=booleanExpression 'THEN' EOL block ('ELSE IF' tests+=booleanExpression 'THEN' EOL block)* ('ELSE' EOL block)? 'END IF'; //multiline is mandatory here
+forLoop: 'FOR' control=IDENTIFIER '=' lower=INTEGER 'TO' upper=INTEGER ('STEP' '=' step=INTEGER)? EOL block 'NEXT';
 print: 'PRINT' expression (spacer+=(',' | ';') expression)*;
 input: 'INPUT' (prompt=STRING (spacer=(',' | ';')))? var+=IDENTIFIER (',' var+=IDENTIFIER)*;
 blank: WS* EOL;

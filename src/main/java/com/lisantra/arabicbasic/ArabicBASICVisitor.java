@@ -61,6 +61,13 @@ public interface ArabicBASICVisitor<T> extends ParseTreeVisitor<T> {
    */
   T visitConditionalBlock(ArabicBASICParser.ConditionalBlockContext ctx);
   /**
+   * Visit a parse tree produced by {@link ArabicBASICParser#forLoop}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitForLoop(ArabicBASICParser.ForLoopContext ctx);
+  /**
    * Visit a parse tree produced by {@link ArabicBASICParser#print}.
    *
    * @param ctx the parse tree

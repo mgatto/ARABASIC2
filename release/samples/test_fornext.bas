@@ -1,0 +1,3 @@
+FOR K = 0 TO 4 STEP=2
+    PRINT K
+NEXT
