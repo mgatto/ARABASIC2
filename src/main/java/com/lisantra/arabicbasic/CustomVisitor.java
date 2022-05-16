@@ -809,17 +809,43 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
   @Override
   public Value visitStringFunction(ArabicBASICParser.StringFunctionContext ctx) {
     // 1. Get value to operate upon
-    Value argValue = (Value) visit(ctx.variable());
+    // multiple args are allowed such as for RIGHT, so now it's a List
+    Value argValue1 = (Value) visit(ctx.variable(0));
 
-    // 2. ensure it is a string
-    if (!argValue.getOriginalType().equals("String")) {
-      throw new IllegalArgumentException("argument: '" + argValue + "' is not a string");
+    //    if (showDebug) System.out.println("ARG1 = " + argValue1);
+
+    Value argValue2 = null;
+    if (null != ctx.variable(1)) {
+      argValue2 = (Value) visit(ctx.variable(1));
+
+      if (!argValue2.getOriginalType().equals("String")) {
+        throw new IllegalArgumentException("argument: '" + argValue2 + "' is not a string");
+      }
     }
 
-    // 2. construct a return value
-    Value retValue = new Value(null, "");
+    // 2. ensure it is a string
+    if (!argValue1.getOriginalType().equals("String")) {
+      throw new IllegalArgumentException("argument: '" + argValue1 + "' is not a string");
+    }
+
+    // 2. construct a default return value
+    Value retValue = new Value("", "String");
+
     // 4. get name
-    ctx.name.getText();
+    String operation = ctx.name.getText();
+    //    if (showDebug) System.out.println("Function = " + operation);
+
+    switch (operation) {
+      case "LEN":
+        retValue.setVal((double) ((String) argValue1.getVal()).length());
+        retValue.setOriginalType("Integer");
+
+        if (showDebug) System.out.println(retValue);
+        break;
+
+      default:
+        throw new IllegalArgumentException("I do not recognize the function: '" + operation + "'.");
+    }
 
     return retValue;
   }
