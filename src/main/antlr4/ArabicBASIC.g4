@@ -10,6 +10,10 @@ statement:  COMMENT // shouldn't have EOL because it's a terminal
             | conditionalBlock EOL
             | forLoop EOL
             | whileLoop EOL
+            //| defineSubroutine EOL  sub IDENTIFIER EOL block END SUB
+            //| callSubroutine EOL  call IDENTIFIER  needs a new variable type: Function
+             | defineSingleLineFunction EOL
+             | callFunction EOL
             | print EOL
             | input EOL
             // break EOL  how would Java code know if this is within a specific context?
@@ -20,6 +24,8 @@ arrayCreation: 'DIM' IDENTIFIER '(' arraySize ')';
 conditionalBlock: 'IF' tests+=booleanExpression 'THEN' EOL block ('ELSE IF' tests+=booleanExpression 'THEN' EOL block)* ('ELSE' EOL block)? 'END IF'; //multiline is mandatory here
 forLoop: 'FOR' control=IDENTIFIER '=' lower=INTEGER 'TO' upper=INTEGER ('STEP' '=' step=INTEGER)? EOL block 'NEXT';
 whileLoop: 'WHILE' test=booleanExpression EOL block  ('END WHILE' | 'WEND');
+defineSingleLineFunction: 'DEF' 'FN' funcName=IDENTIFIER'(' arg=variable ')' '=' expression; //DEF FN cube(a) = a^3
+callFunction: 'CALL' funcName=IDENTIFIER'(' variable ')' ; //this looks too much like arrayAccess!
 print: 'PRINT' expression (spacer+=(',' | ';') expression)*;
 input: 'INPUT' (prompt=STRING (spacer=(',' | ';')))? var+=IDENTIFIER (',' var+=IDENTIFIER)*;
 blank: WS* EOL;
@@ -29,9 +35,10 @@ expression: // list the rules from highest -> lowest precedence
             | <assoc=right>expression'^' expression     #exponentation
             | expression op=('*' | '/') expression      #mulDiv
             | expression op=('+' | '-') expression      #addSub
+            | callFunction                              #functionCall
             //TODO get rid of  "Variable" = too many layers of abstraction
             | variable                                  #term
-            | '(' expression ')'                         #nested
+            | '(' expression ')'                        #nested
             ;
 subscript:  INTEGER
             | IDENTIFIER

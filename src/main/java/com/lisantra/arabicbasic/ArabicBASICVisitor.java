@@ -75,6 +75,20 @@ public interface ArabicBASICVisitor<T> extends ParseTreeVisitor<T> {
    */
   T visitWhileLoop(ArabicBASICParser.WhileLoopContext ctx);
   /**
+   * Visit a parse tree produced by {@link ArabicBASICParser#defineSingleLineFunction}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitDefineSingleLineFunction(ArabicBASICParser.DefineSingleLineFunctionContext ctx);
+  /**
+   * Visit a parse tree produced by {@link ArabicBASICParser#callFunction}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitCallFunction(ArabicBASICParser.CallFunctionContext ctx);
+  /**
    * Visit a parse tree produced by {@link ArabicBASICParser#print}.
    *
    * @param ctx the parse tree
@@ -95,6 +109,14 @@ public interface ArabicBASICVisitor<T> extends ParseTreeVisitor<T> {
    * @return the visitor result
    */
   T visitBlank(ArabicBASICParser.BlankContext ctx);
+  /**
+   * Visit a parse tree produced by the {@code functionCall} labeled alternative in {@link
+   * ArabicBASICParser#expression}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitFunctionCall(ArabicBASICParser.FunctionCallContext ctx);
   /**
    * Visit a parse tree produced by the {@code term} labeled alternative in {@link
    * ArabicBASICParser#expression}.

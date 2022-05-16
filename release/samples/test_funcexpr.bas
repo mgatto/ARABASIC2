@@ -1,0 +1,5 @@
+LET G = 3
+DEF FN CUBE(A) = A^3
+
+LET X = CALL CUBE(G)
+LET Y = CALL CUBE(2)
