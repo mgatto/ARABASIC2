@@ -9,7 +9,7 @@
     </properties>
     <groupId>com.lisantra.arabicbasic</groupId>
     <artifactId>ArabicBASIC</artifactId>
-    <version>0.3-alpha</version>
+    <version>0.5-alpha</version>
     <dependencies>
         <dependency>
             <groupId>org.antlr</groupId>
