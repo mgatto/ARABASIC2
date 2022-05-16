@@ -79,7 +79,7 @@ public class App implements Callable<Integer> {
       interpreter.visit(programTree);
     } catch (Exception e) {
       System.err.println(e.getMessage());
-      e.printStackTrace();
+      if (showDebug) e.printStackTrace();
       return 1;
     }
 
