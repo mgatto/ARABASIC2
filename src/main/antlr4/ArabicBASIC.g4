@@ -61,12 +61,10 @@ variable: IDENTIFIER        #name
         | STRING            #text
         ;
 COMMENT: ('//' | 'REM') ~[\r\n]* EOL -> channel(HIDDEN);
-IDENTIFIER: [A-Z]+ [A-Z0-9_]*; //TODO replace with Arabic UNICODE after Latin script testing
-//STRING: '"' [ a-zA-Z]* '"';  //TODO basically any printable char other than "
-//STRING : '"' .*? '"' ; // match anything in "..."
 STRING: '"' (~'"'|'\\"')* '"';
-INTEGER: '0' | [1-9] DIGIT*; //TODO replace with Arabic UNICODE //'-'?
+IDENTIFIER: [A-Z]+ [A-Z0-9_]*; //TODO replace with Arabic UNICODE after Latin script testing
 REAL:  DIGIT '.' DIGIT+; //'-'?
+INTEGER: '0' | [1-9] DIGIT*; //TODO replace with Arabic UNICODE //'-'?
 //MUL: '*';
 //DIV: '/';
 //ADD: '+';
