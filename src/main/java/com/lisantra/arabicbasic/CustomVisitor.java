@@ -64,6 +64,11 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
         var = new ArrayVariable(s, val);
         break;
 
+        // TODO this must be from a FN call
+      case "Function":
+        var = new Variable(s, val);
+        break;
+
       default:
         System.out.println("Value's original type was " + val.getOriginalType());
     }
@@ -718,5 +723,85 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     }
 
     return null;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * ctx}.
+   */
+  @Override
+  public Void visitDefineSingleLineFunction(ArabicBASICParser.DefineSingleLineFunctionContext ctx) {
+    // 1. get funcName
+    String id = ctx.funcName.getText();
+    Symbol s = new FunctionSymbol(id);
+
+    // 2. get arg and visit(identifier)
+    //    ParseTree arg = ctx.getChild(0); // I think this is the "arg"
+    String argumentPlaceholder = ctx.variable().getText();
+
+    // 3. get the body/expression
+    //    ParseTree body = ctx.getChild(1); // I think this is the "block"
+    // But, maybe I shouldn't use that? "Normally you would use the generated accessor methods
+    // instead."
+    // like, "expression"
+    ArabicBASICParser.ExpressionContext functionExpression = ctx.expression();
+
+    // 4. save the expression
+    globalScope.put(
+        id,
+        new FunctionVariable(
+            s, new Value(null, "Function"), argumentPlaceholder, functionExpression));
+
+    return null;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * ctx}.
+   */
+  @Override
+  public Value visitCallFunction(ArabicBASICParser.CallFunctionContext ctx) {
+    // 1. retrieve function from the symbol table
+    String fnName = ctx.funcName.getText();
+    Object fn = globalScope.get(fnName);
+
+    // should be a FunctionVariable
+    FunctionVariable fnVar = null;
+    if (fn instanceof FunctionVariable) {
+      fnVar = (FunctionVariable) fn;
+    } else {
+      throw new IllegalArgumentException(fnName + " is not a function");
+    }
+
+    // 3. run the arg context to get a value, the passed-in value
+    Value argValue = (Value) visit(ctx.variable());
+    //    Object actualArgumentContent = argValue.getVal();
+    if (showDebug) System.out.println(argValue);
+
+    // 2. check it has the argument (s) <-- grammar takes care of it,
+    // and any type mismatch will be caught by visitNumeric/visitText() etc
+
+    // 3. copy the current arg value into a new var whose symbol was originally defined as a
+    // function arg symbol and set the value of the arg into the Symbol table so the visit*() can
+    // get to it
+    String argSymbol = fnVar.getArg();
+    globalScope.put(fnVar.getArg(), new Variable(new VariableSymbol(fnVar.getArg()), argValue));
+    // ?? TODO needs to replicate switch to make it the right sub-type of Variable
+
+    // 4. apply the raw value to the functionExpression context
+    // let it run now, looking for the value of the ARG variable just recently added to the variable
+    // table
+    Value fnResult2 = (Value) visit(fnVar.getbody()); // should return a Value() instance
+    if (showDebug) System.out.println(fnResult2);
+
+    // 5. Destroy the arg variable in the symbol table
+    globalScope.remove(fnVar.getArg());
+
+    // 6. return the raw result wrapped, or just forward the Value class, actually...
+    return fnResult2;
   }
 }
