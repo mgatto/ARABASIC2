@@ -2,7 +2,8 @@ package com.lisantra.arabicbasic;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.misc.MultiMap;
+import org.antlr.v4.runtime.DiagnosticErrorListener;
+import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import picocli.CommandLine;
 
@@ -54,8 +55,7 @@ public class App implements Callable<Integer> {
     Map<String, Variable> globalScope = new LinkedHashMap<>();
     // TODO wrap in a class: Scope {}? and provide methods like resolve() and define()?
     // If so, then remember that Scope has one Symbol table (and there can be  )
-
-    MultiMap<String, Symbol> symbolTable = new MultiMap<>();
+    //    MultiMap<String, Symbol> symbolTable = new MultiMap<>();
 
     // create an input stream from the string
     ArabicBASICLexer lexer = new ArabicBASICLexer(CharStreams.fromPath(file.toPath()));
@@ -63,10 +63,15 @@ public class App implements Callable<Integer> {
 
     lexer.removeErrorListeners();
     lexer.addErrorListener(BASICErrorListener.INSTANCE);
+
     parser.removeErrorListeners();
     parser.addErrorListener(BASICErrorListener.INSTANCE);
-    //    parser.setErrorHandler(new BailErrorStrategy());
-    //    parser.setErrorHandler(new HaltErrorStrategy());
+
+    if (showDebug) {
+      // listen for ambiguous grammar
+      parser.addErrorListener(new DiagnosticErrorListener());
+      parser.getInterpreter().setPredictionMode(PredictionMode.LL_EXACT_AMBIG_DETECTION);
+    }
 
     try {
       /* Instantiate the parse tree */
