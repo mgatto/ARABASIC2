@@ -29,8 +29,11 @@ callFunction: 'CALL' funcName=IDENTIFIER'(' variable ')' ; //this looks too much
 print: 'PRINT' expression (spacer+=(',' | ';') expression)*;
 input: 'INPUT' (prompt=STRING (spacer=(',' | ';')))? var+=IDENTIFIER (',' var+=IDENTIFIER)*;
 blank: WS* EOL;
-expression: // list the rules from highest -> lowest precedence
-            IDENTIFIER '(' subscript ')'                #arrayAccess
+expression: // List the rules from highest -> lowest precedence
+            // Put built-in function matches here BEFORE identifier to take advantage of first-match
+            name=('ABS' | 'COS' | 'SIN' | 'TAN' | 'LOG' | 'EXP' | 'INT' | 'SQR' | 'RND') '(' variable? ')'  #mathFunction
+            | name=( 'LEFT' | 'RIGHT' | 'MID' | 'LEN' | 'CHR' | 'ORD') '(' arg+=variable (',' arg+=variable)? ')' #stringFunction
+            | IDENTIFIER '(' subscript ')'              #arrayAccess
             | '-' expression                            #unary
             | <assoc=right>expression'^' expression     #exponentation
             | expression op=('*' | '/') expression      #mulDiv

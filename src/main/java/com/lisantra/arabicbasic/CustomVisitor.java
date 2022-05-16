@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.Collator;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
   private final Map<String, Variable> globalScope;
@@ -803,5 +804,98 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
 
     // 6. return the raw result wrapped, or just forward the Value class, actually...
     return fnResult2;
+  }
+
+  @Override
+  public Value visitStringFunction(ArabicBASICParser.StringFunctionContext ctx) {
+    // 1. Get value to operate upon
+    Value argValue = (Value) visit(ctx.variable());
+
+    // 2. ensure it is a string
+    if (!argValue.getOriginalType().equals("String")) {
+      throw new IllegalArgumentException("argument: '" + argValue + "' is not a string");
+    }
+
+    // 2. construct a return value
+    Value retValue = new Value(null, "");
+    // 4. get name
+    ctx.name.getText();
+
+    return retValue;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * ctx}.
+   */
+  @Override
+  public Value visitMathFunction(ArabicBASICParser.MathFunctionContext ctx) {
+    // 2. construct a return value
+    Value retValue = new Value(null, "Real"); // default to REAL
+
+    // 4. get name
+    String operation = ctx.name.getText();
+
+    // 0. Rare, special case: Arg may be null, since RND() for example takes no args.
+    if (null == ctx.variable() && operation.equals("RND")) {
+      retValue.setVal(ThreadLocalRandom.current().nextInt(0, 1));
+      return retValue;
+    } else if (null == ctx.variable()) {
+      // this is a problem!
+      throw new IllegalArgumentException(
+          "This function requires a number as an argument, but none was given.");
+    }
+
+    // 1. Get value to operate upon
+    Value argValue = (Value) visit(ctx.variable());
+
+    // 2. ensure it is numeric
+    if (!(argValue.getOriginalType().equals("Integer")
+        || argValue.getOriginalType().equals("Real"))) {
+      throw new IllegalArgumentException("argument: '" + argValue + "' is not a number");
+    }
+
+    // TODO has to be a better way to proxy the calls...
+    switch (operation) {
+      case "ABS":
+        retValue.setVal(Math.abs((double) argValue.getVal()));
+        retValue.setOriginalType(argValue.getOriginalType());
+        break;
+
+      case "SQR":
+        retValue.setVal(Math.sqrt((double) argValue.getVal()));
+        break;
+
+      case "LOG":
+        retValue.setVal(Math.log10((double) argValue.getVal()));
+        break;
+
+      case "COS":
+        retValue.setVal(Math.cos((double) argValue.getVal()));
+        break;
+
+      case "SIN":
+        retValue.setVal(Math.sin((double) argValue.getVal()));
+        break;
+
+      case "TAN":
+        retValue.setVal(Math.tan((double) argValue.getVal()));
+        break;
+
+      case "INT":
+        retValue.setVal(((Double) argValue.getVal()).intValue());
+        retValue.setOriginalType("Integer");
+        break;
+
+      case "EXP":
+        break;
+
+      default:
+        throw new IllegalArgumentException("I do not recognize the function: '" + operation + "'.");
+    }
+
+    return retValue;
   }
 }

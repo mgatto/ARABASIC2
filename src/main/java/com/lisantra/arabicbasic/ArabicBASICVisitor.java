@@ -110,6 +110,14 @@ public interface ArabicBASICVisitor<T> extends ParseTreeVisitor<T> {
    */
   T visitBlank(ArabicBASICParser.BlankContext ctx);
   /**
+   * Visit a parse tree produced by the {@code stringFunction} labeled alternative in {@link
+   * ArabicBASICParser#expression}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitStringFunction(ArabicBASICParser.StringFunctionContext ctx);
+  /**
    * Visit a parse tree produced by the {@code functionCall} labeled alternative in {@link
    * ArabicBASICParser#expression}.
    *
@@ -117,6 +125,14 @@ public interface ArabicBASICVisitor<T> extends ParseTreeVisitor<T> {
    * @return the visitor result
    */
   T visitFunctionCall(ArabicBASICParser.FunctionCallContext ctx);
+  /**
+   * Visit a parse tree produced by the {@code mathFunction} labeled alternative in {@link
+   * ArabicBASICParser#expression}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitMathFunction(ArabicBASICParser.MathFunctionContext ctx);
   /**
    * Visit a parse tree produced by the {@code term} labeled alternative in {@link
    * ArabicBASICParser#expression}.

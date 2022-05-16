@@ -159,7 +159,27 @@ public class ArabicBASICBaseVisitor<T> extends AbstractParseTreeVisitor<T>
    * ctx}.
    */
   @Override
+  public T visitStringFunction(ArabicBASICParser.StringFunctionContext ctx) {
+    return visitChildren(ctx);
+  }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * ctx}.
+   */
+  @Override
   public T visitFunctionCall(ArabicBASICParser.FunctionCallContext ctx) {
+    return visitChildren(ctx);
+  }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * ctx}.
+   */
+  @Override
+  public T visitMathFunction(ArabicBASICParser.MathFunctionContext ctx) {
     return visitChildren(ctx);
   }
   /**
