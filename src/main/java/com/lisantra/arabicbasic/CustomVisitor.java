@@ -42,40 +42,45 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
   public Void visitSimpleAssignment(ArabicBASICParser.SimpleAssignmentContext ctx) {
     if (showDebug) System.out.println("I visited Simple Assignment");
 
-    String id = ctx.IDENTIFIER().getText();
-
-    // really should be an enum?
-    Symbol s = new VariableSymbol(id);
-
+    // What value are we setting?
     /* If val is another variable [A = B], then a new value is returned; is "copy by value" */
     Value val = (Value) visit(ctx.expression());
     Variable var = null;
 
-    switch (val.getOriginalType()) {
-      case "String":
-        var = new StringVariable(s, val);
-        break;
+    int varCount = ctx.name.size();
+    for (int i = 0; i < varCount; i++) {
+      String id = ctx.IDENTIFIER(i).getText();
 
-      case "Integer":
-      case "Real":
-        var = new NumericVariable(s, val);
-        break;
+      // really should be an enum?
+      Symbol s = new VariableSymbol(id);
 
-      case "Array":
-        var = new ArrayVariable(s, val);
-        break;
+      switch (val.getOriginalType()) {
+        case "String":
+          var = new StringVariable(s, val);
+          break;
 
-        // TODO this must be from a FN call
-      case "Function":
-        var = new Variable(s, val);
-        break;
+        case "Integer":
+        case "Real":
+          var = new NumericVariable(s, val);
+          break;
 
-      default:
-        System.out.println("Value's original type was " + val.getOriginalType());
+        case "Array":
+          var = new ArrayVariable(s, val);
+          break;
+
+          // TODO this must be from a FN call
+        case "Function":
+          var = new Variable(s, val);
+          break;
+
+        default:
+          System.out.println("Value's original type was " + val.getOriginalType());
+      }
+
+      /* this covers both creation and updating */
+      globalScope.put(id, var);
     }
 
-    /* this covers both creation and updating */
-    globalScope.put(id, var);
     return null;
   }
 
