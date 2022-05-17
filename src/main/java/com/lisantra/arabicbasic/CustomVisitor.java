@@ -964,6 +964,9 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
         break;
 
       case "LOG":
+        if ((double) argValue.getVal() == 0.0)
+          throw new IllegalArgumentException("0 (zero) is not allowed for LOG(). ");
+
         retValue.setVal(Math.log10((double) argValue.getVal()));
         break;
 
