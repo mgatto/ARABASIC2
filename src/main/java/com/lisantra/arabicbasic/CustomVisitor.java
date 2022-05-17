@@ -811,21 +811,21 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     // 1. Get value to operate upon
     // multiple args are allowed such as for RIGHT, so now it's a List
     Value argValue1 = (Value) visit(ctx.variable(0));
+    String str = (String) argValue1.getVal();
 
-    //    if (showDebug) System.out.println("ARG1 = " + argValue1);
-
+    // if there's a 2nd arg, it has to be numeric
     Value argValue2 = null;
     if (null != ctx.variable(1)) {
       argValue2 = (Value) visit(ctx.variable(1));
 
-      if (!argValue2.getOriginalType().equals("String")) {
-        throw new IllegalArgumentException("argument: '" + argValue2 + "' is not a string");
+      if (!argValue2.getOriginalType().equals("Integer")) {
+        throw new IllegalArgumentException("argument: '" + argValue2 + "' should be a number.");
       }
     }
 
     // 2. ensure it is a string
     if (!argValue1.getOriginalType().equals("String")) {
-      throw new IllegalArgumentException("argument: '" + argValue1 + "' is not a string");
+      throw new IllegalArgumentException("argument: '" + argValue1 + "' is not a string.");
     }
 
     // 2. construct a default return value
@@ -836,11 +836,48 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     //    if (showDebug) System.out.println("Function = " + operation);
 
     switch (operation) {
+        // 'MID' | 'CHR' | 'ORD'
       case "LEN":
-        retValue.setVal((double) ((String) argValue1.getVal()).length());
+        retValue.setVal((double) str.length());
         retValue.setOriginalType("Integer");
 
         if (showDebug) System.out.println(retValue);
+        break;
+
+      case "LEFT":
+        // the grammar won't catch an absent 2nd arg
+        if (null == argValue2)
+          throw new IllegalArgumentException(
+              "The second argument is missing. It should be a number.");
+
+        if (((Double) argValue2.getVal()).intValue() > str.length())
+          throw new IllegalArgumentException(
+              "The second argument is greater than the length of the string.");
+
+        retValue.setVal(str.substring(0, ((Double) argValue2.getVal()).intValue()));
+        break;
+
+      case "RIGHT":
+        // the grammar won't catch an absent 2nd arg
+        if (null == argValue2)
+          throw new IllegalArgumentException(
+              "The second argument is missing. It should be a number.");
+
+        if (((Double) argValue2.getVal()).intValue() > str.length())
+          throw new IllegalArgumentException(
+              "The second argument is greater than the length of the string.");
+        // will throw IndexOutOfBoundsException
+        retValue.setVal(
+            str.substring(str.length() - ((Double) argValue2.getVal()).intValue(), str.length()));
+        break;
+
+      case "MID":
+        break;
+
+      case "CHR":
+        break;
+
+      case "ORD":
         break;
 
       default:

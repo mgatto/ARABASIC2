@@ -7,3 +7,7 @@ PRINT LEN("Hello")
 
 LET X = LEN("Hello")
 PRINT X
+
+PRINT A
+PRINT LEFT(A, 2)
+PRINT RIGHT(A, 2)
