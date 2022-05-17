@@ -1,0 +1,3 @@
+LET A = 1
+IF A <> 1 THEN PRINT "NO"
+IF A = 1 THEN PRINT "YES"

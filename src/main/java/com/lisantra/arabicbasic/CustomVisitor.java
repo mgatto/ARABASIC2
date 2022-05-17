@@ -438,6 +438,38 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     */
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * ctx}.
+   */
+  @Override
+  public Void visitSingleLineConditional(ArabicBASICParser.SingleLineConditionalContext ctx) {
+    Boolean condition = null;
+
+    Object conditionalExpr =
+        visit(ctx.booleanExpression()); // it could be Boolean or Value from atomicBoolean rule
+    if (conditionalExpr instanceof Boolean) {
+      condition = (Boolean) conditionalExpr;
+      // special condition for a constant or variable all by itself in the condition
+    } else if (conditionalExpr instanceof Value) {
+      // any non-null value true; else we'd get an undefined exception
+      condition = true;
+    }
+
+    if (showDebug)
+      System.out.println(
+          "condition " + ": " + ctx.booleanExpression().getText() + " is " + condition);
+
+    if (Boolean.TRUE.equals(condition)) {
+      visit(ctx.statement());
+      return null;
+    }
+
+    return null;
+  }
+
   @Override
   public Boolean visitComparitiveBoolean(ArabicBASICParser.ComparitiveBooleanContext ctx) {
     // TODO bad for assuming a type already...

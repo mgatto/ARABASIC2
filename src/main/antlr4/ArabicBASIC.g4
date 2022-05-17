@@ -7,6 +7,7 @@ statement:  COMMENT // shouldn't have EOL because it's a terminal
             | simpleAssignment EOL
             | arrayAssignment EOL
             | arrayCreation EOL
+            | singleLineConditional //doesn't need EOL because it ends with a statement = already has EOL
             | conditionalBlock EOL
             | forLoop EOL
             | whileLoop EOL
@@ -22,6 +23,7 @@ simpleAssignment: 'LET' IDENTIFIER '=' expression; // Sequence with Terminator p
 arrayAssignment: IDENTIFIER '(' subscript ')' '=' expression; //TODO visitor implementation will check for type consistency in array elements
 arrayCreation: 'DIM' IDENTIFIER '(' arraySize ')';
 conditionalBlock: 'IF' tests+=booleanExpression 'THEN' EOL block ('ELSE IF' tests+=booleanExpression 'THEN' EOL block)* ('ELSE' EOL block)? 'END IF'; //multiline is mandatory here
+singleLineConditional: 'IF' booleanExpression 'THEN' statement;
 forLoop: 'FOR' control=IDENTIFIER '=' lower=INTEGER 'TO' upper=INTEGER ('STEP' '=' step=INTEGER)? EOL block 'NEXT';
 whileLoop: 'WHILE' test=booleanExpression EOL block  ('END WHILE' | 'WEND');
 defineSingleLineFunction: 'DEF' 'FN' funcName=IDENTIFIER'(' arg=variable ')' '=' expression; //DEF FN cube(a) = a^3
@@ -32,7 +34,7 @@ blank: WS* EOL;
 expression: // List the rules from highest -> lowest precedence
             // Put built-in function matches here BEFORE identifier to take advantage of first-match
             name=('ABS' | 'COS' | 'SIN' | 'TAN' | 'LOG' | 'EXP' | 'INT' | 'SQR' | 'RND') '(' variable? ')'  #mathFunction
-            | name=( 'LEFT' | 'RIGHT' | 'MID' | 'LEN' | 'CHR' | 'ORD') '(' arg+=variable (',' arg+=variable)? ')' #stringFunction
+            | name=('LEFT' | 'RIGHT' | 'MID' | 'LEN' | 'CHR' | 'ORD') '(' arg+=variable (',' arg+=variable)? ')' #stringFunction
             | IDENTIFIER '(' subscript ')'              #arrayAccess
             | '-' expression                            #unary
             | <assoc=right>expression'^' expression     #exponentation
