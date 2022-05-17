@@ -942,12 +942,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     // 4. get name
     String operation = ctx.name.getText();
 
-    // 0. Rare, special case: Arg may be null, since RND() for example takes no args.
-    if (null == ctx.variable() && operation.equals("RND")) {
-      retValue.setVal(ThreadLocalRandom.current().nextInt(0, 1));
-      return retValue;
-    } else if (null == ctx.variable()) {
-      // this is a problem!
+    if (null == ctx.variable()) {
       throw new IllegalArgumentException(
           "This function requires a number as an argument, but none was given.");
     }
@@ -994,6 +989,14 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
       case "INT":
         // this is a really roundabout thing...
         retValue.setVal((double) ((Double) argValue.getVal()).intValue());
+        retValue.setOriginalType("Integer");
+        break;
+
+      case "RND":
+        retValue.setVal(
+            (double)
+                ThreadLocalRandom.current()
+                    .nextInt(0, ((Double) argValue.getVal()).intValue() + 1));
         retValue.setOriginalType("Integer");
         break;
 
