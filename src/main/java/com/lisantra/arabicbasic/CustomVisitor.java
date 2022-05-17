@@ -840,9 +840,30 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
 
   @Override
   public Value visitStringFunction(ArabicBASICParser.StringFunctionContext ctx) {
+    // 4. get name
+    String operation = ctx.name.getText();
+
     // 1. Get value to operate upon
     // multiple args are allowed such as for RIGHT, so now it's a List
     Value argValue1 = (Value) visit(ctx.variable(0));
+
+    // 2. construct a default return value
+    Value retValue = new Value("", "String");
+
+    // special case for CHR()
+    // TODO this function is going to be much fun for Arabic!
+    if (operation.equals("CHR")) {
+      // oh, this casting is a doozey!
+      char ch = (char) ((Double) argValue1.getVal()).intValue();
+      retValue.setVal(ch);
+      return retValue;
+    }
+
+    // 2. ensure it is a string
+    if (!argValue1.getOriginalType().equals("String")) {
+      throw new IllegalArgumentException("argument: '" + argValue1 + "' is not a string.");
+    }
+
     String str = (String) argValue1.getVal();
 
     // if there's a 2nd arg, it has to be numeric
@@ -855,20 +876,8 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
       }
     }
 
-    // 2. ensure it is a string
-    if (!argValue1.getOriginalType().equals("String")) {
-      throw new IllegalArgumentException("argument: '" + argValue1 + "' is not a string.");
-    }
-
-    // 2. construct a default return value
-    Value retValue = new Value("", "String");
-
-    // 4. get name
-    String operation = ctx.name.getText();
-    //    if (showDebug) System.out.println("Function = " + operation);
-
     switch (operation) {
-        // 'MID' | 'CHR' | 'ORD'
+        // MID
       case "LEN":
         retValue.setVal((double) str.length());
         retValue.setOriginalType("Integer");
@@ -906,10 +915,10 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
       case "MID":
         break;
 
-      case "CHR":
-        break;
-
       case "ORD":
+        int ascii = (int) str.charAt(0);
+        retValue.setVal((double) ascii);
+        retValue.setOriginalType("Integer");
         break;
 
       default:
