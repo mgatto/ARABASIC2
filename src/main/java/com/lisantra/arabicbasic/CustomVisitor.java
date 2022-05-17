@@ -983,7 +983,8 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
         break;
 
       case "INT":
-        retValue.setVal(((Double) argValue.getVal()).intValue());
+        // this is a really roundabout thing...
+        retValue.setVal((double) ((Double) argValue.getVal()).intValue());
         retValue.setOriginalType("Integer");
         break;
 
