@@ -33,11 +33,12 @@ input: 'INPUT' (prompt=STRING (spacer=(',' | ';')))? var+=IDENTIFIER (',' var+=I
 blank: WS* EOL;
 expression: // List the rules from highest -> lowest precedence
             // Put built-in function matches here BEFORE identifier to take advantage of first-match
-            name=('ABS' | 'COS' | 'SIN' | 'TAN' | 'LOG' | 'EXP' | 'INT' | 'SQR' | 'RND') '(' variable ')'  #mathFunction
+            name=('ABS' | 'COS' | 'SIN' | 'TAN' | 'LOG' | 'EXP' | 'INT' | 'SQR' | 'RND') '(' expression ')'  #mathFunction
             | name=('LEFT' | 'RIGHT' | 'MID' | 'LEN' | 'CHR' | 'ORD') '(' arg+=variable (',' arg+=variable)? ')' #stringFunction
             | IDENTIFIER '(' subscript ')'              #arrayAccess
             | '-' expression                            #unary
             | <assoc=right>expression'^' expression     #exponentation
+            | expression op='MOD' expression            #modulus
             | expression op=('*' | '/') expression      #mulDiv
             | expression op=('+' | '-') expression      #addSub
             | callFunction                              #functionCall

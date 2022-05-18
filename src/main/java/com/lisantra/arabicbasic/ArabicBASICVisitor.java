@@ -189,6 +189,14 @@ public interface ArabicBASICVisitor<T> extends ParseTreeVisitor<T> {
    */
   T visitExponentation(ArabicBASICParser.ExponentationContext ctx);
   /**
+   * Visit a parse tree produced by the {@code modulus} labeled alternative in {@link
+   * ArabicBASICParser#expression}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitModulus(ArabicBASICParser.ModulusContext ctx);
+  /**
    * Visit a parse tree produced by the {@code mulDiv} labeled alternative in {@link
    * ArabicBASICParser#expression}.
    *

@@ -222,6 +222,25 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     return resultType;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * ctx}.
+   */
+  @Override
+  public Value visitModulus(ArabicBASICParser.ModulusContext ctx) {
+    Value left = (Value) visit(ctx.expression(0));
+    Value right = (Value) visit(ctx.expression(1));
+
+    Double leftVal = makeNumber(left);
+    Double rightVal = makeNumber(right);
+
+    Value remainder = new Value((double) (leftVal % rightVal), "Integer");
+
+    return remainder;
+  }
+
   public Value visitMulDiv(ArabicBASICParser.MulDivContext ctx) {
     Value left = (Value) visit(ctx.expression(0));
     Value right = (Value) visit(ctx.expression(1));
@@ -947,13 +966,13 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     // 4. get name
     String operation = ctx.name.getText();
 
-    if (null == ctx.variable()) {
+    if (null == ctx.expression()) {
       throw new IllegalArgumentException(
           "This function requires a number as an argument, but none was given.");
     }
 
     // 1. Get value to operate upon
-    Value argValue = (Value) visit(ctx.variable());
+    Value argValue = (Value) visit(ctx.expression());
 
     // 2. ensure it is numeric
     if (!(argValue.getOriginalType().equals("Integer")

@@ -4,7 +4,13 @@ PRINT A
 
 LET B = 90
 PRINT COS(B)
+
+LET X = TAN(45+45)
+PRINT X
+
 PRINT RND(10)
 
-//TODO I need to update the grammar to be an expression, not a variable!
-//PRINT ABS(-20)  'this breaks because of the - sign...
+PRINT ABS(-20)
+
+LET X = 3 MOD 2
+PRINT X
