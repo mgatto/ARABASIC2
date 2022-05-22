@@ -23,23 +23,25 @@ public class App implements Callable<Integer> {
   @CommandLine.Parameters(index = "0", descriptionKey = "fileParam")
   private File file;
 
-  @CommandLine.Option(
+  /*@CommandLine.Option(
       names = {"-w", "--writing-system"},
       description = "Arabic or Latin")
-  private String writingSystem = "Arabic";
+  private String writingSystem = "Arabic";*/
   // or Latin for later expansion to alternative Arabic writing systems
 
-  @CommandLine.Option(
+  /*@CommandLine.Option(
       names = {"-m", "--mode"},
       description = "interpret or compile (LLVM's IR, .NET IR, Java bytecode, WASM)")
-  private String mode = "interpret";
+  private String mode = "interpret";*/
 
   // valid only for compile
   private String output = "";
 
   @CommandLine.Option(
       names = {"-d", "--debug"},
-      description = "Print out the symbol table after running an ArabicBASIC script")
+      descriptionKey = "debug"
+      //    description = "Print out the symbol table after running an ArabicBASIC script"
+      )
   private boolean showDebug = false;
 
   /**
