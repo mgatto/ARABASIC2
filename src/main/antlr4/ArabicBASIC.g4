@@ -66,7 +66,7 @@ variable: IDENTIFIER        #name
 COMMENT: ('//' | 'REM') ~[\r\n]* EOL -> channel(HIDDEN);
 STRING: '"' (~'"'|'\\"')* '"';
 IDENTIFIER: [A-Z]+ [A-Z0-9_]*; //TODO replace with Arabic UNICODE after Latin script testing
-REAL:  DIGIT '.' DIGIT+; //'-'?
+REAL:  DIGIT [.,] DIGIT+;
 INTEGER: '0' | [1-9] DIGIT*; //TODO replace with Arabic UNICODE //'-'?
 //MUL: '*';
 //DIV: '/';
