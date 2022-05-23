@@ -152,21 +152,15 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
   }
 
   public Value visitAddSub(ArabicBASICParser.AddSubContext ctx) {
-    // TODO ensure left is a numeric
-    // TODO treat all numbers as Double in this Java code?
     Value left = (Value) visit(ctx.expression(0));
     Value right = (Value) visit(ctx.expression(1));
 
-    // Can't rely on getOriginalType here...
     if (left.getVal() instanceof ArrayList && right.getVal() instanceof ArrayList) {
       if (ctx.op.getText().equals("+")) {
         ArrayList<?> combined = new ArrayList<>();
-        //        System.out.println(combined);
-        combined.addAll((ArrayList) left.getVal());
-        //        System.out.println(combined);
 
+        combined.addAll((ArrayList) left.getVal());
         combined.addAll((ArrayList) right.getVal());
-        //        System.out.println(combined);
 
         return new Value(combined, "Array");
       } else {
@@ -509,8 +503,8 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     Integer strComparison = null;
     if (Objects.equals(left.getOriginalType(), "String")
         && Objects.equals(right.getOriginalType(), "String")) {
-      Collator englishCollator = Collator.getInstance(new Locale("en", "US"));
-      strComparison = englishCollator.compare(left.getVal(), right.getVal());
+      Collator arabicCollator = Collator.getInstance(new Locale("ar"));
+      strComparison = arabicCollator.compare(left.getVal(), right.getVal());
     }
 
     if (ctx.comp.getText().equals("=")) {
