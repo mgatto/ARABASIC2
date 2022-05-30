@@ -41,15 +41,26 @@ language features it demonstrates.
 In your favorite terminal, navigate to the where you saved the JAR file, and copy this command:
 
 ```
-java -cp ArabicBASIC-0.2.1-alpha.jar com.lisantra.arabicbasic.App -d ./samples/test_01_assignment.bas 
+java -cp ArabicBASIC-1.0.0.jar com.lisantra.arabicbasic.App -d ./samples/test_01_assignment.bas 
 ```
 
 The `-d` flag turns on debug mode. This flag is also available as `--debug`.
 
-To see a list of all modes, not all of which are functional in this ALPHA release, run this command with the `-h` flag:
+To see a list of all modes, run this command with the `-h` flag:
 
 ```
-java -cp ArabicBASIC-0.2.1-alpha.jar com.lisantra.arabicbasic.App -h
+java -cp ArabicBASIC-1.0.0.jar com.lisantra.arabicbasic.App -h
 ```
 
+# Building the interpreter from scratch
 
+This project requires the Maven build tool.
+
+## In the Terminal
+
+Run `mvn package` from the repository root, and enjoy!
+
+## In an IDE
+
+Configure Maven from the interface provided by your IDE, and then run the "package" command from whichever GUI interface
+provided to you by the IDE.
