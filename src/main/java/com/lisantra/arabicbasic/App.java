@@ -23,20 +23,6 @@ public class App implements Callable<Integer> {
   @CommandLine.Parameters(index = "0", descriptionKey = "fileParam")
   private File file;
 
-  /*@CommandLine.Option(
-      names = {"-w", "--writing-system"},
-      description = "Arabic or Latin")
-  private String writingSystem = "Arabic";*/
-  // or Latin for later expansion to alternative Arabic writing systems
-
-  /*@CommandLine.Option(
-      names = {"-m", "--mode"},
-      description = "interpret or compile (LLVM's IR, .NET IR, Java bytecode, WASM)")
-  private String mode = "interpret";*/
-
-  // valid only for compile
-  private String output = "";
-
   @CommandLine.Option(
       names = {"-d", "--debug"},
       descriptionKey = "debug"
@@ -52,8 +38,7 @@ public class App implements Callable<Integer> {
    */
   @Override
   public Integer call() throws Exception {
-    // u-nu-Arab is required for arabic digits...still fails. Maybe it helps with output...
-    //    Locale arabicLocale = new Locale.Builder().setLanguageTag("ar-SA-u-nu-arab").build();
+    /* u-nu-Arab is required for arabic digits */
     Locale arabicLocale =
         new Locale.Builder()
             .setLanguage("ar")
@@ -66,21 +51,22 @@ public class App implements Callable<Integer> {
     /* since BASIC scope is global, we don't need a stack, and a HashMap is great for fast lookup */
     Map<String, Variable> globalScope = new LinkedHashMap<>();
     // TODO wrap in a class: Scope {}? and provide methods like resolve() and define()?
-    // If so, then remember that Scope has one Symbol table (and there can be  )
-    //    MultiMap<String, Symbol> symbolTable = new MultiMap<>();
+    // If so, then remember that Scope has one Symbol table.
 
-    // create an input stream from the string
+    /* create an input stream from the string */
     ArabicBASICLexer lexer = new ArabicBASICLexer(CharStreams.fromPath(file.toPath()));
     ArabicBASICParser parser = new ArabicBASICParser(new CommonTokenStream(lexer));
 
+    /* my custom error listener is needed for cleaner, and Arabic error messages.
+     * However, TODO it throws a cancellation exception even on resolved ambiguities which is
+     *           obviously not desirable. */
     //    lexer.removeErrorListeners();
     //    lexer.addErrorListener(BASICErrorListener.INSTANCE);
-
     //    parser.removeErrorListeners();
     //    parser.addErrorListener(BASICErrorListener.INSTANCE);
 
+    /* listen and warn for ambiguous grammar, but recover and continue if possible */
     if (showDebug) {
-      // listen for ambiguous grammar
       parser.addErrorListener(new DiagnosticErrorListener());
       parser.getInterpreter().setPredictionMode(PredictionMode.LL_EXACT_AMBIG_DETECTION);
     }
@@ -90,9 +76,9 @@ public class App implements Callable<Integer> {
       ParseTree programTree = parser.program();
 
       /* Instantiate my visitor class, which is the actual interpreter */
-      CustomVisitor interpreter = new CustomVisitor(arabicLocale, globalScope, showDebug);
+      InterpreterVisitor interpreter = new InterpreterVisitor(arabicLocale, globalScope, showDebug);
 
-      /* Cause the interpreter to walk the parse tree */
+      /* Walk the interpreter through the parse tree */
       interpreter.visit(programTree);
     } catch (Exception e) {
       System.err.println(e.getMessage());
@@ -103,6 +89,7 @@ public class App implements Callable<Integer> {
     if (showDebug) System.out.println(globalScope);
     if (showDebug) System.out.println("Finished running ArabicBASIC script");
 
+    /* Be a good Unix system citizen and return a numerical exit code */
     return 0;
   }
 

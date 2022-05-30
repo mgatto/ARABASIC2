@@ -12,12 +12,12 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
+public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
   private Locale arabicLocale;
   private final Map<String, Variable> globalScope;
   private final boolean showDebug;
 
-  public CustomVisitor(Locale locale, Map<String, Variable> globalScope, boolean showDebug) {
+  public InterpreterVisitor(Locale locale, Map<String, Variable> globalScope, boolean showDebug) {
     super();
     this.arabicLocale = locale;
     this.globalScope = globalScope;
@@ -46,7 +46,6 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
   public Void visitSimpleAssignment(ArabicBASICParser.SimpleAssignmentContext ctx) {
     if (showDebug) System.out.println("I visited Simple Assignment");
 
-    // What value are we setting?
     /* If val is another variable [A = B], then a new value is returned; is "copy by value" */
     Value val = (Value) visit(ctx.expression());
     Variable var = null;
@@ -55,7 +54,6 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     for (int i = 0; i < varCount; i++) {
       String id = ctx.IDENTIFIER(i).getText();
 
-      // really should be an enum?
       Symbol s = new VariableSymbol(id);
 
       switch (val.getOriginalType()) {
@@ -72,7 +70,6 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
           var = new ArrayVariable(s, val);
           break;
 
-          // TODO this must be from a FN call
         case "Function":
           var = new Variable(s, val);
           break;
@@ -81,7 +78,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
           System.out.println("Value's original type was " + val.getOriginalType());
       }
 
-      /* this covers both creation and updating */
+      /* this covers both creation and updating a variable */
       globalScope.put(id, var);
     }
 
@@ -91,32 +88,30 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
   public Void visitArrayAssignment(ArabicBASICParser.ArrayAssignmentContext ctx) {
     if (showDebug) System.out.println("I visited Array Assignment");
 
-    String id = ctx.IDENTIFIER().getSymbol().getText(); // we don't need to create a new symbol
+    /* we don't need to create a new symbol for element assignment */
+    String id = ctx.IDENTIFIER().getSymbol().getText();
     Integer index = (Integer) visit(ctx.subscript());
 
     // get the widened, stored Variable associated with id. It should be an Array,
-    // better to not cast it and test for class type
+    // but better to not cast it and instead to test for class type
     Variable existingArray = globalScope.get(id);
     if (!existingArray.getClass().getSimpleName().equals("ArrayVariable")) {
       throw new IllegalArgumentException(id + " is not an Array");
-    } else {
     }
 
     // visit expression to get value to insert
     Value newElement = (Value) visit(ctx.expression());
     Object valToInsert = newElement.getVal(); // this should be Double or String
 
-    // TODO check type of value to insert
-    // check the Value's originalType? or the Value's attr of element_type?
-    // Type erasure means I probably can't get List<Integer> for example...
+    // TODO check type of value to insert; check the Value's originalType
+    // Type erasure means I probably can't get List<Integer>, though which would be nice.
 
     // insert a value at the index; this call looks wierd
     Value arrayValue = existingArray.getValue();
     arrayValue.setOriginalType(newElement.getOriginalType());
     ArrayList targetArray = (ArrayList) arrayValue.getVal();
 
-    // TODO must test for existing index; add() for new element, and set() for updating
-    // TODO will I need to reinsert this, or is it enough to "update" the List reference var?
+    /* must test for existing index; add() for new element, and set() for updating */
     try {
       // could just try to get it and deal with exception? expensive in resources (?)
       Object existingElement = targetArray.get(index);
@@ -124,7 +119,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
       targetArray.set(index, valToInsert); // TODO enforce consistent typing of elements
     } catch (IndexOutOfBoundsException idxe) {
       /* add new element and enforce array capacity */
-      int maxIndex = ((ArrayVariable) existingArray).getUpperBound(); //  targetArray.size();
+      int maxIndex = ((ArrayVariable) existingArray).getUpperBound();
 
       if (index > maxIndex) {
         System.out.println(globalScope);
@@ -133,7 +128,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
                 + index
                 + ", but the array '"
                 + id
-                + "' only has elements from position 0 to position "
+                + "' only has elements from position: 0 to position: "
                 + maxIndex);
       }
       targetArray.add(index, valToInsert);
@@ -150,8 +145,8 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     Value expr = (Value) visit(ctx.expression());
     Double exprVal = makeNumber(expr);
 
-    // Copy by value here may only be necessary if there is a variable in the expression.
-    // Otherwise, it mutates the original like this A = 1, X=-A and negates A retroactively.
+    /* Copy by value here may only be necessary if there is a variable in the expression.
+     * Otherwise, it mutates the original like this A = 1, X=-A and negates A retroactively. */
     return new Value(-exprVal, expr.getOriginalType());
   }
 
@@ -188,7 +183,8 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
 
     String resultType = getResultType(left, right);
 
-    // TODO can use getType() if I specify the operators as terminals
+    // TODO can use getType() if I specify the operators as terminals by aliasing them as
+    // tokens in the grammar.
     if (ctx.op.getText().equals("+")) {
       return new Value(leftVal + rightVal, resultType);
     }
@@ -206,7 +202,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
   }
 
   private String getResultType(Value left, Value right) {
-    // what if left and right have different original types? Widen the result
+    /* Widen the result in case left and right have different original types */
     String resultType;
     String leftType = left.getOriginalType();
     String rightType = right.getOriginalType();
@@ -234,9 +230,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     Double leftVal = makeNumber(left);
     Double rightVal = makeNumber(right);
 
-    Value remainder = new Value((double) (leftVal % rightVal), "Integer");
-
-    return remainder;
+    return new Value(leftVal % rightVal, "Integer");
   }
 
   public Value visitMulDiv(ArabicBASICParser.MulDivContext ctx) {
@@ -250,7 +244,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
 
     // TODO can use getType() if I specify the operators as terminals
     if (ctx.op.getText().equals("*")) {
-      // TODO use Guava's "int mustNotOverflow = IntMath.checkedMultiply(x, y);"
+      // TODO use Google Guava's "int mustNotOverflow = IntMath.checkedMultiply(x, y);"
       return new Value(leftVal * rightVal, resultType);
     }
 
@@ -308,7 +302,6 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     Value val = globalScope.get(id).getValue();
     List targetArray = (ArrayList) val.getVal();
 
-    // TODO check size vs index
     // TODO use upperBound instead of size()
     int numberOfElements = targetArray.size();
     if (idx > numberOfElements) {
@@ -323,19 +316,13 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     }
 
     String elementsType = val.getOriginalType();
-
-    //    System.out.println(targetArray.get(idx));
-    //    System.out.println(elementsType);
-
     return new Value(targetArray.get(idx), elementsType);
   }
 
   public Value visitNumeric(ArabicBASICParser.NumericContext ctx) {
     // all get treated as Double anyways, but let's track the original type
-    //  ...this is why I had a "number" rule in the grammar...
 
-    // need to find a new way to deal with Arabic numbers since Double.valueOf causes
-    // NumberFormat exception with Arabic numbers
+    // Double.valueOf causes NumberFormat exception with Arabic numbers
     // https://stackoverflow.com/questions/60044997/integer-valueof-arabic-number-works-fine-but-float-valueof-the-same-number-gives
     NumberFormat arabicNumberFormat = NumberFormat.getNumberInstance(this.arabicLocale);
 
@@ -351,7 +338,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
       type = "Real";
     }
 
-    //  convert the text to english digits, and then re-Arabicize later on output?
+    //  convert the text to english digits, and then re-Arabicize later on output
     try {
       double parsedArabicNumeral = arabicNumberFormat.parse(inputNumerical).doubleValue();
 
@@ -375,9 +362,6 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     String id = ctx.IDENTIFIER().getText();
     Symbol s = new VariableSymbol(id);
 
-    // TODO probably should decide the type here for the Generic! Double or String
-    //    No, probably not! An empty array is OK!
-
     // 3. wrap in Value; the type of List's elements are unknowable at this stage.
     List<Value> newArray = new ArrayList<>(size);
     for (int i = 0; i < size; i++) {
@@ -386,8 +370,6 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     }
 
     Value arr = new Value(newArray, "Array");
-    // TODO switch to primitive "array"
-
     ArrayVariable var = new ArrayVariable(s, arr);
     var.setUpperBound((size > 0) ? size - 1 : 0);
 
@@ -442,8 +424,8 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     if (showDebug) System.out.println("There are " + blockCount + " blocks in this IF statement.");
 
     for (int i = 0; i < testCount; i++) {
-      Object conditionalExpr =
-          visit(ctx.booleanExpression(i)); // it could be Boolean or Value from atomicBoolean rule
+      // it could be Boolean or Value from atomicBoolean rule
+      Object conditionalExpr = visit(ctx.booleanExpression(i));
       if (conditionalExpr instanceof Boolean) {
         condition = (Boolean) conditionalExpr;
         // special condition for an atomic of a constant or variable all by itself in the condition
@@ -461,8 +443,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
       }
     }
 
-    // HERE, all the conditions evaluated to false, so let's see if there is an ELSE
-    // this would be when
+    // Up to HERE, all the conditions evaluated to false, so let's see if there is an ELSE
     if (blockCount == testCount + 1) {
       // if condition is false, and there is an else block, then visit it.
       visit(ctx.block(blockCount - 1));
@@ -523,8 +504,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
       System.out.println(
           "left: " + left.getVal() + " " + ctx.comp.getText() + " right: " + right.getVal());
 
-    // TODO What if one is a string and the other term is not? Check for this!
-
+    //  What if one is a string and the other term is not? Check for this.
     Integer strComparison = null;
     if (Objects.equals(left.getOriginalType(), "String")
         && Objects.equals(right.getOriginalType(), "String")) {
@@ -533,35 +513,31 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     }
 
     if (ctx.comp.getText().equals("=")) {
-      // TODO deal with string comparisons!
+      /* deal with string comparisons */
       return Objects.equals(left.getVal(), right.getVal());
     } else if (ctx.comp.getText().equals("<>")) {
       return !Objects.equals(left.getVal(), right.getVal());
     } else if (ctx.comp.getText().equals(">")) {
       if (strComparison != null) {
-        if (strComparison > 1) return true;
-        return false;
+        return strComparison > 1;
       }
 
       return (Double) left.getVal() > (Double) right.getVal();
     } else if (ctx.comp.getText().equals(">=")) {
       if (strComparison != null) {
-        if (strComparison > 0) return true;
-        return false;
+        return strComparison > 0;
       }
 
       return (Double) left.getVal() >= (Double) right.getVal();
     } else if (ctx.comp.getText().equals("<")) {
       if (strComparison != null) {
-        if (strComparison < 0) return true;
-        return false;
+        return strComparison < 0;
       }
 
       return (Double) left.getVal() < (Double) right.getVal();
     } else if (ctx.comp.getText().equals("<=")) {
       if (strComparison != null) {
-        if (strComparison < 1) return true;
-        return false;
+        return strComparison < 1;
       }
 
       return (Double) left.getVal() <= (Double) right.getVal();
@@ -574,7 +550,6 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
 
   @Override
   public Boolean visitLogicalAnd(ArabicBASICParser.LogicalAndContext ctx) {
-    // TODO what if
     Boolean left = (Boolean) visit(ctx.booleanExpression(0));
     Boolean right = (Boolean) visit(ctx.booleanExpression(1));
 
@@ -616,7 +591,8 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
   public Value visitAtomicBoolean(ArabicBASICParser.AtomicBooleanContext ctx) {
     /* it could be visitName(), visitNumeric() or visitText() */
     //    Object x = visit(ctx.variable(ctx));
-    // TODO how to tell if it should return a value or be evaulated as a Boolean??
+    // how to tell if it should return a value or be evaulated as a Boolean??
+    // just run visitChildren().
 
     return (Value) visitChildren(ctx);
   }
@@ -649,12 +625,12 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
           System.out.println(arabicNumberFormat.format(boxedPrimitive));
           break;
         case "Integer":
+          arabicNumberFormat = NumberFormat.getNumberInstance(this.arabicLocale);
+
+          // truncate it
           /*new DecimalFormat(
           "#,###.##",
           DecimalFormatSymbols.getInstance(customLocale)).format(d))*/
-
-          arabicNumberFormat = NumberFormat.getNumberInstance(this.arabicLocale);
-          // truncate it
           boxedPrimitive = ((Double) exprToPrint.getVal()).intValue();
           System.out.println(arabicNumberFormat.format(boxedPrimitive));
           break;
@@ -670,14 +646,10 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
 
   @Override
   public Void visitInput(ArabicBASICParser.InputContext ctx) {
-    /* TODO Maybe a "next?" default non-first prompt would be nice? */
-
-    //    if (showDebug) System.out.println(ctx.prompt.getText());
+    // TODO Maybe a "next?" default non-first prompt would be nice?
 
     ListIterator<Token> varTokenIter = ctx.var.listIterator();
     while (varTokenIter.hasNext()) {
-      //      if (showDebug) System.out.println(varTokenIter.nextIndex());
-
       // the prompt should apply to each variable in the list, but only printed once
       if (ctx.prompt != null && varTokenIter.nextIndex() == 0) {
         System.out.print(ctx.prompt.getText() + " ");
@@ -732,10 +704,6 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
       }
     }
 
-    //    ctx.spacer.getText();
-    // loop the "var"s and do virtual assignments based on read in input
-    // in loop , do the scan/buffered input reader
-
     return null;
   }
 
@@ -769,7 +737,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     // Start Java while loop
     // 2. if control var is less than "upper", then visit(block)
     while (counter >= lower && counter <= upper) {
-      // 4.  store updated value
+      // 3.  store updated value FIRST
       controlVal.setVal((double) counter);
       globalScope.put(id, controlVar);
 
@@ -777,7 +745,7 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
 
       if (showDebug) System.out.printf("counter=%d%n", counter);
 
-      // 3. increment control var by 1 or step
+      // 4. increment control var by step
       counter += step;
     }
 
@@ -811,7 +779,6 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
 
       if (Boolean.FALSE.equals(condition)) {
         break;
-        // return null;
       }
 
       visit(ctx.block());
@@ -833,14 +800,9 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     Symbol s = new FunctionSymbol(id);
 
     // 2. get arg and visit(identifier)
-    //    ParseTree arg = ctx.getChild(0); // I think this is the "arg"
     String argumentPlaceholder = ctx.variable().getText();
 
     // 3. get the body/expression
-    //    ParseTree body = ctx.getChild(1); // I think this is the "block"
-    // But, maybe I shouldn't use that? "Normally you would use the generated accessor methods
-    // instead."
-    // like, "expression"
     ArabicBASICParser.ExpressionContext functionExpression = ctx.expression();
 
     // 4. save the expression
@@ -872,31 +834,31 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
       throw new IllegalArgumentException(fnName + " is not a function");
     }
 
-    // 3. run the arg context to get a value, the passed-in value
+    // 2. run the arg context to get a value, the passed-in value
     Value argValue = (Value) visit(ctx.variable());
     //    Object actualArgumentContent = argValue.getVal();
     if (showDebug) System.out.println(argValue);
 
-    // 2. check it has the argument (s) <-- grammar takes care of it,
+    // 3. check it has the argument (s) <-- grammar takes care of it,
     // and any type mismatch will be caught by visitNumeric/visitText() etc
 
-    // 3. copy the current arg value into a new var whose symbol was originally defined as a
+    // 4. copy the current arg value into a new var whose symbol was originally defined as a
     // function arg symbol and set the value of the arg into the Symbol table so the visit*() can
     // get to it
     String argSymbol = fnVar.getArg();
     globalScope.put(fnVar.getArg(), new Variable(new VariableSymbol(fnVar.getArg()), argValue));
     // ?? TODO needs to replicate switch to make it the right sub-type of Variable
 
-    // 4. apply the raw value to the functionExpression context
+    // 5. apply the raw value to the functionExpression context
     // let it run now, looking for the value of the ARG variable just recently added to the variable
     // table
     Value fnResult2 = (Value) visit(fnVar.getbody()); // should return a Value() instance
     if (showDebug) System.out.println(fnResult2);
 
-    // 5. Destroy the arg variable in the symbol table
+    // 6. Destroy the arg variable in the symbol table
     globalScope.remove(fnVar.getArg());
 
-    // 6. return the raw result wrapped, or just forward the Value class, actually...
+    // 7. return the raw result wrapped, or just forward the Value class, actually...
     return fnResult2;
   }
 
@@ -913,7 +875,6 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
     Value retValue = new Value("", "String");
 
     // special case for CHR()
-    // TODO this function is going to be much fun for Arabic!
     if (operation.equals("CHR")) {
       // oh, this casting is a doozey!
       char ch = (char) ((Double) argValue1.getVal()).intValue();
