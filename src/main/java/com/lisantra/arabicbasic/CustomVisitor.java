@@ -7,15 +7,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.Collator;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
+  private Locale arabicLocale;
   private final Map<String, Variable> globalScope;
   private final boolean showDebug;
 
-  public CustomVisitor(Map<String, Variable> globalScope, boolean showDebug) {
+  public CustomVisitor(Locale locale, Map<String, Variable> globalScope, boolean showDebug) {
     super();
+    this.arabicLocale = locale;
     this.globalScope = globalScope;
     this.showDebug = showDebug;
   }
@@ -329,10 +333,31 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
   public Value visitNumeric(ArabicBASICParser.NumericContext ctx) {
     // all get treated as Double anyways, but let's track the original type
     //  ...this is why I had a "number" rule in the grammar...
+
+    // need to find a new way to deal with Arabic numbers since Double.valueOf causes
+    // NumberFormat exception with Arabic numbers
+    // https://stackoverflow.com/questions/60044997/integer-valueof-arabic-number-works-fine-but-float-valueof-the-same-number-gives
+    NumberFormat arabicNumberFormat = NumberFormat.getNumberInstance(this.arabicLocale);
+
+    String inputNumerical = "";
+    String type = "";
+
     if (null != ctx.INTEGER()) {
-      return new Value(Double.valueOf(ctx.INTEGER().getText()), "Integer");
+
+      inputNumerical = ctx.INTEGER().getText();
+      type = "Integer";
     } else {
-      return new Value(Double.valueOf(ctx.REAL().getText()), "Real");
+      inputNumerical = ctx.REAL().getText();
+      type = "Real";
+    }
+
+    //  convert the text to english digits, and then re-Arabicize later on output?
+    try {
+      double parsedArabicNumeral = arabicNumberFormat.parse(inputNumerical).doubleValue();
+
+      return new Value(parsedArabicNumeral, type);
+    } catch (ParseException pe) {
+      throw new IllegalArgumentException("Number could not be parsed");
     }
   }
 
@@ -612,13 +637,30 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
         if (Objects.equals(spacingController, ";")) spacingSeparator = "";
       }
 
+      NumberFormat arabicNumberFormat;
       Object boxedPrimitive = exprToPrint.getVal();
-      if (Objects.equals(exprToPrint.getOriginalType(), "Integer")) {
-        // reformat integers; below feels a bit overdone...
-        boxedPrimitive = ((Double) exprToPrint.getVal()).intValue();
-      }
 
-      System.out.print(boxedPrimitive + spacingSeparator);
+      switch (exprToPrint.getOriginalType()) {
+        case "String":
+          System.out.print(boxedPrimitive + spacingSeparator);
+          break;
+        case "Real":
+          arabicNumberFormat = NumberFormat.getNumberInstance(this.arabicLocale);
+          System.out.println(arabicNumberFormat.format(boxedPrimitive));
+          break;
+        case "Integer":
+          /*new DecimalFormat(
+          "#,###.##",
+          DecimalFormatSymbols.getInstance(customLocale)).format(d))*/
+
+          arabicNumberFormat = NumberFormat.getNumberInstance(this.arabicLocale);
+          // truncate it
+          boxedPrimitive = ((Double) exprToPrint.getVal()).intValue();
+          System.out.println(arabicNumberFormat.format(boxedPrimitive));
+          break;
+
+        default:
+      }
     }
 
     // print blank line following any output
@@ -667,12 +709,14 @@ public class CustomVisitor extends ArabicBASICBaseVisitor<Object> {
         } catch (NumberFormatException ne0) {
           // try to get float/real
           try {
-            floatInput = Double.parseDouble(input);
+            NumberFormat arabicNumberFormat = NumberFormat.getNumberInstance(this.arabicLocale);
+            double parsedArabicNumeral = arabicNumberFormat.parse(input).doubleValue();
+
             // make Value and Variable here
-            Value val = new Value(floatInput, "Real");
+            Value val = new Value(parsedArabicNumeral, "Real");
             variable = new NumericVariable(s, val);
 
-          } catch (IllegalArgumentException e) {
+          } catch (IllegalArgumentException | ParseException e) {
             // keep it as a string
             textInput = input;
             // make Value and Variable here

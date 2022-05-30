@@ -9,6 +9,7 @@ import picocli.CommandLine;
 
 import java.io.File;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -17,8 +18,7 @@ import java.util.concurrent.Callable;
     mixinStandardHelpOptions = true,
     version = "0.3",
     resourceBundle = "Messages",
-    description =
-        "Runs a script written in ArabicBASIC and prints results of computations to STDOUT.")
+    description = "")
 public class App implements Callable<Integer> {
   @CommandLine.Parameters(index = "0", descriptionKey = "fileParam")
   private File file;
@@ -52,6 +52,16 @@ public class App implements Callable<Integer> {
    */
   @Override
   public Integer call() throws Exception {
+    // u-nu-Arab is required for arabic digits...still fails. Maybe it helps with output...
+    //    Locale arabicLocale = new Locale.Builder().setLanguageTag("ar-SA-u-nu-arab").build();
+    Locale arabicLocale =
+        new Locale.Builder()
+            .setLanguage("ar")
+            .setExtension(Locale.UNICODE_LOCALE_EXTENSION, "nu-arab")
+            .build();
+
+    Locale.setDefault(arabicLocale);
+
     /* we need separate tables: one for symbols and the other for variable states only = scope */
     /* since BASIC scope is global, we don't need a stack, and a HashMap is great for fast lookup */
     Map<String, Variable> globalScope = new LinkedHashMap<>();
@@ -63,11 +73,11 @@ public class App implements Callable<Integer> {
     ArabicBASICLexer lexer = new ArabicBASICLexer(CharStreams.fromPath(file.toPath()));
     ArabicBASICParser parser = new ArabicBASICParser(new CommonTokenStream(lexer));
 
-    lexer.removeErrorListeners();
-    lexer.addErrorListener(BASICErrorListener.INSTANCE);
+    //    lexer.removeErrorListeners();
+    //    lexer.addErrorListener(BASICErrorListener.INSTANCE);
 
-    parser.removeErrorListeners();
-    parser.addErrorListener(BASICErrorListener.INSTANCE);
+    //    parser.removeErrorListeners();
+    //    parser.addErrorListener(BASICErrorListener.INSTANCE);
 
     if (showDebug) {
       // listen for ambiguous grammar
@@ -80,7 +90,7 @@ public class App implements Callable<Integer> {
       ParseTree programTree = parser.program();
 
       /* Instantiate my visitor class, which is the actual interpreter */
-      CustomVisitor interpreter = new CustomVisitor(globalScope, showDebug);
+      CustomVisitor interpreter = new CustomVisitor(arabicLocale, globalScope, showDebug);
 
       /* Cause the interpreter to walk the parse tree */
       interpreter.visit(programTree);
