@@ -23,10 +23,10 @@ conditionalBlock: 'اذا' tests+=booleanExpression 'ثم' EOL block ('وإلا 
 singleLineConditional: 'اذا' booleanExpression 'ثم' statement;
 forLoop: 'لكل' control=IDENTIFIER '=' lower=INTEGER 'حتى' upper=INTEGER ('درجة' '=' step=INTEGER)? EOL block 'التالي';
 whileLoop: 'في إثنأ' test=booleanExpression EOL block  'نهاية في إثنأ';
-defineSingleLineFunction: 'تعريف' 'وظيفة' funcName=IDENTIFIER'(' arg=variable ')' '=' expression; //DEF FN cube(a) = a^3
-callFunction: 'ندا' funcName=IDENTIFIER'(' variable ')'; //this looks too much like arrayAccess!
+defineSingleLineFunction: 'عرّف' 'وظيفة' funcName=IDENTIFIER'(' arg=variable ')' '=' expression; //DEF FN cube(a) = a^3
+callFunction: 'اجري' funcName=IDENTIFIER'(' variable ')'; //this looks too much like arrayAccess!
 print: 'اطبع' expression (spacer+=(',' | ';') expression)*;
-input: 'دخل' (prompt=STRING (spacer=(',' | ';')))? var+=IDENTIFIER (',' var+=IDENTIFIER)*;
+input: 'ادخل' (prompt=STRING (spacer=(',' | ';')))? var+=IDENTIFIER (',' var+=IDENTIFIER)*;
 blank: WS* EOL;
 expression: // List the rules from highest -> lowest precedence
             // Put built-in function matches here BEFORE identifier to take advantage of first-match
