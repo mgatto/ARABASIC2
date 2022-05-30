@@ -11,8 +11,8 @@ statement:  COMMENT // shouldn't have EOL because it's a terminal
             | conditionalBlock EOL
             | forLoop EOL
             | whileLoop EOL
-             | defineSingleLineFunction EOL
-             | callFunction EOL
+            | defineSingleLineFunction EOL
+            | callFunction EOL
             | print EOL
             | input EOL
             ;
@@ -24,7 +24,7 @@ singleLineConditional: 'اذا' booleanExpression 'ثم' statement;
 forLoop: 'لكل' control=IDENTIFIER '=' lower=INTEGER 'حتى' upper=INTEGER ('درجة' '=' step=INTEGER)? EOL block 'التالي';
 whileLoop: 'في إثنأ' test=booleanExpression EOL block  'نهاية في إثنأ';
 defineSingleLineFunction: 'تعريف' 'وظيفة' funcName=IDENTIFIER'(' arg=variable ')' '=' expression; //DEF FN cube(a) = a^3
-callFunction: 'ندا' funcName=IDENTIFIER'(' variable ')' ; //this looks too much like arrayAccess!
+callFunction: 'ندا' funcName=IDENTIFIER'(' variable ')'; //this looks too much like arrayAccess!
 print: 'اطبع' expression (spacer+=(',' | ';') expression)*;
 input: 'دخل' (prompt=STRING (spacer=(',' | ';')))? var+=IDENTIFIER (',' var+=IDENTIFIER)*;
 blank: WS* EOL;
@@ -65,13 +65,13 @@ variable: IDENTIFIER        #name
         ;
 COMMENT: '//' ~[\r\n]* EOL -> channel(HIDDEN);
 STRING: '"' (~'"'|'\\"')* '"';
-//IDENTIFIER: [A-Z]+ [A-Z0-9_]*;
 //see U0600.pdf from the unicode consortium:
 IDENTIFIER: [\u0622-\u0655]+ [\p{InArabic}_\p{InArabic_Presentation_Forms_B}]*;
 REAL:  DIGIT [.,\u060C\u066B] DIGIT+;
-INTEGER: '\u0660' | [\u0661-\u0669] DIGIT*;
+//Western Arabic numbers are increasingly in use throughout the Arabic-speaking world.
+INTEGER: [0\u0660] | [1-9\u0661-\u0669] DIGIT*;
 EOL: ('\r'? '\n' | '\u2028'); // end of statement marker
 WS: [ \t] -> skip; //TODO replace with unicode whitespace class minus NEWLINE
-//fragment DIGIT : [0-9] ; // fragment is not a token itself, but a non-atomic component of tokens
-fragment DIGIT : [\u0660-\u06609];
-fragment LETTER: [a-zA-Z];
+// fragments are not token themselves, but non-atomic components of tokens
+fragment DIGIT : [0-9\u0660-\u0669];
+//wierdly, this will allow intermixing, when I really want Western OR Eastern Arabic numbers

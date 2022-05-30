@@ -51,12 +51,13 @@ public class ArabicBASICParser extends Parser {
 			"'\\u0644\\u0643\\u0644'", "'\\u062D\\u062A\\u0649'", "'\\u062F\\u0631\\u062C\\u0629'", 
 			"'\\u0627\\u0644\\u062A\\u0627\\u0644\\u064A'", "'\\u0641\\u064A \\u0625\\u062B\\u0646\\u0623'", 
 			"'\\u0646\\u0647\\u0627\\u064A\\u0629 \\u0641\\u064A \\u0625\\u062B\\u0646\\u0623'", 
-			"'\\u062A\\u0639\\u0631\\u064A\\u0641'", "'\\u0648\\u0638\\u064A\\u0641\\u0629'", 
-			"'\\u0646\\u062F\\u0627'", "'\\u0627\\u0637\\u0628\\u0639'", "';'", "'\\u062F\\u062E\\u0644'", 
-			"'ABS'", "'COS'", "'SIN'", "'TAN'", "'LOG'", "'EXP'", "'INT'", "'SQR'", 
-			"'RND'", "'LEFT'", "'RIGHT'", "'MID'", "'LEN'", "'CHR'", "'ORD'", "'-'", 
-			"'^'", "'MOD'", "'*'", "'/'", "'+'", "'>'", "'<'", "'<='", "'>='", "'<>'", 
-			"'\\u0644\\u064A\\u0633'", "'\\u0627\\u064A\\u0636\\u0627\\u064B'", "'\\u0627\\u0645'"
+			"'\\u0639\\u0631\\u0651\\u0641'", "'\\u0648\\u0638\\u064A\\u0641\\u0629'", 
+			"'\\u0627\\u062C\\u0631\\u064A'", "'\\u0627\\u0637\\u0628\\u0639'", "';'", 
+			"'\\u0627\\u062F\\u062E\\u0644'", "'ABS'", "'COS'", "'SIN'", "'TAN'", 
+			"'LOG'", "'EXP'", "'INT'", "'SQR'", "'RND'", "'LEFT'", "'RIGHT'", "'MID'", 
+			"'LEN'", "'CHR'", "'ORD'", "'-'", "'^'", "'MOD'", "'*'", "'/'", "'+'", 
+			"'>'", "'<'", "'<='", "'>='", "'<>'", "'\\u0644\\u064A\\u0633'", "'\\u0627\\u064A\\u0636\\u0627\\u064B'", 
+			"'\\u0627\\u0645'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
@@ -932,7 +933,7 @@ public class ArabicBASICParser extends Parser {
 		public Token s2;
 		public List<Token> spacer = new ArrayList<Token>();
 		public Token s22;
-		public Token _tset318;
+		public Token _tset317;
 		public List<ExpressionContext> expression() {
 			return getRuleContexts(ExpressionContext.class);
 		}
@@ -968,17 +969,17 @@ public class ArabicBASICParser extends Parser {
 				{
 				{
 				setState(175);
-				((PrintContext)_localctx)._tset318 = _input.LT(1);
+				((PrintContext)_localctx)._tset317 = _input.LT(1);
 				_la = _input.LA(1);
 				if ( !(_la==T__1 || _la==T__21) ) {
-					((PrintContext)_localctx)._tset318 = (Token)_errHandler.recoverInline(this);
+					((PrintContext)_localctx)._tset317 = (Token)_errHandler.recoverInline(this);
 				}
 				else {
 					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
 					_errHandler.reportMatch(this);
 					consume();
 				}
-				((PrintContext)_localctx).spacer.add(((PrintContext)_localctx)._tset318);
+				((PrintContext)_localctx).spacer.add(((PrintContext)_localctx)._tset317);
 				setState(176);
 				expression(0);
 				}
