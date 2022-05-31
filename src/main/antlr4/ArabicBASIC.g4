@@ -16,7 +16,7 @@ statement:  COMMENT // shouldn't have EOL because it's a terminal
             | print EOL
             | input EOL
             ;
-simpleAssignment: 'صار' name+=IDENTIFIER (',' name+=IDENTIFIER)* '=' expression; // Sequence with Terminator pattern
+simpleAssignment: 'صار' name+=IDENTIFIER ((',' | '\u060C') name+=IDENTIFIER)* '=' expression; // Sequence with Terminator pattern
 arrayAssignment: IDENTIFIER '(' subscript ')' '=' expression;
 arrayCreation: 'مصفوفة' IDENTIFIER '(' arraySize ')';
 conditionalBlock: 'اذا' tests+=booleanExpression 'ثم' EOL block ('وإلا اذا' tests+=booleanExpression 'ثم' EOL block)* ('وإلا' EOL block)? 'نهاية اذا';
@@ -25,13 +25,13 @@ forLoop: 'لكل' control=IDENTIFIER '=' lower=INTEGER 'حتى' upper=INTEGER ('
 whileLoop: 'في إثنأ' test=booleanExpression EOL block  'نهاية في إثنأ';
 defineSingleLineFunction: 'عرّف' 'وظيفة' funcName=IDENTIFIER'(' arg=variable ')' '=' expression; //DEF FN cube(a) = a^3
 callFunction: 'اجري' funcName=IDENTIFIER'(' variable ')'; //this looks too much like arrayAccess!
-print: 'اطبع' expression (spacer+=(',' | ';') expression)*;
-input: 'ادخل' (prompt=STRING (spacer=(',' | ';')))? var+=IDENTIFIER (',' var+=IDENTIFIER)*;
+print: 'اطبع' expression (spacer+=(',' | ';' | '\u061B' | '\u060C') expression)*;
+input: 'ادخل' (prompt=STRING (spacer=(',' | ';' | '\u061B' | '\u060C')))? var+=IDENTIFIER ((',' | '\u060C') var+=IDENTIFIER)*;
 blank: WS* EOL;
 expression: // List the rules from highest -> lowest precedence
             // Put built-in function matches here BEFORE identifier to take advantage of first-match
             name=('ABS' | 'COS' | 'SIN' | 'TAN' | 'LOG' | 'EXP' | 'INT' | 'SQR' | 'RND') '(' expression ')'  #mathFunction
-            | name=('LEFT' | 'RIGHT' | 'MID' | 'LEN' | 'CHR' | 'ORD') '(' arg+=variable (',' arg+=variable)? ')' #stringFunction
+            | name=('LEFT' | 'RIGHT' | 'MID' | 'LEN' | 'CHR' | 'ORD') '(' arg+=variable ((',' | '\u060C') arg+=variable)? ')' #stringFunction
             | IDENTIFIER '(' subscript ')'              #arrayAccess
             | '-' expression                            #unary
             | <assoc=right>expression'^' expression     #exponentation
