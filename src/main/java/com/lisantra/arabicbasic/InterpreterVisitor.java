@@ -652,7 +652,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     while (varTokenIter.hasNext()) {
       // the prompt should apply to each variable in the list, but only printed once
       if (ctx.prompt != null && varTokenIter.nextIndex() == 0) {
-        System.out.print(ctx.prompt.getText() + " ");
+        System.out.print(ctx.prompt.getText().replaceAll("^\"|\"$", "") + " ");
       } else {
         // if no prompt, default to "?"
         System.out.print("? ");
