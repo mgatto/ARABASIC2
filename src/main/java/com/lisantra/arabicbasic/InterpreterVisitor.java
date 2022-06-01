@@ -640,7 +640,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     }
 
     // print blank line following any output
-    System.out.println();
+    //    System.out.println();
     return null;
   }
 
