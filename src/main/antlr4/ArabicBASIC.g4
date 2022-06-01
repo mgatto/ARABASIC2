@@ -23,6 +23,7 @@ conditionalBlock: 'اذا' tests+=booleanExpression 'ثم' EOL block ('وإلا 
 singleLineConditional: 'اذا' booleanExpression 'ثم' statement;
 forLoop: 'لكل' control=IDENTIFIER '=' lower=INTEGER 'حتى' upper=INTEGER ('درجة' '=' step=INTEGER)? EOL block 'التالي';
 whileLoop: 'في إثنأ' test=booleanExpression EOL block  'نهاية في إثنأ';
+// حدِّد might be better! used in qalb
 defineSingleLineFunction: 'عرّف' 'وظيفة' funcName=IDENTIFIER'(' arg=variable ')' '=' expression; //DEF FN cube(a) = a^3
 callFunction: 'اجري' funcName=IDENTIFIER'(' variable ')'; //this looks too much like arrayAccess!
 print: 'اطبع' expression (spacer+=(',' | ';' | '\u061B' | '\u060C') expression)*;
