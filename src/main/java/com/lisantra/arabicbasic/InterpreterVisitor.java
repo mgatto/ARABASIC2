@@ -650,6 +650,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
     ListIterator<Token> varTokenIter = ctx.var.listIterator();
     while (varTokenIter.hasNext()) {
+      System.out.println(); // blank line before prompt
+
       // the prompt should apply to each variable in the list, but only printed once
       if (ctx.prompt != null && varTokenIter.nextIndex() == 0) {
         System.out.print(ctx.prompt.getText().replaceAll("^\"|\"$", "") + " ");
