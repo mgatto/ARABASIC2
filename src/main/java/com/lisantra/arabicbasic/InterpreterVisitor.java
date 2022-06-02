@@ -677,7 +677,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
         // Nested exceptions and use of exceptions like this is considered bad style.
         try {
           intInput = Integer.parseInt(input);
-          Value val = new Value(intInput, "Integer");
+          Value val = new Value(Double.valueOf(intInput), "Integer");
           variable = new NumericVariable(s, val);
 
         } catch (NumberFormatException ne0) {
