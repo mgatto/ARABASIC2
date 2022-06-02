@@ -48,7 +48,7 @@ subscript:  INTEGER
             | IDENTIFIER
             ;
 // expression's left recursion will break if I put "expression" here...
-arraySize: INTEGER; //can expand it from Integer --> Expression(Numerical), maybe catch string "size" in the parser.
+arraySize: expression; //can expand it from Integer --> Expression(Numerical), maybe catch string "size" in the parser.
 booleanExpression: // does not support "expression" in the terms because of left recursion?
              booleanExpression comp=('>' | '<' | '<='| '>='| '='| '<>') booleanExpression   #comparitiveBoolean
             //جزم

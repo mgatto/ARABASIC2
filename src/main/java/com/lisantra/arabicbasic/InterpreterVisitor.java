@@ -378,7 +378,14 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
   }
 
   public Integer visitArraySize(ArabicBASICParser.ArraySizeContext ctx) {
-    return Integer.valueOf(ctx.INTEGER().getText());
+    Value size = (Value) visit(ctx.expression());
+
+    // 2. ensure it is numeric
+    if (!(size.getOriginalType().equals("Integer"))) {
+      throw new IllegalArgumentException("argument: '" + size + "' is not an integer");
+    }
+
+    return ((Double) size.getVal()).intValue();
   }
 
   public Integer visitSubscript(ArabicBASICParser.SubscriptContext ctx) {
