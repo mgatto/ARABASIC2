@@ -622,6 +622,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
       NumberFormat arabicNumberFormat;
       Object boxedPrimitive = exprToPrint.getVal();
+      // TODO wait, it could be an array, too!
 
       switch (exprToPrint.getOriginalType()) {
         case "String":
@@ -642,12 +643,15 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
           System.out.println(arabicNumberFormat.format(boxedPrimitive));
           break;
 
+        case "Array":
+          for (Value element : (ArrayList<Value>) boxedPrimitive) {
+            System.out.println(element.getVal());
+          }
+          break;
         default:
       }
     }
 
-    // print blank line following any output
-    //    System.out.println();
     return null;
   }
 
