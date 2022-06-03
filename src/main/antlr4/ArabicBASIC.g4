@@ -27,7 +27,7 @@ whileLoop: 'في إثنأ' test=booleanExpression EOL block  'نهاية في إ
 // حدِّد might be better! used in qalb
 defineSingleLineFunction: 'عرّف' 'وظيفة' funcName=IDENTIFIER'(' arg=variable ')' '=' expression; //DEF FN cube(a) = a^3
 callFunction: 'اجري' funcName=IDENTIFIER'(' variable ')'; //this looks too much like arrayAccess!
-print: 'اطبع' expression (spacer+=(',' | '\u060C') expression)*;
+print: 'اطبع' expression (spacer+=(',' | ';' | '\u061B' |'\u060C') expression)*;
 input: 'ادخل' (prompt=STRING (spacer=(',' | ';' | '\u061B' | '\u060C')))? var+=IDENTIFIER ((',' | '\u060C') var+=IDENTIFIER)*;
 blank: WS* EOL;
 expression: // List the rules from highest -> lowest precedence
