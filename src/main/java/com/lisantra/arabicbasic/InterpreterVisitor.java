@@ -92,6 +92,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     String id = ctx.IDENTIFIER().getSymbol().getText();
     Integer index = (Integer) visit(ctx.subscript());
 
+    if (showDebug) System.out.println("Index = " + index);
+
     // get the widened, stored Variable associated with id. It should be an Array,
     // but better to not cast it and instead to test for class type
     Variable existingArray = globalScope.get(id);
@@ -101,25 +103,32 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
     // visit expression to get value to insert
     Value newElement = (Value) visit(ctx.expression());
-    Object valToInsert = newElement.getVal(); // this should be Double or String
+    if (showDebug) System.out.println("New element = " + newElement);
 
     // TODO check type of value to insert; check the Value's originalType
-    // Type erasure means I probably can't get List<Integer>, though which would be nice.
 
-    // insert a value at the index; this call looks wierd
-    Value arrayValue = existingArray.getValue();
-    arrayValue.setOriginalType(newElement.getOriginalType());
-    ArrayList targetArray = (ArrayList) arrayValue.getVal();
+    Value arrayContainer = existingArray.getValue();
+    arrayContainer.setOriginalType(newElement.getOriginalType());
+
+    int maxIndex = ((ArrayVariable) existingArray).getUpperBound();
+
+    ArrayList targetArray = (ArrayList) arrayContainer.getVal();
+
+    // Copy! this fixed an error where the elements were refs if "targetArray.set(index,
+    // newElement);"
+    Value existingElement = (Value) targetArray.get(index);
+    existingElement.setVal(newElement.getVal());
+    existingElement.setOriginalType(newElement.getOriginalType());
 
     /* must test for existing index; add() for new element, and set() for updating */
-    try {
+    /*try {
       // could just try to get it and deal with exception? expensive in resources (?)
-      Object existingElement = targetArray.get(index);
+      // Object existingElement = targetArray.get(index);
       // update
-      targetArray.set(index, valToInsert); // TODO enforce consistent typing of elements
+      targetArray.set(index, newElement); // TODO enforce consistent typing of elements
     } catch (IndexOutOfBoundsException idxe) {
-      /* add new element and enforce array capacity */
-      int maxIndex = ((ArrayVariable) existingArray).getUpperBound();
+      * add new element and enforce array capacity *
+
 
       if (index > maxIndex) {
         System.out.println(globalScope);
@@ -131,8 +140,9 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
                 + "' only has elements from position: 0 to position: "
                 + maxIndex);
       }
-      targetArray.add(index, valToInsert);
-    }
+
+      // targetArray.add(index, newElement);
+    }*/
 
     return null;
   }
@@ -606,6 +616,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
   @Override
   public Void visitPrint(ArabicBASICParser.PrintContext ctx) {
+    if (showDebug) System.out.println("I visited Print");
+
     // loop through how many expressions there are
     int exprCount = ctx.expression().size();
     for (int i = 0; i < exprCount; i++) {
@@ -622,7 +634,28 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
       NumberFormat arabicNumberFormat;
       Object boxedPrimitive = exprToPrint.getVal();
-      // TODO wait, it could be an array, too!
+
+      if (showDebug) System.out.println(boxedPrimitive);
+
+      // Odd situation in an array where it's wrapped again
+      if (exprToPrint.getVal() instanceof Value) {
+        //        System.out.println("It IS a Value obj!");
+        //        System.out.println(exprToPrint.getVal());
+        boxedPrimitive = ((Value) boxedPrimitive).getVal();
+      }
+
+      /* special case for arrays, since getOriginalType becomes that of it's elements */
+      if (boxedPrimitive instanceof ArrayList) {
+        for (Value element : (ArrayList<Value>) boxedPrimitive) {
+          // TODO ugh, I have to check by type just like below!
+          // TODO this is a good use case for recursion!
+          // arabicNumberFormat = NumberFormat.getNumberInstance(this.arabicLocale);
+          //          System.out.println(arabicNumberFormat.format(boxedPrimitive));
+          System.out.println(element.getVal());
+        }
+
+        return null;
+      }
 
       switch (exprToPrint.getOriginalType()) {
         case "String":
@@ -635,19 +668,20 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
         case "Integer":
           arabicNumberFormat = NumberFormat.getNumberInstance(this.arabicLocale);
 
+          // TODO we may have an Array element here
+
           // truncate it
           /*new DecimalFormat(
           "#,###.##",
           DecimalFormatSymbols.getInstance(customLocale)).format(d))*/
-          boxedPrimitive = ((Double) exprToPrint.getVal()).intValue();
+
+          boxedPrimitive = ((Double) boxedPrimitive).intValue();
           System.out.println(arabicNumberFormat.format(boxedPrimitive));
           break;
 
         case "Array":
-          for (Value element : (ArrayList<Value>) boxedPrimitive) {
-            System.out.println(element.getVal());
-          }
           break;
+
         default:
       }
     }
@@ -725,7 +759,15 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
   public Void visitForLoop(ArabicBASICParser.ForLoopContext ctx) {
 
     int lower = Integer.parseInt(ctx.lower.getText());
-    int upper = Integer.parseInt(ctx.upper.getText());
+
+    /* upper bound can be an expression */
+    Value upperExpression = (Value) visit(ctx.expression());
+    if (!(upperExpression.getOriginalType().equals("Integer"))) {
+      throw new IllegalArgumentException("argument: '" + upperExpression + "' is not an integer");
+    }
+    int upper = ((Double) upperExpression.getVal()).intValue();
+    // int upper = Integer.parseInt(ctx.upper.getText());
+
     // TODO if I decide to be not inclusive, then either subtract 1 here or change "while" below
 
     int counter = lower;
