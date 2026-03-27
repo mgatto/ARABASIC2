@@ -16,7 +16,7 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(
     name = "run",
     mixinStandardHelpOptions = true,
-    version = "0.3",
+    versionProvider = ManifestVersionProvider.class,
     resourceBundle = "Messages",
     description = "")
 public class App implements Callable<Integer> {

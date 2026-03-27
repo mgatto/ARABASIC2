@@ -61,7 +61,10 @@
                 <version>${maven-jar-plugin.version}</version>
                 <configuration>
                     <archive>
-                        <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <mainClass>com.lisantra.arabicbasic.App</mainClass>
+                        </manifest>
                     </archive>
                 </configuration>
             </plugin>
@@ -145,6 +148,7 @@
                     <!--                    <appendAssemblyId>false</appendAssemblyId>-->
                     <archive>
                         <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                             <mainClass>com.lisantra.arabicbasic.App</mainClass>
                         </manifest>
                     </archive>
