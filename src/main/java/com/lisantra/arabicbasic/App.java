@@ -17,8 +17,7 @@ import java.util.concurrent.Callable;
     name = "run",
     mixinStandardHelpOptions = true,
     versionProvider = ManifestVersionProvider.class,
-    resourceBundle = "Messages",
-    description = "")
+    resourceBundle = "Messages")
 public class App implements Callable<Integer> {
   @CommandLine.Parameters(index = "0", descriptionKey = "fileParam")
   private File file;
