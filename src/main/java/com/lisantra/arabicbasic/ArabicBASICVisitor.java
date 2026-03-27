@@ -1,4 +1,4 @@
-// Generated from /Users/mgatto/Development/cs-361/ARABASIC2/src/main/antlr4/ArabicBASIC.g4 by ANTLR 4.10.1
+// Generated from src/main/antlr4/ArabicBASIC.g4 by ANTLR 4.10.1
 package com.lisantra.arabicbasic;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
