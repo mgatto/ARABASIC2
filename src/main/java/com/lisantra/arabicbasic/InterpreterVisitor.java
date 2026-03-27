@@ -67,7 +67,18 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
           break;
 
         case "Array":
-          var = new ArrayVariable(s, val);
+          {
+            ArrayVariable av = new ArrayVariable(s, val);
+            Object raw = val.getVal();
+            int n = 0;
+            
+            if (raw instanceof List) {
+              n = ((List<?>) raw).size();
+            }
+
+            av.setUpperBound(n > 0 ? n - 1 : 0);
+            var = av;
+          }
           break;
 
         case "Function":

@@ -1,9 +1,14 @@
 package com.lisantra.arabicbasic;
 
+import java.util.List;
+
 // TODO maybe THIS should be parameterized with the type of the Value's val or type of it's
 // elements if ArrayList
 public class ArrayVariable extends Variable {
+  /** Inclusive minimum index; ArabicBASIC arrays are currently zero-based. */
   private final int lowerBound = 0;
+
+  /** Inclusive maximum valid index (aligned with {@code InterpreterVisitor#visitArrayCreation}). */
   private int upperBound;
 
   /**
@@ -16,19 +21,41 @@ public class ArrayVariable extends Variable {
     super(symbol, value);
   }
 
+  public int getLowerBound() {
+    return lowerBound;
+  }
+
   /**
-   * @return int the max index of the array
+   * @return inclusive max index of the array
    */
   public int getUpperBound() {
     return upperBound;
   }
 
   /**
-   *
-   * @param upperBound
+   * @param upperBound inclusive max index (for {@code n} elements, use {@code n - 1}, or {@code 0}
+   *     when empty)
    */
   public void setUpperBound(int upperBound) {
     this.upperBound = upperBound;
+  }
+
+  /**
+   * Number of element slots in the backing list. Prefer list size when present so it stays correct
+   * even if bounds were not yet set.
+   */
+  public int getCapacity() {
+    Object v = getValue().getVal();
+
+    if (v instanceof List) {
+      return ((List<?>) v).size();
+    }
+
+    if (upperBound >= lowerBound) {
+      return upperBound - lowerBound + 1;
+    }
+
+    return 0;
   }
 
   /**
@@ -41,10 +68,8 @@ public class ArrayVariable extends Variable {
     String symbolType = this.getSymbol().getClass().getSimpleName();
 
     StringBuilder sb = new StringBuilder("[" + symbolType);
-    if (symbolType == "ArraySymbol") {
-      sb.append("of capacity: " + (getUpperBound() - 1));
-    }
-    sb.append("] having " + this.getValue().getVal());
+    sb.append(" of capacity: ").append(getCapacity());
+    sb.append("] having ").append(this.getValue().getVal());
 
     return sb.toString();
   }
