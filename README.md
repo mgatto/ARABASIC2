@@ -1,55 +1,109 @@
 # ArabicBASIC
 
-A standalone interpreter for Arabic BASIC. The interpreter is written in Java and is currently available as a JAR file
-for any platform on which Java can run.
+A standalone **interpreter** for Arabic BASIC: programs use **Arabic keywords and identifiers** (and may use **Eastern Arabic–Indic digits** in numeric literals). The runtime is written in **Java** (ANTLR 4, Picocli) and ships as a JAR for any platform with a Java 11+ runtime.
 
-The next release will include a native executable for MacOS. Native executables for additional platforms will be
-supported as my build pipeline for Windows and Linux comes online.
+The interpreter sets the JVM default locale to **Arabic** with the **`ar-u-nu-arab`** numbering extension so numeric formatting and related locale behavior align with Arabic contexts.
 
-# How to run it
+A native executable for macOS (and later Windows/Linux) may follow once the build pipeline is in place.
 
-## Download
+---
 
-A pre-built JAR file is available in the `release` directory of this repository. You may simply download it from there.
-There are also sample ArabicBASIC scripts to run from the subdirectory, `release/samples`.
+## Requirements
 
-## Expectations
+- **Java 11 or higher** on your `PATH`
+- Scripts saved as **UTF-8** (without BOM is fine). The lexer reads the source file as Unicode text.
 
-When you run an ArabicBASIC script in debug mode, you will see a series of notifications and then a print out of the
-current symbol table. The symbol table will list all the variables processed and their values at the end of the script.
-Variables are mutable in BASIC, and the sample scripts will demonstrate this.
+Helpful links:
 
-This current release runs only in Latin-script mode for evaluation purposes only. The next release will likely run only
-in Arabic-script mode
+- OpenJDK install: https://openjdk.org/install/
+- Command-line basics: https://tutorial.djangogirls.org/en/intro_to_command_line/
 
-## Requirements to run
+---
 
-- Java 11 or higher must be installed on your system.
-    - Instructions for OpenJDK are here: https://openjdk.java.net/install/
-    - The `java` executable must be in your PATH.
-    - You should know how to use the command line in a terminal application. A good introduction is
-      here: https://tutorial.djangogirls.org/en/intro_to_command_line/
+## Language and samples
 
-## Sample scripts
+The grammar in `src/main/antlr4/ArabicBASIC.g4` defines the current syntax—for example assignments with **صار**, conditionals with **اذا** / **ثم** / **نهاية اذا**, **اطبع** for output, **ادخل** for input, **مصفوفة** for arrays, and Arabic **IDENTIFIER** tokens.
 
-In the `release/samples` directory, you will find several sample scripts for convenience. These are numbered in order of
-increasing complexity of language features. A comment appears on the first line of each sample script to convey which
-language features it demonstrates.
+**Working examples** that match the current parser live alongside the older numbered demos:
 
-## Running the scripts on the Command-line
+| Scripts (Arabic syntax) | Rough purpose |
+|-------------------------|----------------|
+| `release/samples/CONDITIONAL_Ar.bas` | Simple `اذا` / `نهاية اذا` |
+| `release/samples/INPUT_Ar.bas` | `ادخل`, loop, array |
+| `release/samples/LOOP_Ar.bas` | Loop-style sample |
 
-In your favorite terminal, navigate to the where you saved the JAR file, and copy this command:
+Many **`test_*.bas`** files under `release/samples/` still use **legacy Latin** keywords (`LET`, `IF`, `PRINT`, …). They do **not** match the current Arabic grammar; use them only with a build that still exposes that syntax, or after updating them to the Arabic forms.
 
-```
-java -cp ArabicBASIC-0.2.1-alpha.jar com.lisantra.arabicbasic.App -d ./samples/test_01.bas
-```
+---
 
-The `-d` flag turns on debug mode. This flag is also available as `--debug`.
+## Running from the pre-built JAR
 
-To see a list of all modes, not all of which are functional in this ALPHA release, run this command with the `-h` flag:
+A JAR is provided under **`release/`** (for example `ArabicBASIC-1.0.0.jar`). If that artifact is a single “fat” JAR with dependencies, you can run:
 
-```
-java -cp ArabicBASIC-0.2.1-alpha.jar com.lisantra.arabicbasic.App -h
+```bash
+cd release
+java -cp ArabicBASIC-1.0.0.jar com.lisantra.arabicbasic.App samples/CONDITIONAL_Ar.bas
 ```
 
+Enable debug output (parse/runtime diagnostics and end-of-run scope dump when implemented for your build):
 
+```bash
+java -cp ArabicBASIC-1.0.0.jar com.lisantra.arabicbasic.App --debug samples/CONDITIONAL_Ar.bas
+```
+
+CLI help:
+
+```bash
+java -cp ArabicBASIC-1.0.0.jar com.lisantra.arabicbasic.App -h
+```
+
+If `java` reports missing classes for ANTLR or Picocli, build the **jar-with-dependencies** from source (next section) and use `java -jar` instead of `-cp` with a thin JAR.
+
+---
+
+## Building from source (recommended for latest grammar)
+
+This project uses **Maven**. From the repository root:
+
+```bash
+mvn clean package
+```
+
+That produces a dependency-fat JAR:
+
+```text
+target/ArabicBASIC-1.0-release-jar-with-dependencies.jar
+```
+
+(The version segment matches `<version>` in `pom.xml`.)
+
+Run an Arabic script:
+
+```bash
+java -jar target/ArabicBASIC-1.0-release-jar-with-dependencies.jar release/samples/CONDITIONAL_Ar.bas
+```
+
+With debug:
+
+```bash
+java -jar target/ArabicBASIC-1.0-release-jar-with-dependencies.jar --debug release/samples/INPUT_Ar.bas
+```
+
+### In an IDE
+
+Use the IDE’s Maven integration and run the **`package`** lifecycle on the project, then run the same `java -jar …` command in a terminal, or configure a run configuration with main class **`com.lisantra.arabicbasic.App`** and the path to your `.bas` file as the first program argument.
+
+---
+
+## What to expect
+
+- **Normal mode:** Program output goes to **stdout**; errors to **stderr**.
+- **Debug mode (`-d` / `--debug`):** Extra diagnostics (e.g. ambiguous-parse warnings via ANTLR’s diagnostic listener when enabled in code) and, when wired in your tree, a dump of the global variable map after a successful run.
+
+Variables are global and mutable like classic BASIC; the Arabic samples illustrate typical usage.
+
+---
+
+<!-- ## Agent / contributor notes
+
+For build commands, layout, ANTLR regeneration, and verification checklists, see **[AGENTS.md](AGENTS.md)**. -->

@@ -1,5 +1,4 @@
-// Generated from /Users/mgatto/Development/cs-361/ARABASIC2/src/main/antlr4/ArabicBASIC.g4 by ANTLR 4.10.1
-package com.lisantra.arabicbasic;
+// Generated from /Users/mgatto/Development/cs-361/ARABASIC2/src/main/antlr4/ArabicBASIC.g4 by ANTLR 4.9.2
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -11,7 +10,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class ArabicBASICParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.10.1", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.9.2", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -46,20 +45,18 @@ public class ArabicBASICParser extends Parser {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'\\u0635\\u0627\\u0631'", "','", "'\\u060C'", "'='", "'('", "')'", 
-			"'\\u0645\\u0635\\u0641\\u0648\\u0641\\u0629'", "'\\u0627\\u0630\\u0627'", 
-			"'\\u062B\\u0645'", "'\\u0648\\u0625\\u0644\\u0627 \\u0627\\u0630\\u0627'", 
-			"'\\u0648\\u0625\\u0644\\u0627'", "'\\u0646\\u0647\\u0627\\u064A\\u0629 \\u0627\\u0630\\u0627'", 
-			"'\\u0644\\u0643\\u0644'", "'\\u062D\\u062A\\u0649'", "'\\u062F\\u0631\\u062C\\u0629'", 
-			"'\\u0627\\u0644\\u062A\\u0627\\u0644\\u064A'", "'\\u0641\\u064A \\u0625\\u062B\\u0646\\u0623'", 
-			"'\\u0646\\u0647\\u0627\\u064A\\u0629 \\u0641\\u064A \\u0625\\u062B\\u0646\\u0623'", 
-			"'\\u0639\\u0631\\u0651\\u0641'", "'\\u0648\\u0638\\u064A\\u0641\\u0629'", 
-			"'\\u0627\\u062C\\u0631\\u064A'", "'\\u0627\\u0637\\u0628\\u0639'", "';'", 
-			"'\\u061B'", "'\\u0627\\u062F\\u062E\\u0644'", "'ABS'", "'COS'", "'SIN'", 
-			"'TAN'", "'LOG'", "'EXP'", "'INT'", "'SQR'", "'RND'", "'LEFT'", "'RIGHT'", 
-			"'MID'", "'LEN'", "'CHR'", "'ORD'", "'-'", "'^'", "'MOD'", "'*'", "'/'", 
-			"'+'", "'>'", "'<'", "'<='", "'>='", "'<>'", "'\\u0644\\u064A\\u0633'", 
-			"'\\u0627\\u064A\\u0636\\u0627\\u064B'", "'\\u0627\\u0645'"
+			null, "'\u0635\u0627\u0631'", "','", "'\u060C'", "'='", "'('", "')'", 
+			"'\u0645\u0635\u0641\u0648\u0641\u0629'", "'\u0627\u0630\u0627'", "'\u062B\u0645'", 
+			"'\u0648\u0625\u0644\u0627 \u0627\u0630\u0627'", "'\u0648\u0625\u0644\u0627'", 
+			"'\u0646\u0647\u0627\u064A\u0629 \u0627\u0630\u0627'", "'\u0644\u0643\u0644'", 
+			"'\u062D\u062A\u0649'", "'\u062F\u0631\u062C\u0629'", "'\u0627\u0644\u062A\u0627\u0644\u064A'", 
+			"'\u0641\u064A \u0625\u062B\u0646\u0623'", "'\u0646\u0647\u0627\u064A\u0629 \u0641\u064A \u0625\u062B\u0646\u0623'", 
+			"'\u0639\u0631\u0651\u0641'", "'\u0648\u0638\u064A\u0641\u0629'", "'\u0627\u062C\u0631\u064A'", 
+			"'\u0627\u0637\u0628\u0639'", "';'", "'\u061B'", "'\u0627\u062F\u062E\u0644'", 
+			"'ABS'", "'COS'", "'SIN'", "'TAN'", "'LOG'", "'EXP'", "'INT'", "'SQR'", 
+			"'RND'", "'LEFT'", "'RIGHT'", "'MID'", "'LEN'", "'CHR'", "'ORD'", "'-'", 
+			"'^'", "'MOD'", "'*'", "'/'", "'+'", "'>'", "'<'", "'<='", "'>='", "'<>'", 
+			"'\u0644\u064A\u0633'", "'\u0627\u064A\u0636\u0627\u064B'", "'\u0627\u0645'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
@@ -133,11 +130,6 @@ public class ArabicBASICParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_program; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitProgram(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ProgramContext program() throws RecognitionException {
@@ -174,11 +166,6 @@ public class ArabicBASICParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_block; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitBlock(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final BlockContext block() throws RecognitionException {
@@ -258,11 +245,6 @@ public class ArabicBASICParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_statement; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitStatement(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final StatementContext statement() throws RecognitionException {
@@ -410,11 +392,6 @@ public class ArabicBASICParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_simpleAssignment; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitSimpleAssignment(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final SimpleAssignmentContext simpleAssignment() throws RecognitionException {
@@ -483,11 +460,6 @@ public class ArabicBASICParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_arrayAssignment; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitArrayAssignment(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ArrayAssignmentContext arrayAssignment() throws RecognitionException {
@@ -530,11 +502,6 @@ public class ArabicBASICParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_arrayCreation; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitArrayCreation(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ArrayCreationContext arrayCreation() throws RecognitionException {
@@ -589,11 +556,6 @@ public class ArabicBASICParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_conditionalBlock; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitConditionalBlock(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ConditionalBlockContext conditionalBlock() throws RecognitionException {
@@ -677,11 +639,6 @@ public class ArabicBASICParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_singleLineConditional; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitSingleLineConditional(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final SingleLineConditionalContext singleLineConditional() throws RecognitionException {
@@ -732,11 +689,6 @@ public class ArabicBASICParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_forLoop; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitForLoop(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ForLoopContext forLoop() throws RecognitionException {
@@ -804,11 +756,6 @@ public class ArabicBASICParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_whileLoop; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitWhileLoop(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final WhileLoopContext whileLoop() throws RecognitionException {
@@ -854,11 +801,6 @@ public class ArabicBASICParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_defineSingleLineFunction; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitDefineSingleLineFunction(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final DefineSingleLineFunctionContext defineSingleLineFunction() throws RecognitionException {
@@ -906,11 +848,6 @@ public class ArabicBASICParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_callFunction; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitCallFunction(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final CallFunctionContext callFunction() throws RecognitionException {
@@ -959,11 +896,6 @@ public class ArabicBASICParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_print; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitPrint(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final PrintContext print() throws RecognitionException {
@@ -1030,11 +962,6 @@ public class ArabicBASICParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_input; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitInput(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final InputContext input() throws RecognitionException {
@@ -1120,11 +1047,6 @@ public class ArabicBASICParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_blank; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitBlank(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final BlankContext blank() throws RecognitionException {
@@ -1185,22 +1107,12 @@ public class ArabicBASICParser extends Parser {
 			return getRuleContext(VariableContext.class,i);
 		}
 		public StringFunctionContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitStringFunction(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class FunctionCallContext extends ExpressionContext {
 		public CallFunctionContext callFunction() {
 			return getRuleContext(CallFunctionContext.class,0);
 		}
 		public FunctionCallContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitFunctionCall(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class MathFunctionContext extends ExpressionContext {
 		public Token name;
@@ -1208,22 +1120,12 @@ public class ArabicBASICParser extends Parser {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public MathFunctionContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitMathFunction(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class TermContext extends ExpressionContext {
 		public VariableContext variable() {
 			return getRuleContext(VariableContext.class,0);
 		}
 		public TermContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitTerm(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class AddSubContext extends ExpressionContext {
 		public Token op;
@@ -1234,11 +1136,6 @@ public class ArabicBASICParser extends Parser {
 			return getRuleContext(ExpressionContext.class,i);
 		}
 		public AddSubContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitAddSub(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class ArrayAccessContext extends ExpressionContext {
 		public TerminalNode IDENTIFIER() { return getToken(ArabicBASICParser.IDENTIFIER, 0); }
@@ -1246,33 +1143,18 @@ public class ArabicBASICParser extends Parser {
 			return getRuleContext(SubscriptContext.class,0);
 		}
 		public ArrayAccessContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitArrayAccess(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class UnaryContext extends ExpressionContext {
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public UnaryContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitUnary(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class NestedContext extends ExpressionContext {
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public NestedContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitNested(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class ExponentationContext extends ExpressionContext {
 		public List<ExpressionContext> expression() {
@@ -1282,11 +1164,6 @@ public class ArabicBASICParser extends Parser {
 			return getRuleContext(ExpressionContext.class,i);
 		}
 		public ExponentationContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitExponentation(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class ModulusContext extends ExpressionContext {
 		public Token op;
@@ -1297,11 +1174,6 @@ public class ArabicBASICParser extends Parser {
 			return getRuleContext(ExpressionContext.class,i);
 		}
 		public ModulusContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitModulus(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class MulDivContext extends ExpressionContext {
 		public Token op;
@@ -1312,11 +1184,6 @@ public class ArabicBASICParser extends Parser {
 			return getRuleContext(ExpressionContext.class,i);
 		}
 		public MulDivContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitMulDiv(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ExpressionContext expression() throws RecognitionException {
@@ -1572,11 +1439,6 @@ public class ArabicBASICParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_subscript; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitSubscript(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final SubscriptContext subscript() throws RecognitionException {
@@ -1617,11 +1479,6 @@ public class ArabicBASICParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_arraySize; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitArraySize(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ArraySizeContext arraySize() throws RecognitionException {
@@ -1661,11 +1518,6 @@ public class ArabicBASICParser extends Parser {
 			return getRuleContext(VariableContext.class,0);
 		}
 		public AtomicBooleanContext(BooleanExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitAtomicBoolean(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class LogicalAndContext extends BooleanExpressionContext {
 		public List<BooleanExpressionContext> booleanExpression() {
@@ -1675,11 +1527,6 @@ public class ArabicBASICParser extends Parser {
 			return getRuleContext(BooleanExpressionContext.class,i);
 		}
 		public LogicalAndContext(BooleanExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitLogicalAnd(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class ComparitiveBooleanContext extends BooleanExpressionContext {
 		public Token comp;
@@ -1690,11 +1537,6 @@ public class ArabicBASICParser extends Parser {
 			return getRuleContext(BooleanExpressionContext.class,i);
 		}
 		public ComparitiveBooleanContext(BooleanExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitComparitiveBoolean(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class LogicalOrContext extends BooleanExpressionContext {
 		public List<BooleanExpressionContext> booleanExpression() {
@@ -1704,33 +1546,18 @@ public class ArabicBASICParser extends Parser {
 			return getRuleContext(BooleanExpressionContext.class,i);
 		}
 		public LogicalOrContext(BooleanExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitLogicalOr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class NegatingBooleanContext extends BooleanExpressionContext {
 		public BooleanExpressionContext booleanExpression() {
 			return getRuleContext(BooleanExpressionContext.class,0);
 		}
 		public NegatingBooleanContext(BooleanExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitNegatingBoolean(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class NestedBooleanContext extends BooleanExpressionContext {
 		public BooleanExpressionContext booleanExpression() {
 			return getRuleContext(BooleanExpressionContext.class,0);
 		}
 		public NestedBooleanContext(BooleanExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitNestedBoolean(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final BooleanExpressionContext booleanExpression() throws RecognitionException {
@@ -1883,30 +1710,15 @@ public class ArabicBASICParser extends Parser {
 	public static class NameContext extends VariableContext {
 		public TerminalNode IDENTIFIER() { return getToken(ArabicBASICParser.IDENTIFIER, 0); }
 		public NameContext(VariableContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitName(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class NumericContext extends VariableContext {
 		public TerminalNode INTEGER() { return getToken(ArabicBASICParser.INTEGER, 0); }
 		public TerminalNode REAL() { return getToken(ArabicBASICParser.REAL, 0); }
 		public NumericContext(VariableContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitNumeric(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class TextContext extends VariableContext {
 		public TerminalNode STRING() { return getToken(ArabicBASICParser.STRING, 0); }
 		public TextContext(VariableContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ArabicBASICVisitor ) return ((ArabicBASICVisitor<? extends T>)visitor).visitText(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final VariableContext variable() throws RecognitionException {
@@ -2000,187 +1812,101 @@ public class ArabicBASICParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\u0004\u0001=\u011c\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
-		"\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0002"+
-		"\u0005\u0007\u0005\u0002\u0006\u0007\u0006\u0002\u0007\u0007\u0007\u0002"+
-		"\b\u0007\b\u0002\t\u0007\t\u0002\n\u0007\n\u0002\u000b\u0007\u000b\u0002"+
-		"\f\u0007\f\u0002\r\u0007\r\u0002\u000e\u0007\u000e\u0002\u000f\u0007\u000f"+
-		"\u0002\u0010\u0007\u0010\u0002\u0011\u0007\u0011\u0002\u0012\u0007\u0012"+
-		"\u0002\u0013\u0007\u0013\u0001\u0000\u0001\u0000\u0001\u0000\u0001\u0001"+
-		"\u0005\u0001-\b\u0001\n\u0001\f\u00010\t\u0001\u0001\u0002\u0001\u0002"+
-		"\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002"+
-		"\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002"+
-		"\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002"+
-		"\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002"+
-		"\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002"+
-		"\u0001\u0002\u0003\u0002S\b\u0002\u0001\u0003\u0001\u0003\u0001\u0003"+
-		"\u0001\u0003\u0005\u0003Y\b\u0003\n\u0003\f\u0003\\\t\u0003\u0001\u0003"+
-		"\u0001\u0003\u0001\u0003\u0001\u0004\u0001\u0004\u0001\u0004\u0001\u0004"+
-		"\u0001\u0004\u0001\u0004\u0001\u0004\u0001\u0005\u0001\u0005\u0001\u0005"+
-		"\u0001\u0005\u0001\u0005\u0001\u0005\u0001\u0006\u0001\u0006\u0001\u0006"+
-		"\u0001\u0006\u0001\u0006\u0001\u0006\u0001\u0006\u0001\u0006\u0001\u0006"+
-		"\u0001\u0006\u0001\u0006\u0005\u0006y\b\u0006\n\u0006\f\u0006|\t\u0006"+
-		"\u0001\u0006\u0001\u0006\u0001\u0006\u0003\u0006\u0081\b\u0006\u0001\u0006"+
-		"\u0001\u0006\u0001\u0007\u0001\u0007\u0001\u0007\u0001\u0007\u0001\u0007"+
-		"\u0001\b\u0001\b\u0001\b\u0001\b\u0001\b\u0001\b\u0001\b\u0001\b\u0001"+
-		"\b\u0003\b\u0093\b\b\u0001\b\u0001\b\u0001\b\u0001\b\u0001\t\u0001\t\u0001"+
-		"\t\u0001\t\u0001\t\u0001\t\u0001\n\u0001\n\u0001\n\u0001\n\u0001\n\u0001"+
-		"\n\u0001\n\u0001\n\u0001\n\u0001\u000b\u0001\u000b\u0001\u000b\u0001\u000b"+
-		"\u0001\u000b\u0001\u000b\u0001\f\u0001\f\u0001\f\u0001\f\u0005\f\u00b2"+
-		"\b\f\n\f\f\f\u00b5\t\f\u0001\r\u0001\r\u0001\r\u0003\r\u00ba\b\r\u0001"+
-		"\r\u0001\r\u0001\r\u0005\r\u00bf\b\r\n\r\f\r\u00c2\t\r\u0001\u000e\u0005"+
-		"\u000e\u00c5\b\u000e\n\u000e\f\u000e\u00c8\t\u000e\u0001\u000e\u0001\u000e"+
-		"\u0001\u000f\u0001\u000f\u0001\u000f\u0001\u000f\u0001\u000f\u0001\u000f"+
-		"\u0001\u000f\u0001\u000f\u0001\u000f\u0001\u000f\u0001\u000f\u0003\u000f"+
-		"\u00d7\b\u000f\u0001\u000f\u0001\u000f\u0001\u000f\u0001\u000f\u0001\u000f"+
-		"\u0001\u000f\u0001\u000f\u0001\u000f\u0001\u000f\u0001\u000f\u0001\u000f"+
-		"\u0001\u000f\u0001\u000f\u0001\u000f\u0001\u000f\u0003\u000f\u00e8\b\u000f"+
-		"\u0001\u000f\u0001\u000f\u0001\u000f\u0001\u000f\u0001\u000f\u0001\u000f"+
-		"\u0001\u000f\u0001\u000f\u0001\u000f\u0001\u000f\u0001\u000f\u0001\u000f"+
-		"\u0005\u000f\u00f6\b\u000f\n\u000f\f\u000f\u00f9\t\u000f\u0001\u0010\u0001"+
-		"\u0010\u0001\u0011\u0001\u0011\u0001\u0012\u0001\u0012\u0001\u0012\u0001"+
-		"\u0012\u0001\u0012\u0001\u0012\u0001\u0012\u0001\u0012\u0003\u0012\u0107"+
-		"\b\u0012\u0001\u0012\u0001\u0012\u0001\u0012\u0001\u0012\u0001\u0012\u0001"+
-		"\u0012\u0001\u0012\u0001\u0012\u0001\u0012\u0005\u0012\u0112\b\u0012\n"+
-		"\u0012\f\u0012\u0115\t\u0012\u0001\u0013\u0001\u0013\u0001\u0013\u0003"+
-		"\u0013\u011a\b\u0013\u0001\u0013\u0000\u0002\u001e$\u0014\u0000\u0002"+
-		"\u0004\u0006\b\n\f\u000e\u0010\u0012\u0014\u0016\u0018\u001a\u001c\u001e"+
-		" \"$&\u0000\t\u0001\u0000\u0002\u0003\u0002\u0000\u0002\u0003\u0017\u0018"+
-		"\u0001\u0000\u001a\"\u0001\u0000#(\u0001\u0000,-\u0002\u0000))..\u0002"+
-		"\u000099;;\u0002\u0000\u0004\u0004/3\u0001\u0000:;\u012e\u0000(\u0001"+
-		"\u0000\u0000\u0000\u0002.\u0001\u0000\u0000\u0000\u0004R\u0001\u0000\u0000"+
-		"\u0000\u0006T\u0001\u0000\u0000\u0000\b`\u0001\u0000\u0000\u0000\ng\u0001"+
-		"\u0000\u0000\u0000\fm\u0001\u0000\u0000\u0000\u000e\u0084\u0001\u0000"+
-		"\u0000\u0000\u0010\u0089\u0001\u0000\u0000\u0000\u0012\u0098\u0001\u0000"+
-		"\u0000\u0000\u0014\u009e\u0001\u0000\u0000\u0000\u0016\u00a7\u0001\u0000"+
-		"\u0000\u0000\u0018\u00ad\u0001\u0000\u0000\u0000\u001a\u00b6\u0001\u0000"+
-		"\u0000\u0000\u001c\u00c6\u0001\u0000\u0000\u0000\u001e\u00e7\u0001\u0000"+
-		"\u0000\u0000 \u00fa\u0001\u0000\u0000\u0000\"\u00fc\u0001\u0000\u0000"+
-		"\u0000$\u0106\u0001\u0000\u0000\u0000&\u0119\u0001\u0000\u0000\u0000("+
-		")\u0003\u0002\u0001\u0000)*\u0005\u0000\u0000\u0001*\u0001\u0001\u0000"+
-		"\u0000\u0000+-\u0003\u0004\u0002\u0000,+\u0001\u0000\u0000\u0000-0\u0001"+
-		"\u0000\u0000\u0000.,\u0001\u0000\u0000\u0000./\u0001\u0000\u0000\u0000"+
-		"/\u0003\u0001\u0000\u0000\u00000.\u0001\u0000\u0000\u00001S\u00057\u0000"+
-		"\u00002S\u0003\u001c\u000e\u000034\u0003\u0006\u0003\u000045\u0005<\u0000"+
-		"\u00005S\u0001\u0000\u0000\u000067\u0003\b\u0004\u000078\u0005<\u0000"+
-		"\u00008S\u0001\u0000\u0000\u00009:\u0003\n\u0005\u0000:;\u0005<\u0000"+
-		"\u0000;S\u0001\u0000\u0000\u0000<S\u0003\u000e\u0007\u0000=>\u0003\f\u0006"+
-		"\u0000>?\u0005<\u0000\u0000?S\u0001\u0000\u0000\u0000@A\u0003\u0010\b"+
-		"\u0000AB\u0005<\u0000\u0000BS\u0001\u0000\u0000\u0000CD\u0003\u0012\t"+
-		"\u0000DE\u0005<\u0000\u0000ES\u0001\u0000\u0000\u0000FG\u0003\u0014\n"+
-		"\u0000GH\u0005<\u0000\u0000HS\u0001\u0000\u0000\u0000IJ\u0003\u0016\u000b"+
-		"\u0000JK\u0005<\u0000\u0000KS\u0001\u0000\u0000\u0000LM\u0003\u0018\f"+
-		"\u0000MN\u0005<\u0000\u0000NS\u0001\u0000\u0000\u0000OP\u0003\u001a\r"+
-		"\u0000PQ\u0005<\u0000\u0000QS\u0001\u0000\u0000\u0000R1\u0001\u0000\u0000"+
-		"\u0000R2\u0001\u0000\u0000\u0000R3\u0001\u0000\u0000\u0000R6\u0001\u0000"+
-		"\u0000\u0000R9\u0001\u0000\u0000\u0000R<\u0001\u0000\u0000\u0000R=\u0001"+
-		"\u0000\u0000\u0000R@\u0001\u0000\u0000\u0000RC\u0001\u0000\u0000\u0000"+
-		"RF\u0001\u0000\u0000\u0000RI\u0001\u0000\u0000\u0000RL\u0001\u0000\u0000"+
-		"\u0000RO\u0001\u0000\u0000\u0000S\u0005\u0001\u0000\u0000\u0000TU\u0005"+
-		"\u0001\u0000\u0000UZ\u00059\u0000\u0000VW\u0007\u0000\u0000\u0000WY\u0005"+
-		"9\u0000\u0000XV\u0001\u0000\u0000\u0000Y\\\u0001\u0000\u0000\u0000ZX\u0001"+
-		"\u0000\u0000\u0000Z[\u0001\u0000\u0000\u0000[]\u0001\u0000\u0000\u0000"+
-		"\\Z\u0001\u0000\u0000\u0000]^\u0005\u0004\u0000\u0000^_\u0003\u001e\u000f"+
-		"\u0000_\u0007\u0001\u0000\u0000\u0000`a\u00059\u0000\u0000ab\u0005\u0005"+
-		"\u0000\u0000bc\u0003 \u0010\u0000cd\u0005\u0006\u0000\u0000de\u0005\u0004"+
-		"\u0000\u0000ef\u0003\u001e\u000f\u0000f\t\u0001\u0000\u0000\u0000gh\u0005"+
-		"\u0007\u0000\u0000hi\u00059\u0000\u0000ij\u0005\u0005\u0000\u0000jk\u0003"+
-		"\"\u0011\u0000kl\u0005\u0006\u0000\u0000l\u000b\u0001\u0000\u0000\u0000"+
-		"mn\u0005\b\u0000\u0000no\u0003$\u0012\u0000op\u0005\t\u0000\u0000pq\u0005"+
-		"<\u0000\u0000qz\u0003\u0002\u0001\u0000rs\u0005\n\u0000\u0000st\u0003"+
-		"$\u0012\u0000tu\u0005\t\u0000\u0000uv\u0005<\u0000\u0000vw\u0003\u0002"+
-		"\u0001\u0000wy\u0001\u0000\u0000\u0000xr\u0001\u0000\u0000\u0000y|\u0001"+
-		"\u0000\u0000\u0000zx\u0001\u0000\u0000\u0000z{\u0001\u0000\u0000\u0000"+
-		"{\u0080\u0001\u0000\u0000\u0000|z\u0001\u0000\u0000\u0000}~\u0005\u000b"+
-		"\u0000\u0000~\u007f\u0005<\u0000\u0000\u007f\u0081\u0003\u0002\u0001\u0000"+
-		"\u0080}\u0001\u0000\u0000\u0000\u0080\u0081\u0001\u0000\u0000\u0000\u0081"+
-		"\u0082\u0001\u0000\u0000\u0000\u0082\u0083\u0005\f\u0000\u0000\u0083\r"+
-		"\u0001\u0000\u0000\u0000\u0084\u0085\u0005\b\u0000\u0000\u0085\u0086\u0003"+
-		"$\u0012\u0000\u0086\u0087\u0005\t\u0000\u0000\u0087\u0088\u0003\u0004"+
-		"\u0002\u0000\u0088\u000f\u0001\u0000\u0000\u0000\u0089\u008a\u0005\r\u0000"+
-		"\u0000\u008a\u008b\u00059\u0000\u0000\u008b\u008c\u0005\u0004\u0000\u0000"+
-		"\u008c\u008d\u0005;\u0000\u0000\u008d\u008e\u0005\u000e\u0000\u0000\u008e"+
-		"\u0092\u0003\u001e\u000f\u0000\u008f\u0090\u0005\u000f\u0000\u0000\u0090"+
-		"\u0091\u0005\u0004\u0000\u0000\u0091\u0093\u0005;\u0000\u0000\u0092\u008f"+
-		"\u0001\u0000\u0000\u0000\u0092\u0093\u0001\u0000\u0000\u0000\u0093\u0094"+
-		"\u0001\u0000\u0000\u0000\u0094\u0095\u0005<\u0000\u0000\u0095\u0096\u0003"+
-		"\u0002\u0001\u0000\u0096\u0097\u0005\u0010\u0000\u0000\u0097\u0011\u0001"+
-		"\u0000\u0000\u0000\u0098\u0099\u0005\u0011\u0000\u0000\u0099\u009a\u0003"+
-		"$\u0012\u0000\u009a\u009b\u0005<\u0000\u0000\u009b\u009c\u0003\u0002\u0001"+
-		"\u0000\u009c\u009d\u0005\u0012\u0000\u0000\u009d\u0013\u0001\u0000\u0000"+
-		"\u0000\u009e\u009f\u0005\u0013\u0000\u0000\u009f\u00a0\u0005\u0014\u0000"+
-		"\u0000\u00a0\u00a1\u00059\u0000\u0000\u00a1\u00a2\u0005\u0005\u0000\u0000"+
-		"\u00a2\u00a3\u0003&\u0013\u0000\u00a3\u00a4\u0005\u0006\u0000\u0000\u00a4"+
-		"\u00a5\u0005\u0004\u0000\u0000\u00a5\u00a6\u0003\u001e\u000f\u0000\u00a6"+
-		"\u0015\u0001\u0000\u0000\u0000\u00a7\u00a8\u0005\u0015\u0000\u0000\u00a8"+
-		"\u00a9\u00059\u0000\u0000\u00a9\u00aa\u0005\u0005\u0000\u0000\u00aa\u00ab"+
-		"\u0003&\u0013\u0000\u00ab\u00ac\u0005\u0006\u0000\u0000\u00ac\u0017\u0001"+
-		"\u0000\u0000\u0000\u00ad\u00ae\u0005\u0016\u0000\u0000\u00ae\u00b3\u0003"+
-		"\u001e\u000f\u0000\u00af\u00b0\u0007\u0001\u0000\u0000\u00b0\u00b2\u0003"+
-		"\u001e\u000f\u0000\u00b1\u00af\u0001\u0000\u0000\u0000\u00b2\u00b5\u0001"+
-		"\u0000\u0000\u0000\u00b3\u00b1\u0001\u0000\u0000\u0000\u00b3\u00b4\u0001"+
-		"\u0000\u0000\u0000\u00b4\u0019\u0001\u0000\u0000\u0000\u00b5\u00b3\u0001"+
-		"\u0000\u0000\u0000\u00b6\u00b9\u0005\u0019\u0000\u0000\u00b7\u00b8\u0005"+
-		"8\u0000\u0000\u00b8\u00ba\u0007\u0001\u0000\u0000\u00b9\u00b7\u0001\u0000"+
-		"\u0000\u0000\u00b9\u00ba\u0001\u0000\u0000\u0000\u00ba\u00bb\u0001\u0000"+
-		"\u0000\u0000\u00bb\u00c0\u00059\u0000\u0000\u00bc\u00bd\u0007\u0000\u0000"+
-		"\u0000\u00bd\u00bf\u00059\u0000\u0000\u00be\u00bc\u0001\u0000\u0000\u0000"+
-		"\u00bf\u00c2\u0001\u0000\u0000\u0000\u00c0\u00be\u0001\u0000\u0000\u0000"+
-		"\u00c0\u00c1\u0001\u0000\u0000\u0000\u00c1\u001b\u0001\u0000\u0000\u0000"+
-		"\u00c2\u00c0\u0001\u0000\u0000\u0000\u00c3\u00c5\u0005=\u0000\u0000\u00c4"+
-		"\u00c3\u0001\u0000\u0000\u0000\u00c5\u00c8\u0001\u0000\u0000\u0000\u00c6"+
-		"\u00c4\u0001\u0000\u0000\u0000\u00c6\u00c7\u0001\u0000\u0000\u0000\u00c7"+
-		"\u00c9\u0001\u0000\u0000\u0000\u00c8\u00c6\u0001\u0000\u0000\u0000\u00c9"+
-		"\u00ca\u0005<\u0000\u0000\u00ca\u001d\u0001\u0000\u0000\u0000\u00cb\u00cc"+
-		"\u0006\u000f\uffff\uffff\u0000\u00cc\u00cd\u0007\u0002\u0000\u0000\u00cd"+
-		"\u00ce\u0005\u0005\u0000\u0000\u00ce\u00cf\u0003\u001e\u000f\u0000\u00cf"+
-		"\u00d0\u0005\u0006\u0000\u0000\u00d0\u00e8\u0001\u0000\u0000\u0000\u00d1"+
-		"\u00d2\u0007\u0003\u0000\u0000\u00d2\u00d3\u0005\u0005\u0000\u0000\u00d3"+
-		"\u00d6\u0003&\u0013\u0000\u00d4\u00d5\u0007\u0000\u0000\u0000\u00d5\u00d7"+
-		"\u0003&\u0013\u0000\u00d6\u00d4\u0001\u0000\u0000\u0000\u00d6\u00d7\u0001"+
-		"\u0000\u0000\u0000\u00d7\u00d8\u0001\u0000\u0000\u0000\u00d8\u00d9\u0005"+
-		"\u0006\u0000\u0000\u00d9\u00e8\u0001\u0000\u0000\u0000\u00da\u00db\u0005"+
-		"9\u0000\u0000\u00db\u00dc\u0005\u0005\u0000\u0000\u00dc\u00dd\u0003 \u0010"+
-		"\u0000\u00dd\u00de\u0005\u0006\u0000\u0000\u00de\u00e8\u0001\u0000\u0000"+
-		"\u0000\u00df\u00e0\u0005)\u0000\u0000\u00e0\u00e8\u0003\u001e\u000f\b"+
-		"\u00e1\u00e8\u0003\u0016\u000b\u0000\u00e2\u00e8\u0003&\u0013\u0000\u00e3"+
-		"\u00e4\u0005\u0005\u0000\u0000\u00e4\u00e5\u0003\u001e\u000f\u0000\u00e5"+
-		"\u00e6\u0005\u0006\u0000\u0000\u00e6\u00e8\u0001\u0000\u0000\u0000\u00e7"+
-		"\u00cb\u0001\u0000\u0000\u0000\u00e7\u00d1\u0001\u0000\u0000\u0000\u00e7"+
-		"\u00da\u0001\u0000\u0000\u0000\u00e7\u00df\u0001\u0000\u0000\u0000\u00e7"+
-		"\u00e1\u0001\u0000\u0000\u0000\u00e7\u00e2\u0001\u0000\u0000\u0000\u00e7"+
-		"\u00e3\u0001\u0000\u0000\u0000\u00e8\u00f7\u0001\u0000\u0000\u0000\u00e9"+
-		"\u00ea\n\u0007\u0000\u0000\u00ea\u00eb\u0005*\u0000\u0000\u00eb\u00f6"+
-		"\u0003\u001e\u000f\u0007\u00ec\u00ed\n\u0006\u0000\u0000\u00ed\u00ee\u0005"+
-		"+\u0000\u0000\u00ee\u00f6\u0003\u001e\u000f\u0007\u00ef\u00f0\n\u0005"+
-		"\u0000\u0000\u00f0\u00f1\u0007\u0004\u0000\u0000\u00f1\u00f6\u0003\u001e"+
-		"\u000f\u0006\u00f2\u00f3\n\u0004\u0000\u0000\u00f3\u00f4\u0007\u0005\u0000"+
-		"\u0000\u00f4\u00f6\u0003\u001e\u000f\u0005\u00f5\u00e9\u0001\u0000\u0000"+
-		"\u0000\u00f5\u00ec\u0001\u0000\u0000\u0000\u00f5\u00ef\u0001\u0000\u0000"+
-		"\u0000\u00f5\u00f2\u0001\u0000\u0000\u0000\u00f6\u00f9\u0001\u0000\u0000"+
-		"\u0000\u00f7\u00f5\u0001\u0000\u0000\u0000\u00f7\u00f8\u0001\u0000\u0000"+
-		"\u0000\u00f8\u001f\u0001\u0000\u0000\u0000\u00f9\u00f7\u0001\u0000\u0000"+
-		"\u0000\u00fa\u00fb\u0007\u0006\u0000\u0000\u00fb!\u0001\u0000\u0000\u0000"+
-		"\u00fc\u00fd\u0003\u001e\u000f\u0000\u00fd#\u0001\u0000\u0000\u0000\u00fe"+
-		"\u00ff\u0006\u0012\uffff\uffff\u0000\u00ff\u0100\u00054\u0000\u0000\u0100"+
-		"\u0107\u0003$\u0012\u0005\u0101\u0107\u0003&\u0013\u0000\u0102\u0103\u0005"+
-		"\u0005\u0000\u0000\u0103\u0104\u0003$\u0012\u0000\u0104\u0105\u0005\u0006"+
-		"\u0000\u0000\u0105\u0107\u0001\u0000\u0000\u0000\u0106\u00fe\u0001\u0000"+
-		"\u0000\u0000\u0106\u0101\u0001\u0000\u0000\u0000\u0106\u0102\u0001\u0000"+
-		"\u0000\u0000\u0107\u0113\u0001\u0000\u0000\u0000\u0108\u0109\n\u0006\u0000"+
-		"\u0000\u0109\u010a\u0007\u0007\u0000\u0000\u010a\u0112\u0003$\u0012\u0007"+
-		"\u010b\u010c\n\u0004\u0000\u0000\u010c\u010d\u00055\u0000\u0000\u010d"+
-		"\u0112\u0003$\u0012\u0005\u010e\u010f\n\u0003\u0000\u0000\u010f\u0110"+
-		"\u00056\u0000\u0000\u0110\u0112\u0003$\u0012\u0004\u0111\u0108\u0001\u0000"+
-		"\u0000\u0000\u0111\u010b\u0001\u0000\u0000\u0000\u0111\u010e\u0001\u0000"+
-		"\u0000\u0000\u0112\u0115\u0001\u0000\u0000\u0000\u0113\u0111\u0001\u0000"+
-		"\u0000\u0000\u0113\u0114\u0001\u0000\u0000\u0000\u0114%\u0001\u0000\u0000"+
-		"\u0000\u0115\u0113\u0001\u0000\u0000\u0000\u0116\u011a\u00059\u0000\u0000"+
-		"\u0117\u011a\u0007\b\u0000\u0000\u0118\u011a\u00058\u0000\u0000\u0119"+
-		"\u0116\u0001\u0000\u0000\u0000\u0119\u0117\u0001\u0000\u0000\u0000\u0119"+
-		"\u0118\u0001\u0000\u0000\u0000\u011a\'\u0001\u0000\u0000\u0000\u0012."+
-		"RZz\u0080\u0092\u00b3\u00b9\u00c0\u00c6\u00d6\u00e7\u00f5\u00f7\u0106"+
-		"\u0111\u0113\u0119";
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3?\u011e\4\2\t\2\4"+
+		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
+		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
+		"\4\23\t\23\4\24\t\24\4\25\t\25\3\2\3\2\3\2\3\3\7\3/\n\3\f\3\16\3\62\13"+
+		"\3\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4"+
+		"\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\5\4U"+
+		"\n\4\3\5\3\5\3\5\3\5\7\5[\n\5\f\5\16\5^\13\5\3\5\3\5\3\5\3\6\3\6\3\6\3"+
+		"\6\3\6\3\6\3\6\3\7\3\7\3\7\3\7\3\7\3\7\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b"+
+		"\3\b\3\b\3\b\7\b{\n\b\f\b\16\b~\13\b\3\b\3\b\3\b\5\b\u0083\n\b\3\b\3\b"+
+		"\3\t\3\t\3\t\3\t\3\t\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\5\n\u0095\n\n"+
+		"\3\n\3\n\3\n\3\n\3\13\3\13\3\13\3\13\3\13\3\13\3\f\3\f\3\f\3\f\3\f\3\f"+
+		"\3\f\3\f\3\f\3\r\3\r\3\r\3\r\3\r\3\r\3\16\3\16\3\16\3\16\7\16\u00b4\n"+
+		"\16\f\16\16\16\u00b7\13\16\3\17\3\17\3\17\5\17\u00bc\n\17\3\17\3\17\3"+
+		"\17\7\17\u00c1\n\17\f\17\16\17\u00c4\13\17\3\20\7\20\u00c7\n\20\f\20\16"+
+		"\20\u00ca\13\20\3\20\3\20\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21"+
+		"\3\21\3\21\5\21\u00d9\n\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21"+
+		"\3\21\3\21\3\21\3\21\3\21\3\21\5\21\u00ea\n\21\3\21\3\21\3\21\3\21\3\21"+
+		"\3\21\3\21\3\21\3\21\3\21\3\21\3\21\7\21\u00f8\n\21\f\21\16\21\u00fb\13"+
+		"\21\3\22\3\22\3\23\3\23\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\5\24\u0109"+
+		"\n\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\7\24\u0114\n\24\f\24"+
+		"\16\24\u0117\13\24\3\25\3\25\3\25\5\25\u011c\n\25\3\25\2\4 &\26\2\4\6"+
+		"\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(\2\13\3\2\4\5\4\2\4\5\31\32\3\2"+
+		"\34$\3\2%*\3\2./\4\2++\60\60\4\2;;==\4\2\6\6\61\65\3\2<=\2\u0130\2*\3"+
+		"\2\2\2\4\60\3\2\2\2\6T\3\2\2\2\bV\3\2\2\2\nb\3\2\2\2\fi\3\2\2\2\16o\3"+
+		"\2\2\2\20\u0086\3\2\2\2\22\u008b\3\2\2\2\24\u009a\3\2\2\2\26\u00a0\3\2"+
+		"\2\2\30\u00a9\3\2\2\2\32\u00af\3\2\2\2\34\u00b8\3\2\2\2\36\u00c8\3\2\2"+
+		"\2 \u00e9\3\2\2\2\"\u00fc\3\2\2\2$\u00fe\3\2\2\2&\u0108\3\2\2\2(\u011b"+
+		"\3\2\2\2*+\5\4\3\2+,\7\2\2\3,\3\3\2\2\2-/\5\6\4\2.-\3\2\2\2/\62\3\2\2"+
+		"\2\60.\3\2\2\2\60\61\3\2\2\2\61\5\3\2\2\2\62\60\3\2\2\2\63U\79\2\2\64"+
+		"U\5\36\20\2\65\66\5\b\5\2\66\67\7>\2\2\67U\3\2\2\289\5\n\6\29:\7>\2\2"+
+		":U\3\2\2\2;<\5\f\7\2<=\7>\2\2=U\3\2\2\2>U\5\20\t\2?@\5\16\b\2@A\7>\2\2"+
+		"AU\3\2\2\2BC\5\22\n\2CD\7>\2\2DU\3\2\2\2EF\5\24\13\2FG\7>\2\2GU\3\2\2"+
+		"\2HI\5\26\f\2IJ\7>\2\2JU\3\2\2\2KL\5\30\r\2LM\7>\2\2MU\3\2\2\2NO\5\32"+
+		"\16\2OP\7>\2\2PU\3\2\2\2QR\5\34\17\2RS\7>\2\2SU\3\2\2\2T\63\3\2\2\2T\64"+
+		"\3\2\2\2T\65\3\2\2\2T8\3\2\2\2T;\3\2\2\2T>\3\2\2\2T?\3\2\2\2TB\3\2\2\2"+
+		"TE\3\2\2\2TH\3\2\2\2TK\3\2\2\2TN\3\2\2\2TQ\3\2\2\2U\7\3\2\2\2VW\7\3\2"+
+		"\2W\\\7;\2\2XY\t\2\2\2Y[\7;\2\2ZX\3\2\2\2[^\3\2\2\2\\Z\3\2\2\2\\]\3\2"+
+		"\2\2]_\3\2\2\2^\\\3\2\2\2_`\7\6\2\2`a\5 \21\2a\t\3\2\2\2bc\7;\2\2cd\7"+
+		"\7\2\2de\5\"\22\2ef\7\b\2\2fg\7\6\2\2gh\5 \21\2h\13\3\2\2\2ij\7\t\2\2"+
+		"jk\7;\2\2kl\7\7\2\2lm\5$\23\2mn\7\b\2\2n\r\3\2\2\2op\7\n\2\2pq\5&\24\2"+
+		"qr\7\13\2\2rs\7>\2\2s|\5\4\3\2tu\7\f\2\2uv\5&\24\2vw\7\13\2\2wx\7>\2\2"+
+		"xy\5\4\3\2y{\3\2\2\2zt\3\2\2\2{~\3\2\2\2|z\3\2\2\2|}\3\2\2\2}\u0082\3"+
+		"\2\2\2~|\3\2\2\2\177\u0080\7\r\2\2\u0080\u0081\7>\2\2\u0081\u0083\5\4"+
+		"\3\2\u0082\177\3\2\2\2\u0082\u0083\3\2\2\2\u0083\u0084\3\2\2\2\u0084\u0085"+
+		"\7\16\2\2\u0085\17\3\2\2\2\u0086\u0087\7\n\2\2\u0087\u0088\5&\24\2\u0088"+
+		"\u0089\7\13\2\2\u0089\u008a\5\6\4\2\u008a\21\3\2\2\2\u008b\u008c\7\17"+
+		"\2\2\u008c\u008d\7;\2\2\u008d\u008e\7\6\2\2\u008e\u008f\7=\2\2\u008f\u0090"+
+		"\7\20\2\2\u0090\u0094\5 \21\2\u0091\u0092\7\21\2\2\u0092\u0093\7\6\2\2"+
+		"\u0093\u0095\7=\2\2\u0094\u0091\3\2\2\2\u0094\u0095\3\2\2\2\u0095\u0096"+
+		"\3\2\2\2\u0096\u0097\7>\2\2\u0097\u0098\5\4\3\2\u0098\u0099\7\22\2\2\u0099"+
+		"\23\3\2\2\2\u009a\u009b\7\23\2\2\u009b\u009c\5&\24\2\u009c\u009d\7>\2"+
+		"\2\u009d\u009e\5\4\3\2\u009e\u009f\7\24\2\2\u009f\25\3\2\2\2\u00a0\u00a1"+
+		"\7\25\2\2\u00a1\u00a2\7\26\2\2\u00a2\u00a3\7;\2\2\u00a3\u00a4\7\7\2\2"+
+		"\u00a4\u00a5\5(\25\2\u00a5\u00a6\7\b\2\2\u00a6\u00a7\7\6\2\2\u00a7\u00a8"+
+		"\5 \21\2\u00a8\27\3\2\2\2\u00a9\u00aa\7\27\2\2\u00aa\u00ab\7;\2\2\u00ab"+
+		"\u00ac\7\7\2\2\u00ac\u00ad\5(\25\2\u00ad\u00ae\7\b\2\2\u00ae\31\3\2\2"+
+		"\2\u00af\u00b0\7\30\2\2\u00b0\u00b5\5 \21\2\u00b1\u00b2\t\3\2\2\u00b2"+
+		"\u00b4\5 \21\2\u00b3\u00b1\3\2\2\2\u00b4\u00b7\3\2\2\2\u00b5\u00b3\3\2"+
+		"\2\2\u00b5\u00b6\3\2\2\2\u00b6\33\3\2\2\2\u00b7\u00b5\3\2\2\2\u00b8\u00bb"+
+		"\7\33\2\2\u00b9\u00ba\7:\2\2\u00ba\u00bc\t\3\2\2\u00bb\u00b9\3\2\2\2\u00bb"+
+		"\u00bc\3\2\2\2\u00bc\u00bd\3\2\2\2\u00bd\u00c2\7;\2\2\u00be\u00bf\t\2"+
+		"\2\2\u00bf\u00c1\7;\2\2\u00c0\u00be\3\2\2\2\u00c1\u00c4\3\2\2\2\u00c2"+
+		"\u00c0\3\2\2\2\u00c2\u00c3\3\2\2\2\u00c3\35\3\2\2\2\u00c4\u00c2\3\2\2"+
+		"\2\u00c5\u00c7\7?\2\2\u00c6\u00c5\3\2\2\2\u00c7\u00ca\3\2\2\2\u00c8\u00c6"+
+		"\3\2\2\2\u00c8\u00c9\3\2\2\2\u00c9\u00cb\3\2\2\2\u00ca\u00c8\3\2\2\2\u00cb"+
+		"\u00cc\7>\2\2\u00cc\37\3\2\2\2\u00cd\u00ce\b\21\1\2\u00ce\u00cf\t\4\2"+
+		"\2\u00cf\u00d0\7\7\2\2\u00d0\u00d1\5 \21\2\u00d1\u00d2\7\b\2\2\u00d2\u00ea"+
+		"\3\2\2\2\u00d3\u00d4\t\5\2\2\u00d4\u00d5\7\7\2\2\u00d5\u00d8\5(\25\2\u00d6"+
+		"\u00d7\t\2\2\2\u00d7\u00d9\5(\25\2\u00d8\u00d6\3\2\2\2\u00d8\u00d9\3\2"+
+		"\2\2\u00d9\u00da\3\2\2\2\u00da\u00db\7\b\2\2\u00db\u00ea\3\2\2\2\u00dc"+
+		"\u00dd\7;\2\2\u00dd\u00de\7\7\2\2\u00de\u00df\5\"\22\2\u00df\u00e0\7\b"+
+		"\2\2\u00e0\u00ea\3\2\2\2\u00e1\u00e2\7+\2\2\u00e2\u00ea\5 \21\n\u00e3"+
+		"\u00ea\5\30\r\2\u00e4\u00ea\5(\25\2\u00e5\u00e6\7\7\2\2\u00e6\u00e7\5"+
+		" \21\2\u00e7\u00e8\7\b\2\2\u00e8\u00ea\3\2\2\2\u00e9\u00cd\3\2\2\2\u00e9"+
+		"\u00d3\3\2\2\2\u00e9\u00dc\3\2\2\2\u00e9\u00e1\3\2\2\2\u00e9\u00e3\3\2"+
+		"\2\2\u00e9\u00e4\3\2\2\2\u00e9\u00e5\3\2\2\2\u00ea\u00f9\3\2\2\2\u00eb"+
+		"\u00ec\f\t\2\2\u00ec\u00ed\7,\2\2\u00ed\u00f8\5 \21\t\u00ee\u00ef\f\b"+
+		"\2\2\u00ef\u00f0\7-\2\2\u00f0\u00f8\5 \21\t\u00f1\u00f2\f\7\2\2\u00f2"+
+		"\u00f3\t\6\2\2\u00f3\u00f8\5 \21\b\u00f4\u00f5\f\6\2\2\u00f5\u00f6\t\7"+
+		"\2\2\u00f6\u00f8\5 \21\7\u00f7\u00eb\3\2\2\2\u00f7\u00ee\3\2\2\2\u00f7"+
+		"\u00f1\3\2\2\2\u00f7\u00f4\3\2\2\2\u00f8\u00fb\3\2\2\2\u00f9\u00f7\3\2"+
+		"\2\2\u00f9\u00fa\3\2\2\2\u00fa!\3\2\2\2\u00fb\u00f9\3\2\2\2\u00fc\u00fd"+
+		"\t\b\2\2\u00fd#\3\2\2\2\u00fe\u00ff\5 \21\2\u00ff%\3\2\2\2\u0100\u0101"+
+		"\b\24\1\2\u0101\u0102\7\66\2\2\u0102\u0109\5&\24\7\u0103\u0109\5(\25\2"+
+		"\u0104\u0105\7\7\2\2\u0105\u0106\5&\24\2\u0106\u0107\7\b\2\2\u0107\u0109"+
+		"\3\2\2\2\u0108\u0100\3\2\2\2\u0108\u0103\3\2\2\2\u0108\u0104\3\2\2\2\u0109"+
+		"\u0115\3\2\2\2\u010a\u010b\f\b\2\2\u010b\u010c\t\t\2\2\u010c\u0114\5&"+
+		"\24\t\u010d\u010e\f\6\2\2\u010e\u010f\7\67\2\2\u010f\u0114\5&\24\7\u0110"+
+		"\u0111\f\5\2\2\u0111\u0112\78\2\2\u0112\u0114\5&\24\6\u0113\u010a\3\2"+
+		"\2\2\u0113\u010d\3\2\2\2\u0113\u0110\3\2\2\2\u0114\u0117\3\2\2\2\u0115"+
+		"\u0113\3\2\2\2\u0115\u0116\3\2\2\2\u0116\'\3\2\2\2\u0117\u0115\3\2\2\2"+
+		"\u0118\u011c\7;\2\2\u0119\u011c\t\n\2\2\u011a\u011c\7:\2\2\u011b\u0118"+
+		"\3\2\2\2\u011b\u0119\3\2\2\2\u011b\u011a\3\2\2\2\u011c)\3\2\2\2\24\60"+
+		"T\\|\u0082\u0094\u00b5\u00bb\u00c2\u00c8\u00d8\u00e9\u00f7\u00f9\u0108"+
+		"\u0113\u0115\u011b";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
