@@ -24,37 +24,36 @@ Helpful links:
 
 The grammar in `src/main/antlr4/ArabicBASIC.g4` defines the current syntax—for example assignments with **صار**, conditionals with **اذا** / **ثم** / **نهاية اذا**, **اطبع** for output, **ادخل** for input, **مصفوفة** for arrays, and Arabic **IDENTIFIER** tokens.
 
-**Working examples** that match the current parser live alongside the older numbered demos:
+**Working examples** that match the current parser live under **`examples/`** (see [`examples/README.md`](examples/README.md)), alongside older numbered demos:
 
 | Scripts (Arabic syntax) | Rough purpose |
 |-------------------------|----------------|
-| `release/samples/CONDITIONAL_Ar.bas` | Simple `اذا` / `نهاية اذا` |
-| `release/samples/INPUT_Ar.bas` | `ادخل`, loop, array |
-| `release/samples/LOOP_Ar.bas` | Loop-style sample |
+| `examples/CONDITIONAL_Ar.bas` | Simple `اذا` / `نهاية اذا` |
+| `examples/INPUT_Ar.bas` | `ادخل`, loop, array |
+| `examples/LOOP_Ar.bas` | Loop-style sample |
 
-Many **`test_*.bas`** files under `release/samples/` still use **legacy Latin** keywords (`LET`, `IF`, `PRINT`, …). They do **not** match the current Arabic grammar; use them only with a build that still exposes that syntax, or after updating them to the Arabic forms.
+Many **`test_*.bas`** files in **`examples/`** still use **legacy Latin** keywords (`LET`, `IF`, `PRINT`, …). They do **not** match the current Arabic grammar; use them only with a build that still exposes that syntax, or after updating them to the Arabic forms.
 
 ---
 
 ## Running from the pre-built JAR
 
-A JAR is provided under **`release/`** (for example `ArabicBASIC-1.0.0.jar`). If that artifact is a single “fat” JAR with dependencies, you can run:
+A JAR may be provided under **`release/`** (for example `ArabicBASIC-1.0.0.jar`). From the **repository root**, if that artifact is a single “fat” JAR with dependencies, you can run:
 
 ```bash
-cd release
-java -cp ArabicBASIC-1.0.0.jar com.lisantra.arabicbasic.App samples/CONDITIONAL_Ar.bas
+java -cp release/ArabicBASIC-1.0.0.jar com.lisantra.arabicbasic.App examples/CONDITIONAL_Ar.bas
 ```
 
 Enable debug output (parse/runtime diagnostics and end-of-run scope dump when implemented for your build):
 
 ```bash
-java -cp ArabicBASIC-1.0.0.jar com.lisantra.arabicbasic.App --debug samples/CONDITIONAL_Ar.bas
+java -cp release/ArabicBASIC-1.0.0.jar com.lisantra.arabicbasic.App --debug examples/CONDITIONAL_Ar.bas
 ```
 
 CLI help:
 
 ```bash
-java -cp ArabicBASIC-1.0.0.jar com.lisantra.arabicbasic.App -h
+java -cp release/ArabicBASIC-1.0.0.jar com.lisantra.arabicbasic.App -h
 ```
 
 If `java` reports missing classes for ANTLR or Picocli, build the **jar-with-dependencies** from source (next section) and use `java -jar` instead of `-cp` with a thin JAR.
@@ -80,13 +79,19 @@ target/ArabicBASIC-0.7.0-release-jar-with-dependencies.jar
 Run an Arabic script:
 
 ```bash
-java -jar target/ArabicBASIC-0.7.0-release-jar-with-dependencies.jar release/samples/CONDITIONAL_Ar.bas
+java -jar target/ArabicBASIC-0.7.0-release-jar-with-dependencies.jar examples/CONDITIONAL_Ar.bas
 ```
 
 With debug:
 
 ```bash
-java -jar target/ArabicBASIC-0.7.0-release-jar-with-dependencies.jar --debug release/samples/INPUT_Ar.bas
+java -jar target/ArabicBASIC-0.7.0-release-jar-with-dependencies.jar --debug examples/INPUT_Ar.bas
+```
+
+Automated smoke tests (`examples/` Arabic scripts) run with:
+
+```bash
+mvn test
 ```
 
 ### In an IDE

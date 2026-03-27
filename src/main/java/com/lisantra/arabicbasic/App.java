@@ -8,6 +8,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import picocli.CommandLine;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -37,6 +38,16 @@ public class App implements Callable<Integer> {
    */
   @Override
   public Integer call() throws Exception {
+    return runScript(file.toPath(), showDebug);
+  }
+
+  /**
+   * Parse and run a UTF-8 script using {@link System#in}, {@link System#out}, and {@link
+   * System#err}. Used by the CLI and by tests.
+   *
+   * @return 0 on success, 1 on parse/runtime failure
+   */
+  public static int runScript(Path source, boolean showDebug) {
     /* u-nu-Arab is required for arabic digits */
     Locale arabicLocale =
         new Locale.Builder()
@@ -52,25 +63,25 @@ public class App implements Callable<Integer> {
     // TODO wrap in a class: Scope {}? and provide methods like resolve() and define()?
     // If so, then remember that Scope has one Symbol table.
 
-    /* create an input stream from the string */
-    ArabicBASICLexer lexer = new ArabicBASICLexer(CharStreams.fromPath(file.toPath()));
-    ArabicBASICParser parser = new ArabicBASICParser(new CommonTokenStream(lexer));
-
-    /* my custom error listener is needed for cleaner, and Arabic error messages.
-     * However, TODO it throws a cancellation exception even on resolved ambiguities which is
-     *           obviously not desirable. */
-    //    lexer.removeErrorListeners();
-    //    lexer.addErrorListener(BASICErrorListener.INSTANCE);
-    //    parser.removeErrorListeners();
-    //    parser.addErrorListener(BASICErrorListener.INSTANCE);
-
-    /* listen and warn for ambiguous grammar, but recover and continue if possible */
-    if (showDebug) {
-      parser.addErrorListener(new DiagnosticErrorListener());
-      parser.getInterpreter().setPredictionMode(PredictionMode.LL_EXACT_AMBIG_DETECTION);
-    }
-
     try {
+      /* create an input stream from the string */
+      ArabicBASICLexer lexer = new ArabicBASICLexer(CharStreams.fromPath(source));
+      ArabicBASICParser parser = new ArabicBASICParser(new CommonTokenStream(lexer));
+
+      /* my custom error listener is needed for cleaner, and Arabic error messages.
+       * However, TODO it throws a cancellation exception even on resolved ambiguities which is
+       *           obviously not desirable. */
+      //    lexer.removeErrorListeners();
+      //    lexer.addErrorListener(BASICErrorListener.INSTANCE);
+      //    parser.removeErrorListeners();
+      //    parser.addErrorListener(BASICErrorListener.INSTANCE);
+
+      /* listen and warn for ambiguous grammar, but recover and continue if possible */
+      if (showDebug) {
+        parser.addErrorListener(new DiagnosticErrorListener());
+        parser.getInterpreter().setPredictionMode(PredictionMode.LL_EXACT_AMBIG_DETECTION);
+      }
+
       /* Instantiate the parse tree */
       ParseTree programTree = parser.program();
 
