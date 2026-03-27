@@ -30,18 +30,20 @@ public class FunctionVariable extends Variable {
   }
 
   /**
-   * @return
+   * @return function name, parameter, and body as source text (not parse-tree internals).
    */
   @Override
   public String toString() {
-    // TODO replace with just symbol and it's new toString() method is automatically called in a
-    String symbolType = this.getSymbol().getClass().getSimpleName();
-
+    String fn = getSymbol() != null ? getSymbol().getName() : "?";
+    String arg = getArg() != null ? getArg() : "?";
+    String expr = body != null ? body.getText() : "?";
     return "["
-        + symbolType
-        + "] -> takes '"
-        + getArg()
-        + "' as an arg and calculates: "
-        + getbody();
+        + getSymbol().getClass().getSimpleName()
+        + " "
+        + fn
+        + "] arg '"
+        + arg
+        + "' -> "
+        + expr;
   }
 }
