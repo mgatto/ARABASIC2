@@ -1,6 +1,6 @@
 # ArabicBASIC
 
-A standalone **interpreter** for Arabic BASIC: programs use **Arabic keywords and identifiers** (and may use **Eastern Arabic–Indic digits** in numeric literals). The runtime is written in **Java** (ANTLR 4, Picocli) and ships as a JAR for any platform with a Java 11+ runtime.
+A standalone **interpreter** for Arabic BASIC: programs use **Arabic keywords and identifiers** (and may use **Eastern Arabic–Indic digits** in numeric literals). The runtime is written in **Java** (ANTLR 4, Picocli) and ships as a JAR for any platform with a **Java 21+** runtime.
 
 The interpreter sets the JVM default locale to **Arabic** with the **`ar-u-nu-arab`** numbering extension so numeric formatting and related locale behavior align with Arabic contexts.
 
@@ -10,7 +10,7 @@ A native executable for macOS (and later Windows/Linux) may follow once the buil
 
 ## Requirements
 
-- **Java 11 or higher** on your `PATH`
+- **Java 21 or higher** on your `PATH`
 - Scripts saved as **UTF-8** (without BOM is fine). The lexer reads the source file as Unicode text.
 
 Helpful links:
@@ -72,7 +72,7 @@ mvn clean package
 That produces a dependency-fat JAR:
 
 ```text
-target/ArabicBASIC-1.0-release-jar-with-dependencies.jar
+target/ArabicBASIC-0.7.0-release-jar-with-dependencies.jar
 ```
 
 (The version segment matches `<version>` in `pom.xml`.)
@@ -80,13 +80,13 @@ target/ArabicBASIC-1.0-release-jar-with-dependencies.jar
 Run an Arabic script:
 
 ```bash
-java -jar target/ArabicBASIC-1.0-release-jar-with-dependencies.jar release/samples/CONDITIONAL_Ar.bas
+java -jar target/ArabicBASIC-0.7.0-release-jar-with-dependencies.jar release/samples/CONDITIONAL_Ar.bas
 ```
 
 With debug:
 
 ```bash
-java -jar target/ArabicBASIC-1.0-release-jar-with-dependencies.jar --debug release/samples/INPUT_Ar.bas
+java -jar target/ArabicBASIC-0.7.0-release-jar-with-dependencies.jar --debug release/samples/INPUT_Ar.bas
 ```
 
 ### In an IDE
