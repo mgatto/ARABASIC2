@@ -21,6 +21,9 @@ replay_pid*
 .mtj.tmp/
 *.ctxt
 
+# ANTLR IDE / plugin cache (grammar source of truth: src/main/antlr4/*.g4 + Maven)
+src/main/antlr4/.antlr/
+
 # --- JetBrains (IntelliJ IDEA, etc.) ---
 .idea/
 *.iml

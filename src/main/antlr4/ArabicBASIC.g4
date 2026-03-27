@@ -1,5 +1,9 @@
 grammar ArabicBASIC;
 
+@header {
+package com.lisantra.arabicbasic;
+}
+
 program: block EOF;
 block: statement*;
 statement:  COMMENT // shouldn't have EOL because it's a terminal
