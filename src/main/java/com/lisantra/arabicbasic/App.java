@@ -90,9 +90,17 @@ public class App implements Callable<Integer> {
 
       /* Walk the interpreter through the parse tree */
       interpreter.visit(programTree);
+    } catch (ArabicBasicRuntimeException e) {
+      System.err.println(e.getMessage());
+      if (showDebug) {
+        e.printStackTrace();
+      }
+      return 1;
     } catch (Exception e) {
       System.err.println(e.getMessage());
-      if (showDebug) e.printStackTrace();
+      if (showDebug) {
+        e.printStackTrace();
+      }
       return 1;
     }
 

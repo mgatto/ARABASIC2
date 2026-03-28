@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -98,7 +97,9 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
           break;
 
         default:
-          System.out.println("Value's original type was " + val.getOriginalType());
+          throw new ArabicBasicRuntimeException(
+              "Cannot assign this kind of value (type: " + val.getOriginalType() + ").",
+              DeclarationSite.from(ctx));
       }
 
       /* this covers both creation and updating a variable */
@@ -123,7 +124,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     // but better to not cast it and instead to test for class type
     Variable existingArray = globalScope.get(id);
     if (!existingArray.getClass().getSimpleName().equals("ArrayVariable")) {
-      throw new IllegalArgumentException(id + " is not an Array");
+      throw new ArabicBasicRuntimeException(
+          "'" + id + "' is not an array.", DeclarationSite.from(ctx.IDENTIFIER().getSymbol()));
     }
 
     // visit expression to get value to insert
@@ -186,7 +188,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
   public Value visitUnary(ArabicBASICParser.UnaryContext ctx) {
     Value expr = (Value) visit(ctx.expression());
-    Double exprVal = makeNumber(expr);
+    Double exprVal = makeNumber(expr, DeclarationSite.from(ctx));
 
     /*
      * Copy by value here may only be necessary if there is a variable in the
@@ -210,7 +212,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
         return new Value(combined, "Array");
       } else {
-        throw new IllegalArgumentException("Arrays may not be subtracted.");
+        throw new ArabicBasicRuntimeException(
+            "Arrays may not be subtracted.", DeclarationSite.from(ctx.op));
       }
     }
 
@@ -220,13 +223,14 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
       if (ctx.op.getText().equals("+")) {
         return new Value((String) left.getVal() + (String) right.getVal(), "String");
       } else {
-        throw new IllegalArgumentException("Strings may not be subtracted.");
+        throw new ArabicBasicRuntimeException(
+            "Strings may not be subtracted.", DeclarationSite.from(ctx.op));
       }
     }
 
     // ensure both terms are addable/subtractable
-    Double leftVal = makeNumber(left);
-    Double rightVal = makeNumber(right);
+    Double leftVal = makeNumber(left, DeclarationSite.from(ctx));
+    Double rightVal = makeNumber(right, DeclarationSite.from(ctx));
 
     String resultType = getResultType(left, right);
 
@@ -240,13 +244,12 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     return new Value(leftVal - rightVal, resultType);
   }
 
-  private Double makeNumber(Value val) {
+  private static Double makeNumber(Value val, DeclarationSite site) {
     if (val.getVal() instanceof Double) {
       return (Double) val.getVal();
-    } else {
-      throw new IllegalArgumentException(
-          "Only numbers can be operated on here. You tried to use: '" + val.getVal() + "'");
     }
+    throw new ArabicBasicRuntimeException(
+        "A number was expected here; got: '" + val.getVal() + "'", site);
   }
 
   private String getResultType(Value left, Value right) {
@@ -277,8 +280,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     Value left = (Value) visit(ctx.expression(0));
     Value right = (Value) visit(ctx.expression(1));
 
-    Double leftVal = makeNumber(left);
-    Double rightVal = makeNumber(right);
+    Double leftVal = makeNumber(left, DeclarationSite.from(ctx));
+    Double rightVal = makeNumber(right, DeclarationSite.from(ctx));
 
     return new Value(leftVal % rightVal, "Integer");
   }
@@ -287,20 +290,20 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     Value left = (Value) visit(ctx.expression(0));
     Value right = (Value) visit(ctx.expression(1));
 
-    Double leftVal = makeNumber(left);
-    Double rightVal = makeNumber(right);
+    Double leftVal = makeNumber(left, DeclarationSite.from(ctx));
+    Double rightVal = makeNumber(right, DeclarationSite.from(ctx));
 
     String resultType = getResultType(left, right);
 
     // TODO can use getType() if I specify the operators as terminals
     if (ctx.op.getText().equals("*")) {
-      // TODO use Google Guava's "int mustNotOverflow = IntMath.checkedMultiply(x,
-      // y);"
+      // TODO use Google Guava's "int mustNotOverflow = IntMath.checkedMultiply(x, y);"
       return new Value(leftVal * rightVal, resultType);
     }
 
     if (rightVal == 0) {
-      throw new ArithmeticException("Cannot divide by zero");
+      throw new ArabicBasicRuntimeException(
+          "Cannot divide by zero.", DeclarationSite.from(ctx.op));
     }
 
     return new Value(leftVal / rightVal, resultType);
@@ -310,8 +313,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     Value base = (Value) visit(ctx.expression(0));
     Value exponent = (Value) visit(ctx.expression(1));
 
-    Double basePrimitive = makeNumber(base);
-    Double exponentPrimitive = makeNumber(exponent);
+    Double basePrimitive = makeNumber(base, DeclarationSite.from(ctx));
+    Double exponentPrimitive = makeNumber(exponent, DeclarationSite.from(ctx));
 
     String resultType = getResultType(base, exponent);
 
@@ -334,7 +337,9 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
     String id = ctx.IDENTIFIER().getText();
     if (!globalScope.containsKey(id)) {
-      throw new NoSuchElementException("Variable '" + id + "' has not yet been declared.");
+      throw new ArabicBasicRuntimeException(
+          "Variable '" + id + "' has not been declared yet.",
+          DeclarationSite.from(ctx.IDENTIFIER().getSymbol()));
     }
 
     // The symbol table's value is of custom type Value
@@ -348,7 +353,9 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
     String id = ctx.IDENTIFIER().getText();
     if (!globalScope.containsKey(id)) {
-      throw new NoSuchElementException("Variable '" + id + "' has not yet been declared.");
+      throw new ArabicBasicRuntimeException(
+          "Variable '" + id + "' has not been declared yet.",
+          DeclarationSite.from(ctx.IDENTIFIER().getSymbol()));
     }
 
     // get index
@@ -360,14 +367,15 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     // TODO use upperBound instead of size()
     int numberOfElements = targetArray.size();
     if (idx > numberOfElements) {
-      System.out.println(globalScope);
-      throw new ArrayIndexOutOfBoundsException(
-          "You tried to add a new element at position: "
+      throw new ArabicBasicRuntimeException(
+          "Array index "
               + idx
-              + ", but the array '"
+              + " is out of range for '"
               + id
-              + "' only has elements from position 0 to position "
-              + numberOfElements);
+              + "' (valid indices are 0 through "
+              + numberOfElements
+              + ").",
+          DeclarationSite.from(ctx));
     }
 
     String elementsType = val.getOriginalType();
@@ -399,7 +407,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
       return new Value(parsedArabicNumeral, type);
     } catch (ParseException pe) {
-      throw new IllegalArgumentException("Number could not be parsed");
+      throw new ArabicBasicRuntimeException(
+          "Number could not be parsed: " + inputNumerical, DeclarationSite.from(ctx), pe);
     }
   }
 
@@ -438,7 +447,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
     // 2. ensure it is numeric
     if (!(size.getOriginalType().equals("Integer"))) {
-      throw new IllegalArgumentException("argument: '" + size + "' is not an integer");
+      throw new ArabicBasicRuntimeException(
+          "Array size must be an integer; got: '" + size + "'", DeclarationSite.from(ctx));
     }
 
     return ((Double) size.getVal()).intValue();
@@ -456,7 +466,9 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     } else if (subscriptName != null) {
       String id = subscriptName.getText();
       if (!globalScope.containsKey(id)) {
-        throw new NoSuchElementException("Variable '" + id + "' has not yet been declared.");
+        throw new ArabicBasicRuntimeException(
+            "Variable '" + id + "' has not been declared yet.",
+            DeclarationSite.from(subscriptName.getSymbol()));
       }
 
       // The symbol table's value is of custom type Value
@@ -464,8 +476,9 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
       /* validate that it's an integer */
       if (!indexVal.getOriginalType().equals("Integer")) {
-        throw new IllegalArgumentException(
-            ctx.getText() + " is not a valid number for accessing an array element");
+        throw new ArabicBasicRuntimeException(
+            "Array subscript must be an integer; '" + id + "' is not an integer.",
+            DeclarationSite.from(subscriptName.getSymbol()));
       }
 
       index = ((Double) indexVal.getVal()).intValue();
@@ -613,10 +626,10 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
       return (Double) left.getVal() <= (Double) right.getVal();
     } else {
-      // TODO throw error
+      throw new ArabicBasicRuntimeException(
+          "Unknown comparison operator: '" + ctx.comp.getText() + "'",
+          DeclarationSite.from(ctx.comp));
     }
-
-    return false;
   }
 
   @Override
@@ -813,7 +826,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
         globalScope.put(id, variable);
 
       } catch (IOException e) {
-        System.out.println(e.toString());
+        throw new ArabicBasicRuntimeException(
+            "Could not read INPUT: " + e.getMessage(), DeclarationSite.from(varToken), e);
       }
     }
 
@@ -832,7 +846,9 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     /* upper bound can be an expression */
     Value upperExpression = (Value) visit(ctx.expression());
     if (!(upperExpression.getOriginalType().equals("Integer"))) {
-      throw new IllegalArgumentException("argument: '" + upperExpression + "' is not an integer");
+      throw new ArabicBasicRuntimeException(
+          "FOR loop upper bound must be an integer; got: '" + upperExpression + "'",
+          DeclarationSite.from(ctx.expression()));
     }
     int upper = ((Double) upperExpression.getVal()).intValue();
     // int upper = Integer.parseInt(ctx.upper.getText());
@@ -973,7 +989,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     if (fn instanceof FunctionVariable) {
       fnVar = (FunctionVariable) fn;
     } else {
-      throw new IllegalArgumentException(fnName + " is not a function");
+      throw new ArabicBasicRuntimeException(
+          "'" + fnName + "' is not a function.", DeclarationSite.from(ctx.funcName));
     }
 
     // 2. run the arg context to get a value, the passed-in value
@@ -1035,7 +1052,9 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
     // 2. ensure it is a string
     if (!argValue1.getOriginalType().equals("String")) {
-      throw new IllegalArgumentException("argument: '" + argValue1 + "' is not a string.");
+      throw new ArabicBasicRuntimeException(
+          "String function argument must be a string; got: '" + argValue1 + "'",
+          DeclarationSite.from(ctx));
     }
 
     String str = (String) argValue1.getVal();
@@ -1046,7 +1065,9 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
       argValue2 = (Value) visit(ctx.variable(1));
 
       if (!argValue2.getOriginalType().equals("Integer")) {
-        throw new IllegalArgumentException("argument: '" + argValue2 + "' should be a number.");
+        throw new ArabicBasicRuntimeException(
+            "This string function expects a number here; got: '" + argValue2 + "'",
+            DeclarationSite.from(ctx));
       }
     }
 
@@ -1062,26 +1083,32 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
       case "LEFT":
         // the grammar won't catch an absent 2nd arg
-        if (null == argValue2)
-          throw new IllegalArgumentException(
-              "The second argument is missing. It should be a number.");
+        if (null == argValue2) {
+          throw new ArabicBasicRuntimeException(
+              "LEFT requires a second numeric argument.", DeclarationSite.from(ctx));
+        }
 
-        if (((Double) argValue2.getVal()).intValue() > str.length())
-          throw new IllegalArgumentException(
-              "The second argument is greater than the length of the string.");
+        if (((Double) argValue2.getVal()).intValue() > str.length()) {
+          throw new ArabicBasicRuntimeException(
+              "LEFT length is greater than the string length (" + str.length() + ").",
+              DeclarationSite.from(ctx));
+        }
 
         retValue.setVal(str.substring(0, ((Double) argValue2.getVal()).intValue()));
         break;
 
       case "RIGHT":
         // the grammar won't catch an absent 2nd arg
-        if (null == argValue2)
-          throw new IllegalArgumentException(
-              "The second argument is missing. It should be a number.");
+        if (null == argValue2) {
+          throw new ArabicBasicRuntimeException(
+              "RIGHT requires a second numeric argument.", DeclarationSite.from(ctx));
+        }
 
-        if (((Double) argValue2.getVal()).intValue() > str.length())
-          throw new IllegalArgumentException(
-              "The second argument is greater than the length of the string.");
+        if (((Double) argValue2.getVal()).intValue() > str.length()) {
+          throw new ArabicBasicRuntimeException(
+              "RIGHT length is greater than the string length (" + str.length() + ").",
+              DeclarationSite.from(ctx));
+        }
         // will throw IndexOutOfBoundsException
         retValue.setVal(
             str.substring(str.length() - ((Double) argValue2.getVal()).intValue(), str.length()));
@@ -1097,7 +1124,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
         break;
 
       default:
-        throw new IllegalArgumentException("I do not recognize the function: '" + operation + "'.");
+        throw new ArabicBasicRuntimeException(
+            "Unrecognized string function: '" + operation + "'", DeclarationSite.from(ctx.name));
     }
 
     return retValue;
@@ -1120,8 +1148,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     String operation = ctx.name.getText();
 
     if (null == ctx.expression()) {
-      throw new IllegalArgumentException(
-          "This function requires a number as an argument, but none was given.");
+      throw new ArabicBasicRuntimeException(
+          "This function requires a numeric argument.", DeclarationSite.from(ctx));
     }
 
     // 1. Get value to operate upon
@@ -1130,7 +1158,9 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     // 2. ensure it is numeric
     if (!(argValue.getOriginalType().equals("Integer")
         || argValue.getOriginalType().equals("Real"))) {
-      throw new IllegalArgumentException("argument: '" + argValue + "' is not a number");
+      throw new ArabicBasicRuntimeException(
+          "Math function argument must be a number; got: '" + argValue + "'",
+          DeclarationSite.from(ctx));
     }
 
     // TODO has to be a better way to proxy the calls...
@@ -1145,8 +1175,10 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
         break;
 
       case "LOG":
-        if ((double) argValue.getVal() == 0.0)
-          throw new IllegalArgumentException("0 (zero) is not allowed for LOG(). ");
+        if ((double) argValue.getVal() == 0.0) {
+          throw new ArabicBasicRuntimeException(
+              "LOG argument must not be zero.", DeclarationSite.from(ctx));
+        }
 
         retValue.setVal(Math.log10((double) argValue.getVal()));
         break;
@@ -1180,7 +1212,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
         break;
 
       default:
-        throw new IllegalArgumentException("I do not recognize the function: '" + operation + "'.");
+        throw new ArabicBasicRuntimeException(
+            "Unrecognized math function: '" + operation + "'", DeclarationSite.from(ctx.name));
     }
 
     return retValue;
