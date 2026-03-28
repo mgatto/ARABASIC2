@@ -1,16 +1,22 @@
 package com.lisantra.arabicbasic;
 
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.tree.TerminalNode;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.Collator;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
+
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
   private Locale arabicLocale;
@@ -25,28 +31,35 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
   }
 
   public Object visitProgram(ArabicBASICParser.ProgramContext ctx) {
-    if (showDebug) System.out.println("I visited Program");
+    if (showDebug)
+      System.out.println("I visited Program");
 
     return visitChildren(ctx);
   }
 
   /* This is where we'd implement lexical block scope if we wanted */
   public Object visitBlock(ArabicBASICParser.BlockContext ctx) {
-    if (showDebug) System.out.println("I visited Block");
+    if (showDebug)
+      System.out.println("I visited Block");
 
     return visitChildren(ctx);
   }
 
   public Object visitStatement(ArabicBASICParser.StatementContext ctx) {
-    if (showDebug) System.out.println("I visited Statement");
+    if (showDebug)
+      System.out.println("I visited Statement");
 
     return visitChildren(ctx);
   }
 
   public Void visitSimpleAssignment(ArabicBASICParser.SimpleAssignmentContext ctx) {
-    if (showDebug) System.out.println("I visited Simple Assignment");
+    if (showDebug)
+      System.out.println("I visited Simple Assignment");
 
-    /* If val is another variable [A = B], then a new value is returned; is "copy by value" */
+    /*
+     * If val is another variable [A = B], then a new value is returned; is
+     * "copy by value"
+     */
     Value val = (Value) visit(ctx.expression());
     Variable var = null;
 
@@ -54,7 +67,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     for (int i = 0; i < varCount; i++) {
       String id = ctx.IDENTIFIER(i).getText();
 
-      Symbol s = new VariableSymbol(id);
+      Symbol s = new VariableSymbol(id, DeclarationSite.from(ctx.IDENTIFIER(i).getSymbol()));
 
       switch (val.getOriginalType()) {
         case "String":
@@ -66,19 +79,18 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
           var = new NumericVariable(s, val);
           break;
 
-        case "Array":
-          {
-            ArrayVariable av = new ArrayVariable(s, val);
-            Object raw = val.getVal();
-            int n = 0;
-            
-            if (raw instanceof List) {
-              n = ((List<?>) raw).size();
-            }
+        case "Array": {
+          ArrayVariable av = new ArrayVariable(s, val);
+          Object raw = val.getVal();
+          int n = 0;
 
-            av.setUpperBound(n > 0 ? n - 1 : 0);
-            var = av;
+          if (raw instanceof List) {
+            n = ((List<?>) raw).size();
           }
+
+          av.setUpperBound(n > 0 ? n - 1 : 0);
+          var = av;
+        }
           break;
 
         case "Function":
@@ -97,13 +109,15 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
   }
 
   public Void visitArrayAssignment(ArabicBASICParser.ArrayAssignmentContext ctx) {
-    if (showDebug) System.out.println("I visited Array Assignment");
+    if (showDebug)
+      System.out.println("I visited Array Assignment");
 
     /* we don't need to create a new symbol for element assignment */
     String id = ctx.IDENTIFIER().getSymbol().getText();
     Integer index = (Integer) visit(ctx.subscript());
 
-    if (showDebug) System.out.println("Index = " + index);
+    if (showDebug)
+      System.out.println("Index = " + index);
 
     // get the widened, stored Variable associated with id. It should be an Array,
     // but better to not cast it and instead to test for class type
@@ -114,7 +128,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
     // visit expression to get value to insert
     Value newElement = (Value) visit(ctx.expression());
-    if (showDebug) System.out.println("New element = " + newElement);
+    if (showDebug)
+      System.out.println("New element = " + newElement);
 
     // TODO check type of value to insert; check the Value's originalType
 
@@ -125,35 +140,42 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
     ArrayList targetArray = (ArrayList) arrayContainer.getVal();
 
-    // Copy! this fixed an error where the elements were refs if "targetArray.set(index,
+    // Copy! this fixed an error where the elements were refs if
+    // "targetArray.set(index,
     // newElement);"
     Value existingElement = (Value) targetArray.get(index);
     existingElement.setVal(newElement.getVal());
     existingElement.setOriginalType(newElement.getOriginalType());
 
-    /* must test for existing index; add() for new element, and set() for updating */
-    /*try {
-      // could just try to get it and deal with exception? expensive in resources (?)
-      // Object existingElement = targetArray.get(index);
-      // update
-      targetArray.set(index, newElement); // TODO enforce consistent typing of elements
-    } catch (IndexOutOfBoundsException idxe) {
-      * add new element and enforce array capacity *
-
-
-      if (index > maxIndex) {
-        System.out.println(globalScope);
-        throw new ArrayIndexOutOfBoundsException(
-            "You tried to add a new element at position: "
-                + index
-                + ", but the array '"
-                + id
-                + "' only has elements from position: 0 to position: "
-                + maxIndex);
-      }
-
-      // targetArray.add(index, newElement);
-    }*/
+    /*
+     * must test for existing index; add() for new element, and set() for updating
+     */
+    /*
+     * try {
+     * // could just try to get it and deal with exception? expensive in resources
+     * (?)
+     * // Object existingElement = targetArray.get(index);
+     * // update
+     * targetArray.set(index, newElement); // TODO enforce consistent typing of
+     * elements
+     * } catch (IndexOutOfBoundsException idxe) {
+     * add new element and enforce array capacity *
+     * 
+     * 
+     * if (index > maxIndex) {
+     * System.out.println(globalScope);
+     * throw new ArrayIndexOutOfBoundsException(
+     * "You tried to add a new element at position: "
+     * + index
+     * + ", but the array '"
+     * + id
+     * + "' only has elements from position: 0 to position: "
+     * + maxIndex);
+     * }
+     * 
+     * // targetArray.add(index, newElement);
+     * }
+     */
 
     return null;
   }
@@ -166,8 +188,12 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     Value expr = (Value) visit(ctx.expression());
     Double exprVal = makeNumber(expr);
 
-    /* Copy by value here may only be necessary if there is a variable in the expression.
-     * Otherwise, it mutates the original like this A = 1, X=-A and negates A retroactively. */
+    /*
+     * Copy by value here may only be necessary if there is a variable in the
+     * expression.
+     * Otherwise, it mutates the original like this A = 1, X=-A and negates A
+     * retroactively.
+     */
     return new Value(-exprVal, expr.getOriginalType());
   }
 
@@ -204,7 +230,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
     String resultType = getResultType(left, right);
 
-    // TODO can use getType() if I specify the operators as terminals by aliasing them as
+    // TODO can use getType() if I specify the operators as terminals by aliasing
+    // them as
     // tokens in the grammar.
     if (ctx.op.getText().equals("+")) {
       return new Value(leftVal + rightVal, resultType);
@@ -240,7 +267,9 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
   /**
    * {@inheritDoc}
    *
-   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * <p>
+   * The default implementation returns the result of calling
+   * {@link #visitChildren} on {@code
    * ctx}.
    */
   @Override
@@ -265,7 +294,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
     // TODO can use getType() if I specify the operators as terminals
     if (ctx.op.getText().equals("*")) {
-      // TODO use Google Guava's "int mustNotOverflow = IntMath.checkedMultiply(x, y);"
+      // TODO use Google Guava's "int mustNotOverflow = IntMath.checkedMultiply(x,
+      // y);"
       return new Value(leftVal * rightVal, resultType);
     }
 
@@ -285,8 +315,10 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
     String resultType = getResultType(base, exponent);
 
-    // Copy by value here may only be necessary if there is a variable in the expression.
-    // Otherwise, it mutates the original like this A = 1, X=-A and negates A retroactively.
+    // Copy by value here may only be necessary if there is a variable in the
+    // expression.
+    // Otherwise, it mutates the original like this A = 1, X=-A and negates A
+    // retroactively.
     return new Value(Math.pow(basePrimitive, exponentPrimitive), resultType);
   }
 
@@ -297,7 +329,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
    * @return the value associated with the var name
    */
   public Value visitName(ArabicBASICParser.NameContext ctx) {
-    if (showDebug) System.out.println("I visited Identifier");
+    if (showDebug)
+      System.out.println("I visited Identifier");
 
     String id = ctx.IDENTIFIER().getText();
     if (!globalScope.containsKey(id)) {
@@ -310,7 +343,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
   @Override
   public Value visitArrayAccess(ArabicBASICParser.ArrayAccessContext ctx) {
-    if (showDebug) System.out.println("I visited array access");
+    if (showDebug)
+      System.out.println("I visited array access");
 
     String id = ctx.IDENTIFIER().getText();
     if (!globalScope.containsKey(id)) {
@@ -359,7 +393,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
       type = "Real";
     }
 
-    //  convert the text to english digits, and then re-Arabicize later on output
+    // convert the text to english digits, and then re-Arabicize later on output
     try {
       double parsedArabicNumeral = arabicNumberFormat.parse(inputNumerical).doubleValue();
 
@@ -374,14 +408,15 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
   }
 
   public Void visitArrayCreation(ArabicBASICParser.ArrayCreationContext ctx) {
-    if (showDebug) System.out.println("I visited Array Creation");
+    if (showDebug)
+      System.out.println("I visited Array Creation");
 
     // 2. get array_size
     Integer size = (Integer) visit(ctx.arraySize());
 
     // 1. get identifier
     String id = ctx.IDENTIFIER().getText();
-    Symbol s = new VariableSymbol(id);
+    Symbol s = new VariableSymbol(id, DeclarationSite.from(ctx.IDENTIFIER().getSymbol()));
 
     // 3. wrap in Value; the type of List's elements are unknowable at this stage.
     List<Value> newArray = new ArrayList<>(size);
@@ -445,18 +480,21 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
     // How many conditions to run?
     int testCount = ctx.booleanExpression().size();
-    if (showDebug) System.out.println("There are " + testCount + " IFs and ELSE IFs.");
+    if (showDebug)
+      System.out.println("There are " + testCount + " IFs and ELSE IFs.");
 
     /* how many blocks are here? */
     int blockCount = ctx.block().size();
-    if (showDebug) System.out.println("There are " + blockCount + " blocks in this IF statement.");
+    if (showDebug)
+      System.out.println("There are " + blockCount + " blocks in this IF statement.");
 
     for (int i = 0; i < testCount; i++) {
       // it could be Boolean or Value from atomicBoolean rule
       Object conditionalExpr = visit(ctx.booleanExpression(i));
       if (conditionalExpr instanceof Boolean) {
         condition = (Boolean) conditionalExpr;
-        // special condition for an atomic of a constant or variable all by itself in the condition
+        // special condition for an atomic of a constant or variable all by itself in
+        // the condition
       } else if (conditionalExpr instanceof Value) {
         // any non-null value true; else we'd get an undefined exception
         condition = true;
@@ -471,7 +509,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
       }
     }
 
-    // Up to HERE, all the conditions evaluated to false, so let's see if there is an ELSE
+    // Up to HERE, all the conditions evaluated to false, so let's see if there is
+    // an ELSE
     if (blockCount == testCount + 1) {
       // if condition is false, and there is an else block, then visit it.
       visit(ctx.block(blockCount - 1));
@@ -479,29 +518,33 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
     return null;
 
-    /* with named keyword tokens, I can do this:
-    if (ctx.start.getType() == YourLexer.BOOL) {
-      // it's a BOOL token
-    }
-    or this (this is python?) myLexer.getVocabulary.getSymbolicName(myTerminalNode.getSymbol.getType)
-    Those vocabulary methods seem to be the preferred way get at the tokens in Antlr 4.5, and tokenNames appears to be deprecated.
-
-    ctx.start.getLine();
-    */
+    /*
+     * with named keyword tokens, I can do this:
+     * if (ctx.start.getType() == YourLexer.BOOL) {
+     * // it's a BOOL token
+     * }
+     * or this (this is python?)
+     * myLexer.getVocabulary.getSymbolicName(myTerminalNode.getSymbol.getType)
+     * Those vocabulary methods seem to be the preferred way get at the tokens in
+     * Antlr 4.5, and tokenNames appears to be deprecated.
+     * 
+     * ctx.start.getLine();
+     */
   }
 
   /**
    * {@inheritDoc}
    *
-   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * <p>
+   * The default implementation returns the result of calling
+   * {@link #visitChildren} on {@code
    * ctx}.
    */
   @Override
   public Void visitSingleLineConditional(ArabicBASICParser.SingleLineConditionalContext ctx) {
     Boolean condition = null;
 
-    Object conditionalExpr =
-        visit(ctx.booleanExpression()); // it could be Boolean or Value from atomicBoolean rule
+    Object conditionalExpr = visit(ctx.booleanExpression()); // it could be Boolean or Value from atomicBoolean rule
     if (conditionalExpr instanceof Boolean) {
       condition = (Boolean) conditionalExpr;
       // special condition for a constant or variable all by itself in the condition
@@ -532,7 +575,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
       System.out.println(
           "left: " + left.getVal() + " " + ctx.comp.getText() + " right: " + right.getVal());
 
-    //  What if one is a string and the other term is not? Check for this.
+    // What if one is a string and the other term is not? Check for this.
     Integer strComparison = null;
     if (Objects.equals(left.getOriginalType(), "String")
         && Objects.equals(right.getOriginalType(), "String")) {
@@ -581,8 +624,10 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     Boolean left = (Boolean) visit(ctx.booleanExpression(0));
     Boolean right = (Boolean) visit(ctx.booleanExpression(1));
 
-    if (showDebug) System.out.println(left);
-    if (showDebug) System.out.println(right);
+    if (showDebug)
+      System.out.println(left);
+    if (showDebug)
+      System.out.println(right);
 
     return (left && right);
   }
@@ -592,8 +637,10 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     Boolean left = (Boolean) visit(ctx.booleanExpression(0));
     Boolean right = (Boolean) visit(ctx.booleanExpression(1));
 
-    if (showDebug) System.out.println(left);
-    if (showDebug) System.out.println(right);
+    if (showDebug)
+      System.out.println(left);
+    if (showDebug)
+      System.out.println(right);
 
     return (left || right);
   }
@@ -610,7 +657,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
   }
 
   /**
-   * Tests only for existence; a variable is defined or a constant (which is always true)
+   * Tests only for existence; a variable is defined or a constant (which is
+   * always true)
    *
    * @param ctx
    * @return
@@ -618,7 +666,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
   @Override
   public Value visitAtomicBoolean(ArabicBASICParser.AtomicBooleanContext ctx) {
     /* it could be visitName(), visitNumeric() or visitText() */
-    //    Object x = visit(ctx.variable(ctx));
+    // Object x = visit(ctx.variable(ctx));
     // how to tell if it should return a value or be evaulated as a Boolean??
     // just run visitChildren().
 
@@ -627,7 +675,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
   @Override
   public Void visitPrint(ArabicBASICParser.PrintContext ctx) {
-    if (showDebug) System.out.println("I visited Print");
+    if (showDebug)
+      System.out.println("I visited Print");
 
     // loop through how many expressions there are
     int exprCount = ctx.expression().size();
@@ -640,28 +689,32 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
       int spacerCount = ctx.spacer.size();
       if (i < spacerCount) {
         String spacingController = ctx.spacer.get(i).getText();
-        if (Objects.equals(spacingController, ";")) spacingSeparator = "";
+        if (Objects.equals(spacingController, ";"))
+          spacingSeparator = "";
       }
 
       NumberFormat arabicNumberFormat;
       Object boxedPrimitive = exprToPrint.getVal();
 
-      if (showDebug) System.out.println(boxedPrimitive);
+      if (showDebug)
+        System.out.println(boxedPrimitive);
 
       // Odd situation in an array where it's wrapped again
       if (exprToPrint.getVal() instanceof Value) {
-        //        System.out.println("It IS a Value obj!");
-        //        System.out.println(exprToPrint.getVal());
+        // System.out.println("It IS a Value obj!");
+        // System.out.println(exprToPrint.getVal());
         boxedPrimitive = ((Value) boxedPrimitive).getVal();
       }
 
-      /* special case for arrays, since getOriginalType becomes that of it's elements */
+      /*
+       * special case for arrays, since getOriginalType becomes that of it's elements
+       */
       if (boxedPrimitive instanceof ArrayList) {
         for (Value element : (ArrayList<Value>) boxedPrimitive) {
           // TODO ugh, I have to check by type just like below!
           // TODO this is a good use case for recursion!
           // arabicNumberFormat = NumberFormat.getNumberInstance(this.arabicLocale);
-          //          System.out.println(arabicNumberFormat.format(boxedPrimitive));
+          // System.out.println(arabicNumberFormat.format(boxedPrimitive));
           System.out.println(element.getVal());
         }
 
@@ -682,9 +735,11 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
           // TODO we may have an Array element here
 
           // truncate it
-          /*new DecimalFormat(
-          "#,###.##",
-          DecimalFormatSymbols.getInstance(customLocale)).format(d))*/
+          /*
+           * new DecimalFormat(
+           * "#,###.##",
+           * DecimalFormatSymbols.getInstance(customLocale)).format(d))
+           */
 
           boxedPrimitive = ((Double) boxedPrimitive).intValue();
           System.out.println(arabicNumberFormat.format(boxedPrimitive));
@@ -719,14 +774,14 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
       Integer intInput = null;
       Double floatInput = null;
       String textInput = null;
-      String id = varTokenIter.next().getText();
-      Symbol s = new VariableSymbol(id);
+      Token varToken = varTokenIter.next();
+      String id = varToken.getText();
+      Symbol s = new VariableSymbol(id, DeclarationSite.from(varToken));
       Variable variable = null;
 
       try {
         // get line input
-        BufferedReader reader =
-            new BufferedReader(new InputStreamReader(System.in)); // using java.io.*
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in)); // using java.io.*
         String input = reader.readLine(); // it reads everything into string
         // or, String str = System.console().readLine();
 
@@ -765,7 +820,10 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     return null;
   }
 
-  /** If val is another variable [A = B], then a new value is returned; is "copy by value" */
+  /**
+   * If val is another variable [A = B], then a new value is returned; is "copy by
+   * value"
+   */
   @Override
   public Void visitForLoop(ArabicBASICParser.ForLoopContext ctx) {
 
@@ -779,7 +837,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     int upper = ((Double) upperExpression.getVal()).intValue();
     // int upper = Integer.parseInt(ctx.upper.getText());
 
-    // TODO if I decide to be not inclusive, then either subtract 1 here or change "while" below
+    // TODO if I decide to be not inclusive, then either subtract 1 here or change
+    // "while" below
 
     int counter = lower;
 
@@ -788,28 +847,31 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
       step = Integer.parseInt(ctx.step.getText());
     }
 
-    if (showDebug) System.out.printf("lower=%d%n", lower);
-    if (showDebug) System.out.printf("upper=%d%n", upper);
+    if (showDebug)
+      System.out.printf("lower=%d%n", lower);
+    if (showDebug)
+      System.out.printf("upper=%d%n", upper);
 
     // 1. instantiate control variable = "lower" and add it to var table
     String id = ctx.control.getText();
-    Symbol s = new VariableSymbol(id);
+    Symbol s = new VariableSymbol(id, DeclarationSite.from(ctx.control));
 
     // temp val using lower, which should be the same as counter...
     Value controlVal = new Value((double) lower, "Integer");
     Variable controlVar = new NumericVariable(s, controlVal);
-    //    globalScope.put(id, controlVar);
+    // globalScope.put(id, controlVar);
 
     // Start Java while loop
     // 2. if control var is less than "upper", then visit(block)
     while (counter >= lower && counter <= upper) {
-      // 3.  store updated value FIRST
+      // 3. store updated value FIRST
       controlVal.setVal((double) counter);
       globalScope.put(id, controlVar);
 
       visit(ctx.block());
 
-      if (showDebug) System.out.printf("counter=%d%n", counter);
+      if (showDebug)
+        System.out.printf("counter=%d%n", counter);
 
       // 4. increment control var by step
       counter += step;
@@ -821,12 +883,15 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
   /**
    * {@inheritDoc}
    *
-   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * <p>
+   * The default implementation returns the result of calling
+   * {@link #visitChildren} on {@code
    * ctx}.
    */
   @Override
   public Void visitWhileLoop(ArabicBASICParser.WhileLoopContext ctx) {
-    // assume true, so we can enter the loop; can be "Break"ed if condition evaluates to false
+    // assume true, so we can enter the loop; can be "Break"ed if condition
+    // evaluates to false
     // before executing "block"
     Boolean condition = true;
 
@@ -836,7 +901,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
       if (conditionalExpr instanceof Boolean) {
         condition = (Boolean) conditionalExpr;
       } else if (conditionalExpr instanceof Value) {
-        // special condition for an atomic of a constant or variable all by itself in the condition
+        // special condition for an atomic of a constant or variable all by itself in
+        // the condition
         // any non-null value true; else we'd get an undefined exception
         condition = true;
       }
@@ -856,7 +922,9 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
   /**
    * {@inheritDoc}
    *
-   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * <p>
+   * The default implementation returns the result of calling
+   * {@link #visitChildren} on {@code
    * ctx}.
    */
   @Override
@@ -883,7 +951,9 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
   /**
    * {@inheritDoc}
    *
-   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * <p>
+   * The default implementation returns the result of calling
+   * {@link #visitChildren} on {@code
    * ctx}.
    */
   @Override
@@ -902,29 +972,37 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
     // 2. run the arg context to get a value, the passed-in value
     Value argValue = (Value) visit(ctx.variable());
-    //    Object actualArgumentContent = argValue.getVal();
-    if (showDebug) System.out.println(argValue);
+    // Object actualArgumentContent = argValue.getVal();
+    if (showDebug)
+      System.out.println(argValue);
 
     // 3. check it has the argument (s) <-- grammar takes care of it,
     // and any type mismatch will be caught by visitNumeric/visitText() etc
 
-    // 4. copy the current arg value into a new var whose symbol was originally defined as a
-    // function arg symbol and set the value of the arg into the Symbol table so the visit*() can
+    // 4. copy the current arg value into a new var whose symbol was originally
+    // defined as a
+    // function arg symbol and set the value of the arg into the Symbol table so the
+    // visit*() can
     // get to it
     String argSymbol = fnVar.getArg();
-    globalScope.put(fnVar.getArg(), new Variable(new VariableSymbol(fnVar.getArg()), argValue));
+    globalScope.put(
+        fnVar.getArg(),
+        new Variable(new VariableSymbol(fnVar.getArg(), DeclarationSite.UNKNOWN), argValue));
     // ?? TODO needs to replicate switch to make it the right sub-type of Variable
 
     // 5. apply the raw value to the functionExpression context
-    // let it run now, looking for the value of the ARG variable just recently added to the variable
+    // let it run now, looking for the value of the ARG variable just recently added
+    // to the variable
     // table
-    Value fnResult2 = (Value) visit(fnVar.getbody()); // should return a Value() instance
-    if (showDebug) System.out.println(fnResult2);
+    Value fnResult2 = (Value) visit(fnVar.getBody()); // should return a Value() instance
+    if (showDebug)
+      System.out.println(fnResult2);
 
     // 6. Destroy the arg variable in the symbol table
     globalScope.remove(fnVar.getArg());
 
-    // 7. return the raw result wrapped, or just forward the Value class, actually...
+    // 7. return the raw result wrapped, or just forward the Value class,
+    // actually...
     return fnResult2;
   }
 
@@ -966,12 +1044,13 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     }
 
     switch (operation) {
-        // MID
+      // MID
       case "LEN":
         retValue.setVal((double) str.length());
         retValue.setOriginalType("Integer");
 
-        if (showDebug) System.out.println(retValue);
+        if (showDebug)
+          System.out.println(retValue);
         break;
 
       case "LEFT":
@@ -1020,7 +1099,9 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
   /**
    * {@inheritDoc}
    *
-   * <p>The default implementation returns the result of calling {@link #visitChildren} on {@code
+   * <p>
+   * The default implementation returns the result of calling
+   * {@link #visitChildren} on {@code
    * ctx}.
    */
   @Override
@@ -1083,9 +1164,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
       case "RND":
         retValue.setVal(
-            (double)
-                ThreadLocalRandom.current()
-                    .nextInt(0, ((Double) argValue.getVal()).intValue() + 1));
+            (double) ThreadLocalRandom.current()
+                .nextInt(0, ((Double) argValue.getVal()).intValue() + 1));
         retValue.setOriginalType("Integer");
         break;
 
