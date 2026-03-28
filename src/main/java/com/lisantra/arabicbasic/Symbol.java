@@ -1,7 +1,13 @@
 package com.lisantra.arabicbasic;
 
-/** Super type for all symbols in the ArabicBASIC language. */
-public abstract class Symbol {
+/**
+ * Super type for all symbols in the ArabicBASIC language.
+ *
+ * <p>Sealed so all symbol kinds are known at compile time; add new kinds by extending this type
+ * and listing them in {@code permits}, then handle them in any exhaustive {@code switch} on
+ * {@code Symbol}.
+ */
+public sealed abstract class Symbol permits VariableSymbol, FunctionSymbol, LabelSymbol {
   /** */
   private final String name;
 

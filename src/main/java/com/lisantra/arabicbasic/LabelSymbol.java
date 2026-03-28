@@ -1,7 +1,7 @@
 package com.lisantra.arabicbasic;
 
 /** Marks a symbol as block name. */
-public class LabelSymbol extends Symbol {
+public final class LabelSymbol extends Symbol {
 
   /**
    * Constructor.

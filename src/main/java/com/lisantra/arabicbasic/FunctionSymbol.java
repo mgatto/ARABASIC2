@@ -1,7 +1,7 @@
 package com.lisantra.arabicbasic;
 
 /** Types a variable's symbol as being a function. */
-public class FunctionSymbol extends Symbol {
+public final class FunctionSymbol extends Symbol {
 
   /**
    * Constructor.
