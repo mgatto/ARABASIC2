@@ -1,32 +1,29 @@
 package com.lisantra.arabicbasic;
 
-// TODO maybe THIS should be parameterized with the type of the Value's val or type of it's
-// elements if ArrayList
+import java.util.Objects;
+
+// TODO maybe THIS should be parameterized with the type of the Value's val or type of its elements if ArrayList
 public class FunctionVariable extends Variable {
-  private String argSymbol = null;
-  private ArabicBASICParser.ExpressionContext body = null;
+  private final String argSymbol;
+  private final ArabicBASICParser.ExpressionContext body;
 
   public FunctionVariable(
       Symbol symbol, Value value, String argSymbol, ArabicBASICParser.ExpressionContext body) {
-    super(symbol, value);
-    this.body = body;
-    this.argSymbol = argSymbol;
+    super(Objects.requireNonNull(symbol, "symbol"), Objects.requireNonNull(value, "value"));
+    String arg = Objects.requireNonNull(argSymbol, "argSymbol");
+    if (arg.isBlank()) {
+      throw new IllegalArgumentException("argSymbol must not be blank");
+    }
+    this.argSymbol = arg;
+    this.body = Objects.requireNonNull(body, "body");
   }
 
-  public ArabicBASICParser.ExpressionContext getbody() {
+  public ArabicBASICParser.ExpressionContext getBody() {
     return body;
-  }
-
-  public void setBody(ArabicBASICParser.ExpressionContext body) {
-    this.body = body;
   }
 
   public String getArg() {
     return argSymbol;
-  }
-
-  public void setArg(String arg) {
-    this.argSymbol = arg;
   }
 
   /**
@@ -34,16 +31,13 @@ public class FunctionVariable extends Variable {
    */
   @Override
   public String toString() {
-    String fn = getSymbol() != null ? getSymbol().getName() : "?";
-    String arg = getArg() != null ? getArg() : "?";
-    String expr = body != null ? body.getText() : "?";
     return "["
         + getSymbol().getClass().getSimpleName()
         + " "
-        + fn
+        + getSymbol().getName()
         + "] arg '"
-        + arg
+        + argSymbol
         + "' -> "
-        + expr;
+        + body.getText();
   }
 }

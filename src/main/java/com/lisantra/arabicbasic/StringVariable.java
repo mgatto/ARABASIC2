@@ -1,28 +1,42 @@
 package com.lisantra.arabicbasic;
 
+import java.util.Objects;
+
 /** Represents a variable whose value is a String. A subclass of Variable. */
 public class StringVariable extends Variable {
-  /** A proxy for java.lang.String.length. Intended */
-  private int length = 0;
 
   /**
    * Constructor.
    *
    * @param symbol The variable's name.
-   * @param value The variable's content.
+   * @param value The variable's content; {@link Value#getVal()} must be a non-null {@link String}.
    */
   public StringVariable(Symbol symbol, Value value) {
-    super(symbol, value);
-    /* visitText() ensures the value is only a String */
-    length = ((String) value.getVal()).length();
+    super(symbol, Objects.requireNonNull(value, "value"));
+    validatedStringLength(value);
   }
 
   /**
-   * Accessor for the String value.
-   *
-   * @return int The length of the string.
+   * @return the length of the current string in {@link #getValue()} (same rules as construction)
    */
   public int getLength() {
-    return length;
+    return validatedStringLength(getValue());
+  }
+
+  private static int validatedStringLength(Value value) {
+    Objects.requireNonNull(value, "value");
+    Object raw = value.getVal();
+    if (raw == null) {
+      throw new IllegalArgumentException("StringVariable requires a non-null string (getVal() was null)");
+    }
+    if (!(raw instanceof String)) {
+      throw new IllegalArgumentException(
+          "StringVariable requires String content, got "
+              + raw.getClass().getName()
+              + " (originalType="
+              + value.getOriginalType()
+              + ")");
+    }
+    return ((String) raw).length();
   }
 }
