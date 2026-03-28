@@ -934,7 +934,9 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     Symbol s = new FunctionSymbol(id);
 
     // 2. get arg and visit(identifier)
-    String argumentPlaceholder = ctx.variable().getText();
+    ArabicBASICParser.VariableContext argCtx = ctx.variable();
+    String argumentPlaceholder = argCtx.getText();
+    DeclarationSite argDeclarationSite = declarationSiteForFormalParameter(argCtx);
 
     // 3. get the body/expression
     ArabicBASICParser.ExpressionContext functionExpression = ctx.expression();
@@ -943,7 +945,11 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     globalScope.put(
         id,
         new FunctionVariable(
-            s, new Value(null, "Function"), argumentPlaceholder, functionExpression));
+            s,
+            new Value(null, "Function"),
+            argumentPlaceholder,
+            argDeclarationSite,
+            functionExpression));
 
     return null;
   }
@@ -987,7 +993,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     String argSymbol = fnVar.getArg();
     globalScope.put(
         fnVar.getArg(),
-        new Variable(new VariableSymbol(fnVar.getArg(), DeclarationSite.UNKNOWN), argValue));
+        new Variable(
+            new VariableSymbol(fnVar.getArg(), fnVar.getArgDeclarationSite()), argValue));
     // ?? TODO needs to replicate switch to make it the right sub-type of Variable
 
     // 5. apply the raw value to the functionExpression context
@@ -1177,5 +1184,18 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     }
 
     return retValue;
+  }
+
+  /**
+   * Formal parameters use {@code variable} in the grammar; only an {@link
+   * ArabicBASICParser.NameContext} has an identifier token to anchor a declaration site.
+   */
+  private static DeclarationSite declarationSiteForFormalParameter(
+      ArabicBASICParser.VariableContext varCtx) {
+    if (varCtx instanceof ArabicBASICParser.NameContext nameCtx) {
+      return DeclarationSite.from(nameCtx.IDENTIFIER().getSymbol());
+    }
+
+    return DeclarationSite.UNKNOWN;
   }
 }
