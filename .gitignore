@@ -71,3 +71,7 @@ $RECYCLE.BIN/
 *.swo
 *.tmp
 *.bak
+/.clj-kondo
+/.lsp
+/.idea
+/.vscode

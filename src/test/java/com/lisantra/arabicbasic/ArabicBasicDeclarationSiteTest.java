@@ -30,7 +30,8 @@ class ArabicBasicDeclarationSiteTest {
     Map<String, Variable> globalScope = new LinkedHashMap<>();
     ArabicBASICLexer lexer = new ArabicBASICLexer(CharStreams.fromString(source, "<test>"));
     ArabicBASICParser parser = new ArabicBASICParser(new CommonTokenStream(lexer));
-    InterpreterVisitor visitor = new InterpreterVisitor(arabicLocale(), globalScope, false);
+    InterpreterVisitor visitor =
+        new InterpreterVisitor(arabicLocale(), Locale.ENGLISH, globalScope, false);
     return assertThrows(
         ArabicBasicRuntimeException.class, () -> visitor.visit(parser.program()), source);
   }
@@ -91,5 +92,25 @@ class ArabicBasicDeclarationSiteTest {
     DeclarationSite expected = firstTokenSite(source, 1, "LOG");
     assertEquals(expected.charPositionInLine(), site.charPositionInLine());
     assertTrue(ex.getMessage().contains("LOG"), () -> "message: " + ex.getMessage());
+  }
+
+  @Test
+  void unknownVariable_prefixInArabic_whenMessageLocaleIsArabic() {
+    String source =
+        """
+        صار ا = ١
+        اطبع ب
+        """;
+    Map<String, Variable> globalScope = new LinkedHashMap<>();
+    ArabicBASICLexer lexer = new ArabicBASICLexer(CharStreams.fromString(source, "<test>"));
+    ArabicBASICParser parser = new ArabicBASICParser(new CommonTokenStream(lexer));
+    InterpreterVisitor visitor =
+        new InterpreterVisitor(arabicLocale(), Locale.forLanguageTag("ar"), globalScope, false);
+    ArabicBasicRuntimeException ex =
+        assertThrows(
+            ArabicBasicRuntimeException.class, () -> visitor.visit(parser.program()), source);
+    assertTrue(
+        ex.getMessage().contains("السطر"),
+        () -> "expected Arabic source prefix in: " + ex.getMessage());
   }
 }

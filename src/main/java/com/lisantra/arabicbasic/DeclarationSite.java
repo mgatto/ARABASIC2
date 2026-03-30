@@ -33,18 +33,4 @@ public record DeclarationSite(int line, int charPositionInLine) {
   public boolean isUnknown() {
     return line < 0;
   }
-
-  /**
-   * Prefix for user-facing diagnostics ({@code ""} when unknown). Column is 1-based for humans.
-   */
-  public String formatPrefix() {
-    if (isUnknown()) {
-      return "";
-    }
-    return "line "
-        + line
-        + ", column "
-        + (charPositionInLine + 1)
-        + ": ";
-  }
 }

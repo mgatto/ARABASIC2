@@ -87,7 +87,8 @@
                 <version>${antlr4.version}</version>
                 <configuration>
                     <sourceDirectory>${project.basedir}/src/main/antlr4</sourceDirectory>
-                    <outputDirectory>${project.build.directory}/generated-sources/antlr4</outputDirectory>
+                    <!-- Match Java package dirs so Eclipse JDT / VS Code Java resolve types (not flat *.java next to root). -->
+                    <outputDirectory>${project.build.directory}/generated-sources/antlr4/com/lisantra/arabicbasic</outputDirectory>
                     <includes>
                         <include>ArabicBASIC.g4</include>
                     </includes>

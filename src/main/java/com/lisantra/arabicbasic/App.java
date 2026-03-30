@@ -30,6 +30,9 @@ public class App implements Callable<Integer> {
       )
   private boolean showDebug = false;
 
+  @CommandLine.Option(names = "--locale", descriptionKey = "localeParam")
+  private String messageLocaleTag;
+
   /**
    * Runs the main interpreter from the command line.
    *
@@ -38,7 +41,26 @@ public class App implements Callable<Integer> {
    */
   @Override
   public Integer call() throws Exception {
-    return runScript(file.toPath(), showDebug);
+    try {
+      Locale messageLocaleOverride = null;
+      if (messageLocaleTag != null && !messageLocaleTag.isBlank()) {
+        messageLocaleOverride = parseMessageLocaleTag(messageLocaleTag.trim());
+      }
+
+      return runScript(file.toPath(), showDebug, messageLocaleOverride);
+    } catch (IllegalArgumentException e) {
+      System.err.println(e.getMessage());
+      return 2;
+    }
+  }
+
+  private static Locale parseMessageLocaleTag(String raw) {
+    Locale loc = Locale.forLanguageTag(raw.replace('_', '-'));
+    if (loc.getLanguage().isEmpty()) {
+      throw new IllegalArgumentException("Invalid --locale value: " + raw);
+    }
+
+    return loc;
   }
 
   /**
@@ -48,6 +70,15 @@ public class App implements Callable<Integer> {
    * @return 0 on success, 1 on parse/runtime failure
    */
   public static int runScript(Path source, boolean showDebug) {
+    return runScript(source, showDebug, null);
+  }
+
+  /**
+   * @param messageLocaleOverride if non-null, used for interpreter {@link RuntimeMessages}; if
+   *     null, uses {@link Locale#getDefault()} after Arabic default is installed
+   */
+  public static int runScript(Path source, boolean showDebug, Locale messageLocaleOverride) {
+    Locale previousDefault = Locale.getDefault();
     /* u-nu-Arab is required for arabic digits */
     Locale arabicLocale =
         new Locale.Builder()
@@ -56,6 +87,9 @@ public class App implements Callable<Integer> {
             .build();
 
     Locale.setDefault(arabicLocale);
+
+    Locale messageLocale =
+        messageLocaleOverride != null ? messageLocaleOverride : Locale.getDefault();
 
     /* we need separate tables: one for symbols and the other for variable states only = scope */
     /* since BASIC scope is global, we don't need a stack, and a HashMap is great for fast lookup */
@@ -86,10 +120,17 @@ public class App implements Callable<Integer> {
       ParseTree programTree = parser.program();
 
       /* Instantiate my visitor class, which is the actual interpreter */
-      InterpreterVisitor interpreter = new InterpreterVisitor(arabicLocale, globalScope, showDebug);
+      InterpreterVisitor interpreter =
+          new InterpreterVisitor(arabicLocale, messageLocale, globalScope, showDebug);
 
       /* Walk the interpreter through the parse tree */
       interpreter.visit(programTree);
+
+      if (showDebug) System.out.println(globalScope);
+      if (showDebug) System.out.println("Finished running ArabicBASIC script");
+
+      /* Be a good Unix system citizen and return a numerical exit code */
+      return 0;
     } catch (ArabicBasicRuntimeException e) {
       System.err.println(e.getMessage());
       if (showDebug) {
@@ -102,13 +143,9 @@ public class App implements Callable<Integer> {
         e.printStackTrace();
       }
       return 1;
+    } finally {
+      Locale.setDefault(previousDefault);
     }
-
-    if (showDebug) System.out.println(globalScope);
-    if (showDebug) System.out.println("Finished running ArabicBASIC script");
-
-    /* Be a good Unix system citizen and return a numerical exit code */
-    return 0;
   }
 
   /**

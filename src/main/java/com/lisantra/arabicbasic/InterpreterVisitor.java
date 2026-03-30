@@ -3,7 +3,6 @@ package com.lisantra.arabicbasic;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.Collator;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -18,15 +17,30 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
-  private Locale arabicLocale;
+  private final Locale arabicLocale;
+  private final RuntimeMessages msgs;
   private final Map<String, Variable> globalScope;
   private final boolean showDebug;
 
-  public InterpreterVisitor(Locale locale, Map<String, Variable> globalScope, boolean showDebug) {
+  public InterpreterVisitor(
+      Locale arabicLocale,
+      Locale messageLocale,
+      Map<String, Variable> globalScope,
+      boolean showDebug) {
     super();
-    this.arabicLocale = locale;
+    this.arabicLocale = Objects.requireNonNull(arabicLocale);
+    this.msgs = new RuntimeMessages(Objects.requireNonNull(messageLocale));
     this.globalScope = globalScope;
     this.showDebug = showDebug;
+  }
+
+  private ArabicBasicRuntimeException error(String key, DeclarationSite site, Object... formatArgs) {
+    return new ArabicBasicRuntimeException(msgs.fullMessage(site, key, formatArgs), site);
+  }
+
+  private ArabicBasicRuntimeException error(
+      String key, DeclarationSite site, Throwable cause, Object... formatArgs) {
+    return new ArabicBasicRuntimeException(msgs.fullMessage(site, key, formatArgs), site, cause);
   }
 
   public Object visitProgram(ArabicBASICParser.ProgramContext ctx) {
@@ -97,9 +111,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
           break;
 
         default:
-          throw new ArabicBasicRuntimeException(
-              "Cannot assign this kind of value (type: " + val.getOriginalType() + ").",
-              DeclarationSite.from(ctx));
+          throw error(
+              "error.assignUnsupportedType", DeclarationSite.from(ctx), val.getOriginalType());
       }
 
       /* this covers both creation and updating a variable */
@@ -124,8 +137,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     // but better to not cast it and instead to test for class type
     Variable existingArray = globalScope.get(id);
     if (!existingArray.getClass().getSimpleName().equals("ArrayVariable")) {
-      throw new ArabicBasicRuntimeException(
-          "'" + id + "' is not an array.", DeclarationSite.from(ctx.IDENTIFIER().getSymbol()));
+      throw error("error.notAnArray", DeclarationSite.from(ctx.IDENTIFIER().getSymbol()), id);
     }
 
     // visit expression to get value to insert
@@ -212,8 +224,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
         return new Value(combined, "Array");
       } else {
-        throw new ArabicBasicRuntimeException(
-            "Arrays may not be subtracted.", DeclarationSite.from(ctx.op));
+        throw error("error.arraysMayNotSubtract", DeclarationSite.from(ctx.op));
       }
     }
 
@@ -223,8 +234,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
       if (ctx.op.getText().equals("+")) {
         return new Value((String) left.getVal() + (String) right.getVal(), "String");
       } else {
-        throw new ArabicBasicRuntimeException(
-            "Strings may not be subtracted.", DeclarationSite.from(ctx.op));
+        throw error("error.stringsMayNotSubtract", DeclarationSite.from(ctx.op));
       }
     }
 
@@ -244,12 +254,37 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     return new Value(leftVal - rightVal, resultType);
   }
 
-  private static Double makeNumber(Value val, DeclarationSite site) {
+  private Double makeNumber(Value val, DeclarationSite site) {
     if (val.getVal() instanceof Double) {
       return (Double) val.getVal();
     }
-    throw new ArabicBasicRuntimeException(
-        "A number was expected here; got: '" + val.getVal() + "'", site);
+    throw error("error.numberExpected", site, val.getVal());
+  }
+
+  /** {@code Integer}/{@code Real} with a {@link Double} payload (excludes empty/unknown tags). */
+  private static boolean isNumericValue(Value v) {
+    String t = v.getOriginalType();
+    return ("Integer".equals(t) || "Real".equals(t)) && v.getVal() instanceof Double;
+  }
+
+  private Value requireComparisonValue(Object visited, DeclarationSite site) {
+    if (visited instanceof Boolean || visited == null || !(visited instanceof Value)) {
+      throw error("error.comparisonOperandNotValue", site);
+    }
+    return (Value) visited;
+  }
+
+  private void rejectArrayOrFunction(Value v, DeclarationSite site) {
+    String t = v.getOriginalType();
+    if ("Array".equals(t) || "Function".equals(t)) {
+      throw error("error.comparisonUnsupportedType", site, t);
+    }
+  }
+
+  private void requireOrderingNumericPair(Value left, Value right, DeclarationSite site) {
+    if (!isNumericValue(left) || !isNumericValue(right)) {
+      throw error("error.orderingRequiresNumeric", site);
+    }
   }
 
   private String getResultType(Value left, Value right) {
@@ -302,8 +337,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     }
 
     if (rightVal == 0) {
-      throw new ArabicBasicRuntimeException(
-          "Cannot divide by zero.", DeclarationSite.from(ctx.op));
+      throw error("error.divideByZero", DeclarationSite.from(ctx.op));
     }
 
     return new Value(leftVal / rightVal, resultType);
@@ -337,9 +371,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
     String id = ctx.IDENTIFIER().getText();
     if (!globalScope.containsKey(id)) {
-      throw new ArabicBasicRuntimeException(
-          "Variable '" + id + "' has not been declared yet.",
-          DeclarationSite.from(ctx.IDENTIFIER().getSymbol()));
+      throw error("error.variableUndeclared", DeclarationSite.from(ctx.IDENTIFIER().getSymbol()), id);
     }
 
     // The symbol table's value is of custom type Value
@@ -353,9 +385,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
     String id = ctx.IDENTIFIER().getText();
     if (!globalScope.containsKey(id)) {
-      throw new ArabicBasicRuntimeException(
-          "Variable '" + id + "' has not been declared yet.",
-          DeclarationSite.from(ctx.IDENTIFIER().getSymbol()));
+      throw error("error.variableUndeclared", DeclarationSite.from(ctx.IDENTIFIER().getSymbol()), id);
     }
 
     // get index
@@ -367,15 +397,12 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     // TODO use upperBound instead of size()
     int numberOfElements = targetArray.size();
     if (idx > numberOfElements) {
-      throw new ArabicBasicRuntimeException(
-          "Array index "
-              + idx
-              + " is out of range for '"
-              + id
-              + "' (valid indices are 0 through "
-              + numberOfElements
-              + ").",
-          DeclarationSite.from(ctx));
+      throw error(
+          "error.arrayIndexOutOfRange",
+          DeclarationSite.from(ctx),
+          idx,
+          id,
+          numberOfElements);
     }
 
     String elementsType = val.getOriginalType();
@@ -407,8 +434,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
       return new Value(parsedArabicNumeral, type);
     } catch (ParseException pe) {
-      throw new ArabicBasicRuntimeException(
-          "Number could not be parsed: " + inputNumerical, DeclarationSite.from(ctx), pe);
+      throw error("error.numberParseFailed", DeclarationSite.from(ctx), pe, inputNumerical);
     }
   }
 
@@ -447,8 +473,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
     // 2. ensure it is numeric
     if (!(size.getOriginalType().equals("Integer"))) {
-      throw new ArabicBasicRuntimeException(
-          "Array size must be an integer; got: '" + size + "'", DeclarationSite.from(ctx));
+      throw error("error.arraySizeNotInteger", DeclarationSite.from(ctx), size);
     }
 
     return ((Double) size.getVal()).intValue();
@@ -466,9 +491,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     } else if (subscriptName != null) {
       String id = subscriptName.getText();
       if (!globalScope.containsKey(id)) {
-        throw new ArabicBasicRuntimeException(
-            "Variable '" + id + "' has not been declared yet.",
-            DeclarationSite.from(subscriptName.getSymbol()));
+        throw error("error.variableUndeclared", DeclarationSite.from(subscriptName.getSymbol()), id);
       }
 
       // The symbol table's value is of custom type Value
@@ -476,9 +499,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
       /* validate that it's an integer */
       if (!indexVal.getOriginalType().equals("Integer")) {
-        throw new ArabicBasicRuntimeException(
-            "Array subscript must be an integer; '" + id + "' is not an integer.",
-            DeclarationSite.from(subscriptName.getSymbol()));
+        throw error("error.subscriptNotInteger", DeclarationSite.from(subscriptName.getSymbol()), id);
       }
 
       index = ((Double) indexVal.getVal()).intValue();
@@ -580,56 +601,69 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
   @Override
   public Boolean visitComparitiveBoolean(ArabicBASICParser.ComparitiveBooleanContext ctx) {
-    // TODO bad for assuming a type already...
-    Value left = (Value) visit(ctx.booleanExpression(0));
-    Value right = (Value) visit(ctx.booleanExpression(1));
+    DeclarationSite opSite = DeclarationSite.from(ctx.comp);
 
-    if (showDebug)
-      System.out.println(
-          "left: " + left.getVal() + " " + ctx.comp.getText() + " right: " + right.getVal());
+    Object l = visit(ctx.booleanExpression(0));
+    Object r = visit(ctx.booleanExpression(1));
 
-    // What if one is a string and the other term is not? Check for this.
-    Integer strComparison = null;
-    if (Objects.equals(left.getOriginalType(), "String")
-        && Objects.equals(right.getOriginalType(), "String")) {
-      Collator arabicCollator = Collator.getInstance(new Locale("ar"));
-      strComparison = arabicCollator.compare(left.getVal(), right.getVal());
+    Value left = requireComparisonValue(l, opSite);
+    Value right = requireComparisonValue(r, opSite);
+
+    rejectArrayOrFunction(left, opSite);
+    rejectArrayOrFunction(right, opSite);
+
+    String op = ctx.comp.getText();
+
+    if (showDebug) {
+      System.out.println("left: " + left.getVal() + " " + op + " right: " + right.getVal());
     }
 
-    if (ctx.comp.getText().equals("=")) {
-      /* deal with string comparisons */
-      return Objects.equals(left.getVal(), right.getVal());
-    } else if (ctx.comp.getText().equals("<>")) {
-      return !Objects.equals(left.getVal(), right.getVal());
-    } else if (ctx.comp.getText().equals(">")) {
-      if (strComparison != null) {
-        return strComparison > 1;
+    switch (op) {
+      case ">":
+      case ">=":
+      case "<":
+      case "<=":
+        requireOrderingNumericPair(left, right, opSite);
+        double ld = (Double) left.getVal();
+        double rd = (Double) right.getVal();
+        return switch (op) {
+          case ">" -> ld > rd;
+          case ">=" -> ld >= rd;
+          case "<" -> ld < rd;
+          case "<=" -> ld <= rd;
+          default -> throw error("error.unknownComparisonOperator", opSite, op);
+        };
+
+      case "=":
+      case "<>": {
+        boolean bothString =
+            "String".equals(left.getOriginalType()) && "String".equals(right.getOriginalType());
+        boolean bothNumeric = isNumericValue(left) && isNumericValue(right);
+        
+        if (bothString) {
+          boolean eq = Objects.equals(left.getVal(), right.getVal());
+          return op.equals("=") ? eq : !eq;
+        }
+
+        if (bothNumeric) {
+          boolean eq = Objects.equals(left.getVal(), right.getVal());
+          return op.equals("=") ? eq : !eq;
+        }
+        
+        if (("String".equals(left.getOriginalType()) && isNumericValue(right))
+            || (isNumericValue(left) && "String".equals(right.getOriginalType()))) {
+          throw error("error.comparisonStringNumberMix", opSite);
+        }
+        throw error("error.comparisonUnsupportedType", opSite, describeComparisonTypes(left, right));
       }
 
-      return (Double) left.getVal() > (Double) right.getVal();
-    } else if (ctx.comp.getText().equals(">=")) {
-      if (strComparison != null) {
-        return strComparison > 0;
-      }
-
-      return (Double) left.getVal() >= (Double) right.getVal();
-    } else if (ctx.comp.getText().equals("<")) {
-      if (strComparison != null) {
-        return strComparison < 0;
-      }
-
-      return (Double) left.getVal() < (Double) right.getVal();
-    } else if (ctx.comp.getText().equals("<=")) {
-      if (strComparison != null) {
-        return strComparison < 1;
-      }
-
-      return (Double) left.getVal() <= (Double) right.getVal();
-    } else {
-      throw new ArabicBasicRuntimeException(
-          "Unknown comparison operator: '" + ctx.comp.getText() + "'",
-          DeclarationSite.from(ctx.comp));
+      default:
+        throw error("error.unknownComparisonOperator", opSite, op);
     }
+  }
+
+  private static String describeComparisonTypes(Value left, Value right) {
+    return left.getOriginalType() + " / " + right.getOriginalType();
   }
 
   @Override
@@ -826,8 +860,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
         globalScope.put(id, variable);
 
       } catch (IOException e) {
-        throw new ArabicBasicRuntimeException(
-            "Could not read INPUT: " + e.getMessage(), DeclarationSite.from(varToken), e);
+        String detail = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+        throw error("error.inputIoFailed", DeclarationSite.from(varToken), e, detail);
       }
     }
 
@@ -846,9 +880,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     /* upper bound can be an expression */
     Value upperExpression = (Value) visit(ctx.expression());
     if (!(upperExpression.getOriginalType().equals("Integer"))) {
-      throw new ArabicBasicRuntimeException(
-          "FOR loop upper bound must be an integer; got: '" + upperExpression + "'",
-          DeclarationSite.from(ctx.expression()));
+      throw error(
+          "error.forUpperBoundNotInteger", DeclarationSite.from(ctx.expression()), upperExpression);
     }
     int upper = ((Double) upperExpression.getVal()).intValue();
     // int upper = Integer.parseInt(ctx.upper.getText());
@@ -989,8 +1022,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     if (fn instanceof FunctionVariable) {
       fnVar = (FunctionVariable) fn;
     } else {
-      throw new ArabicBasicRuntimeException(
-          "'" + fnName + "' is not a function.", DeclarationSite.from(ctx.funcName));
+      throw error("error.notAFunction", DeclarationSite.from(ctx.funcName), fnName);
     }
 
     // 2. run the arg context to get a value, the passed-in value
@@ -1052,9 +1084,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
     // 2. ensure it is a string
     if (!argValue1.getOriginalType().equals("String")) {
-      throw new ArabicBasicRuntimeException(
-          "String function argument must be a string; got: '" + argValue1 + "'",
-          DeclarationSite.from(ctx));
+      throw error("error.stringFnArgNotString", DeclarationSite.from(ctx), argValue1);
     }
 
     String str = (String) argValue1.getVal();
@@ -1065,9 +1095,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
       argValue2 = (Value) visit(ctx.variable(1));
 
       if (!argValue2.getOriginalType().equals("Integer")) {
-        throw new ArabicBasicRuntimeException(
-            "This string function expects a number here; got: '" + argValue2 + "'",
-            DeclarationSite.from(ctx));
+        throw error("error.stringFnSecondArgNotNumber", DeclarationSite.from(ctx), argValue2);
       }
     }
 
@@ -1084,14 +1112,11 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
       case "LEFT":
         // the grammar won't catch an absent 2nd arg
         if (null == argValue2) {
-          throw new ArabicBasicRuntimeException(
-              "LEFT requires a second numeric argument.", DeclarationSite.from(ctx));
+          throw error("error.leftRequiresSecondArg", DeclarationSite.from(ctx));
         }
 
         if (((Double) argValue2.getVal()).intValue() > str.length()) {
-          throw new ArabicBasicRuntimeException(
-              "LEFT length is greater than the string length (" + str.length() + ").",
-              DeclarationSite.from(ctx));
+          throw error("error.leftLengthTooLong", DeclarationSite.from(ctx), str.length());
         }
 
         retValue.setVal(str.substring(0, ((Double) argValue2.getVal()).intValue()));
@@ -1100,14 +1125,11 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
       case "RIGHT":
         // the grammar won't catch an absent 2nd arg
         if (null == argValue2) {
-          throw new ArabicBasicRuntimeException(
-              "RIGHT requires a second numeric argument.", DeclarationSite.from(ctx));
+          throw error("error.rightRequiresSecondArg", DeclarationSite.from(ctx));
         }
 
         if (((Double) argValue2.getVal()).intValue() > str.length()) {
-          throw new ArabicBasicRuntimeException(
-              "RIGHT length is greater than the string length (" + str.length() + ").",
-              DeclarationSite.from(ctx));
+          throw error("error.rightLengthTooLong", DeclarationSite.from(ctx), str.length());
         }
         // will throw IndexOutOfBoundsException
         retValue.setVal(
@@ -1124,8 +1146,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
         break;
 
       default:
-        throw new ArabicBasicRuntimeException(
-            "Unrecognized string function: '" + operation + "'", DeclarationSite.from(ctx.name));
+        throw error("error.unrecognizedStringFunction", DeclarationSite.from(ctx.name), operation);
     }
 
     return retValue;
@@ -1148,8 +1169,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     String operation = ctx.name.getText();
 
     if (null == ctx.expression()) {
-      throw new ArabicBasicRuntimeException(
-          "This function requires a numeric argument.", DeclarationSite.from(ctx));
+      throw error("error.mathFnRequiresArgument", DeclarationSite.from(ctx));
     }
 
     // 1. Get value to operate upon
@@ -1158,9 +1178,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     // 2. ensure it is numeric
     if (!(argValue.getOriginalType().equals("Integer")
         || argValue.getOriginalType().equals("Real"))) {
-      throw new ArabicBasicRuntimeException(
-          "Math function argument must be a number; got: '" + argValue + "'",
-          DeclarationSite.from(ctx));
+      throw error("error.mathFnArgNotNumber", DeclarationSite.from(ctx), argValue);
     }
 
     // TODO has to be a better way to proxy the calls...
@@ -1176,8 +1194,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
       case "LOG":
         if ((double) argValue.getVal() == 0.0) {
-          throw new ArabicBasicRuntimeException(
-              "LOG argument must not be zero.", DeclarationSite.from(ctx));
+          throw error("error.logZero", DeclarationSite.from(ctx));
         }
 
         retValue.setVal(Math.log10((double) argValue.getVal()));
@@ -1212,8 +1229,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
         break;
 
       default:
-        throw new ArabicBasicRuntimeException(
-            "Unrecognized math function: '" + operation + "'", DeclarationSite.from(ctx.name));
+        throw error("error.unrecognizedMathFunction", DeclarationSite.from(ctx.name), operation);
     }
 
     return retValue;

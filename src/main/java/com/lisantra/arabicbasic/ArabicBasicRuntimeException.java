@@ -20,14 +20,4 @@ public class ArabicBasicRuntimeException extends RuntimeException {
   public DeclarationSite getDeclarationSite() {
     return site;
   }
-
-  @Override
-  public String getMessage() {
-    String m = super.getMessage();
-    if (m == null) {
-      m = "";
-    }
-    String prefix = site.formatPrefix();
-    return prefix.isEmpty() ? m : prefix + m;
-  }
 }
