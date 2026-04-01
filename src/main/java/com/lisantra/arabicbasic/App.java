@@ -30,7 +30,7 @@ public class App implements Callable<Integer> {
       )
   private boolean showDebug = false;
 
-  @CommandLine.Option(names = "--locale", descriptionKey = "localeParam")
+  @CommandLine.Option(names = "--locale", descriptionKey = "localeParam", description = "Language tag for interpreter runtime error messages (e.g. en, en-US, ar). Default follows JVM locale after Arabic setup.")
   private String messageLocaleTag;
 
   /**
@@ -79,6 +79,7 @@ public class App implements Callable<Integer> {
    */
   public static int runScript(Path source, boolean showDebug, Locale messageLocaleOverride) {
     Locale previousDefault = Locale.getDefault();
+
     /* u-nu-Arab is required for arabic digits */
     Locale arabicLocale =
         new Locale.Builder()
@@ -136,12 +137,14 @@ public class App implements Callable<Integer> {
       if (showDebug) {
         e.printStackTrace();
       }
+
       return 1;
     } catch (Exception e) {
       System.err.println(e.getMessage());
       if (showDebug) {
         e.printStackTrace();
       }
+
       return 1;
     } finally {
       Locale.setDefault(previousDefault);
