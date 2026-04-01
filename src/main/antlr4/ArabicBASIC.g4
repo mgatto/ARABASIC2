@@ -23,13 +23,13 @@ statement:  COMMENT // shouldn't have EOL because it's a terminal
 simpleAssignment: 'صار' name+=IDENTIFIER ((',' | '\u060C') name+=IDENTIFIER)* '=' expression; // Sequence with Terminator pattern
 arrayAssignment: IDENTIFIER '[' subscript ']' '=' expression;
 arrayCreation: 'مصفوفة' IDENTIFIER '[' arraySize ']';
-conditionalBlock: 'اذا' tests+=booleanExpression 'ثم' EOL block ('وإلا اذا' tests+=booleanExpression 'ثم' EOL block)* ('وإلا' EOL block)? 'نهاية اذا';
+conditionalBlock: 'اذا' tests+=booleanExpression 'ثم' EOL block ('وإلا اذا' tests+=booleanExpression 'ثم' EOL block)* ('وإلا' EOL block)? 'ختام اذا';
 singleLineConditional: 'اذا' booleanExpression 'ثم' statement;
 //Allow expressions for upper bound at least?
 forLoop: 'لكل' control=IDENTIFIER '=' lower=INTEGER 'حتى' upper=expression ('درجة' '=' step=INTEGER)? EOL block 'التالي' next=IDENTIFIER;
-whileLoop: 'في إثنأ' test=booleanExpression EOL block  'نهاية في إثنأ';
+whileLoop: 'طالما' test=booleanExpression EOL block  'ختام طالما';
 // حدِّد might be better! used in qalb
-defineSingleLineFunction: 'عرّف' 'دالّة' funcName=IDENTIFIER'(' arg=variable ')' '=' expression; //DEF FN cube(a) = a^3
+defineSingleLineFunction: 'دالّة' funcName=IDENTIFIER'(' arg=variable ')' '=' expression; //DEF FN cube(a) = a^3
 callFunction: 'اجري' funcName=IDENTIFIER'(' variable ')'; //this looks too much like arrayAccess!
 print: 'اطبع' expression (spacer+=(',' | ';' | '\u061B' |'\u060C') expression)*;
 input: 'ادخل' (prompt=STRING (spacer=(',' | ';' | '\u061B' | '\u060C')))? var+=IDENTIFIER ((',' | '\u060C') var+=IDENTIFIER)*;

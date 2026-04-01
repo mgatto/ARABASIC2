@@ -79,7 +79,7 @@ class ComparisonTypingTest {
         صار ب = ١
         اذا ا > ب ثم
         اطبع "ok"
-        نهاية اذا
+        ختام اذا
         """;
     interpret(source, Locale.ENGLISH);
   }
@@ -92,7 +92,7 @@ class ComparisonTypingTest {
         صار ت = "ب"
         اذا س > ت ثم
         اطبع "x"
-        نهاية اذا
+        ختام اذا
         """;
     ArabicBasicRuntimeException ex = interpretFailure(source, Locale.ENGLISH);
     assertTrue(ex.getMessage().contains("Ordering comparisons"), ex.getMessage());
@@ -111,7 +111,7 @@ class ComparisonTypingTest {
         صار ت = "x"
         اذا س = ت ثم
         اطبع "ok"
-        نهاية اذا
+        ختام اذا
         """;
     interpret(source, Locale.ENGLISH);
   }
@@ -124,7 +124,7 @@ class ComparisonTypingTest {
         صار ا = ١
         اذا س = ا ثم
         اطبع "x"
-        نهاية اذا
+        ختام اذا
         """;
     ArabicBasicRuntimeException ex = interpretFailure(source, Locale.ENGLISH);
     assertTrue(ex.getMessage().contains("string to a number"), ex.getMessage());
@@ -140,7 +140,7 @@ class ComparisonTypingTest {
         صار ا = ١
         اذا م = م ثم
         اطبع "x"
-        نهاية اذا
+        ختام اذا
         """;
     ArabicBasicRuntimeException ex = interpretFailure(source, Locale.ENGLISH);
     assertTrue(ex.getMessage().contains("cannot be used in a comparison"), ex.getMessage());
@@ -151,11 +151,11 @@ class ComparisonTypingTest {
   void functionInComparison_reportsUnsupportedType() {
     String source =
         """
-        عرّف دالّة ف(س) = س^2
+        دالّة ف(س) = س^2
         صار ا = ١
         اذا ف = ف ثم
         اطبع "x"
-        نهاية اذا
+        ختام اذا
         """;
     ArabicBasicRuntimeException ex = interpretFailure(source, Locale.ENGLISH);
     assertTrue(ex.getMessage().contains("cannot be used in a comparison"), ex.getMessage());
@@ -170,7 +170,7 @@ class ComparisonTypingTest {
         صار ب = ٢
         اذا ( ا > ب ) > ب ثم
         اطبع "x"
-        نهاية اذا
+        ختام اذا
         """;
     ArabicBasicRuntimeException ex = interpretFailure(source, Locale.ENGLISH);
     assertTrue(

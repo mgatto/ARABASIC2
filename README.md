@@ -22,13 +22,13 @@ Helpful links:
 
 ## Language and samples
 
-The grammar in `src/main/antlr4/ArabicBASIC.g4` defines the current syntax—for example assignments with **صار**, conditionals with **اذا** / **ثم** / **نهاية اذا**, **اطبع** for output, **ادخل** for input, **مصفوفة** for arrays, and Arabic **IDENTIFIER** tokens.
+The grammar in `src/main/antlr4/ArabicBASIC.g4` defines the current syntax—for example assignments with **صار**, conditionals with **اذا** / **ثم** / **ختام اذا**, **اطبع** for output, **ادخل** for input, **مصفوفة** for arrays, and Arabic **IDENTIFIER** tokens.
 
 **Working examples** that match the current parser live under **`examples/`** (see [`examples/README.md`](examples/README.md)), alongside older numbered demos:
 
 | Scripts (Arabic syntax) | Rough purpose |
 |-------------------------|----------------|
-| `examples/CONDITIONAL_Ar.bas` | Simple `اذا` / `نهاية اذا` |
+| `examples/CONDITIONAL_Ar.bas` | Simple `اذا` / `ختام اذا` |
 | `examples/INPUT_Ar.bas` | `ادخل`, loop, array |
 | `examples/LOOP_Ar.bas` | Loop-style sample |
 
