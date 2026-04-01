@@ -21,6 +21,11 @@ public class ArrayVariable extends Variable {
     super(symbol, value);
   }
 
+  /** Source-driven construction with concrete write site. */
+  public ArrayVariable(Symbol symbol, Value value, DeclarationSite sourceWriteSite) {
+    super(symbol, value, sourceWriteSite);
+  }
+
   public int getLowerBound() {
     return lowerBound;
   }

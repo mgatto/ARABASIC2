@@ -12,4 +12,9 @@ public class NumericVariable extends Variable {
   public NumericVariable(Symbol symbol, Value value) {
     super(symbol, value);
   }
+
+  /** Source-driven construction with concrete write site. */
+  public NumericVariable(Symbol symbol, Value value, DeclarationSite sourceWriteSite) {
+    super(symbol, value, sourceWriteSite);
+  }
 }

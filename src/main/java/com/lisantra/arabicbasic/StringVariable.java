@@ -16,6 +16,12 @@ public class StringVariable extends Variable {
     validatedStringLength(value);
   }
 
+  /** Source-driven construction with concrete write site. */
+  public StringVariable(Symbol symbol, Value value, DeclarationSite sourceWriteSite) {
+    super(symbol, Objects.requireNonNull(value, "value"), sourceWriteSite);
+    validatedStringLength(value);
+  }
+
   /**
    * @return the length of the current string in {@link #getValue()} (same rules as construction)
    */

@@ -24,6 +24,26 @@ public class FunctionVariable extends Variable {
     this.body = Objects.requireNonNull(body, "body");
   }
 
+  public FunctionVariable(
+      Symbol symbol,
+      Value value,
+      DeclarationSite sourceWriteSite,
+      String argSymbol,
+      DeclarationSite argDeclarationSite,
+      ArabicBASICParser.ExpressionContext body) {
+    super(
+        Objects.requireNonNull(symbol, "symbol"),
+        Objects.requireNonNull(value, "value"),
+        sourceWriteSite);
+    String arg = Objects.requireNonNull(argSymbol, "argSymbol");
+    if (arg.isBlank()) {
+      throw new IllegalArgumentException("argSymbol must not be blank");
+    }
+    this.argSymbol = arg;
+    this.argDeclarationSite = Objects.requireNonNull(argDeclarationSite, "argDeclarationSite");
+    this.body = Objects.requireNonNull(body, "body");
+  }
+
   public ArabicBASICParser.ExpressionContext getBody() {
     return body;
   }

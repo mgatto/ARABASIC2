@@ -130,4 +130,23 @@ class ArabicBasicDeclarationSiteTest {
     assertEquals(expected.charPositionInLine(), site.charPositionInLine());
     assertTrue(ex.getMessage().contains("NEXT variable"), () -> "message: " + ex.getMessage());
   }
+
+  @Test
+  void notAnArray_reportsLastWriteSiteHint() {
+    String source =
+        """
+        صار س = ١
+        س[٠] = ٢
+        """;
+    ArabicBasicRuntimeException ex = interpretExpectingFailure(source);
+    DeclarationSite site = ex.getDeclarationSite();
+    assertFalse(site.isUnknown(), "site should be known: " + ex.getMessage());
+    DeclarationSite expected = firstTokenSite(source, 2, "س");
+    assertEquals(expected.line(), site.line());
+    assertEquals(expected.charPositionInLine(), site.charPositionInLine());
+    assertTrue(ex.getMessage().contains("is not an array"), () -> "message: " + ex.getMessage());
+    assertTrue(
+        ex.getMessage().contains("Last written at line 1, column"),
+        () -> "message: " + ex.getMessage());
+  }
 }

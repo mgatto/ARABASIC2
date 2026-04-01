@@ -43,6 +43,16 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     return new ArabicBasicRuntimeException(msgs.fullMessage(site, key, formatArgs), site, cause);
   }
 
+  private ArabicBasicRuntimeException errorWithLastWriteSite(
+      String key, DeclarationSite site, Variable variable, Object... formatArgs) {
+    String body = msgs.fullMessage(site, key, formatArgs);
+    DeclarationSite lastWrite = variable.getLastWriteSite();
+    if (lastWrite != null && !lastWrite.isUnknown()) {
+      body += " " + msgs.format("error.lastWriteSiteHint", lastWrite.line(), lastWrite.charPositionInLine() + 1);
+    }
+    return new ArabicBasicRuntimeException(body, site);
+  }
+
   public Object visitProgram(ArabicBASICParser.ProgramContext ctx) {
     if (showDebug)
       System.out.println("I visited Program");
@@ -79,21 +89,22 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     int varCount = ctx.name.size();
     for (int i = 0; i < varCount; i++) {
       String id = ctx.IDENTIFIER(i).getText();
+      DeclarationSite writeSite = DeclarationSite.from(ctx.IDENTIFIER(i).getSymbol());
 
-      Symbol s = new VariableSymbol(id, DeclarationSite.from(ctx.IDENTIFIER(i).getSymbol()));
+      Symbol s = new VariableSymbol(id, writeSite);
 
       switch (val.getOriginalType()) {
         case "String":
-          var = new StringVariable(s, val);
+          var = new StringVariable(s, val, writeSite);
           break;
 
         case "Integer":
         case "Real":
-          var = new NumericVariable(s, val);
+          var = new NumericVariable(s, val, writeSite);
           break;
 
         case "Array": {
-          ArrayVariable av = new ArrayVariable(s, val);
+          ArrayVariable av = new ArrayVariable(s, val, writeSite);
           Object raw = val.getVal();
           int n = 0;
 
@@ -107,7 +118,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
           break;
 
         case "Function":
-          var = new Variable(s, val);
+          var = new Variable(s, val, writeSite);
           break;
 
         default:
@@ -136,9 +147,14 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     // get the widened, stored Variable associated with id. It should be an Array,
     // but better to not cast it and instead to test for class type
     Variable existingArray = globalScope.get(id);
-    if (!existingArray.getClass().getSimpleName().equals("ArrayVariable")) {
-      throw error("error.notAnArray", DeclarationSite.from(ctx.IDENTIFIER().getSymbol()), id);
+    if (existingArray == null) {
+      throw error("error.variableUndeclared", DeclarationSite.from(ctx.IDENTIFIER().getSymbol()), id);
     }
+    if (!existingArray.getClass().getSimpleName().equals("ArrayVariable")) {
+      throw errorWithLastWriteSite(
+          "error.notAnArray", DeclarationSite.from(ctx.IDENTIFIER().getSymbol()), existingArray, id);
+    }
+    existingArray.markWriteFromSource(DeclarationSite.from(ctx.IDENTIFIER().getSymbol()));
 
     // visit expression to get value to insert
     Value newElement = (Value) visit(ctx.expression());
@@ -451,7 +467,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
     // 1. get identifier
     String id = ctx.IDENTIFIER().getText();
-    Symbol s = new VariableSymbol(id, DeclarationSite.from(ctx.IDENTIFIER().getSymbol()));
+    DeclarationSite writeSite = DeclarationSite.from(ctx.IDENTIFIER().getSymbol());
+    Symbol s = new VariableSymbol(id, writeSite);
 
     // 3. wrap in Value; the type of List's elements are unknowable at this stage.
     List<Value> newArray = new ArrayList<>(size);
@@ -461,7 +478,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     }
 
     Value arr = new Value(newArray, "Array");
-    ArrayVariable var = new ArrayVariable(s, arr);
+    ArrayVariable var = new ArrayVariable(s, arr, writeSite);
     var.setUpperBound((size > 0) ? size - 1 : 0);
 
     globalScope.put(id, var);
@@ -823,7 +840,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
       String textInput = null;
       Token varToken = varTokenIter.next();
       String id = varToken.getText();
-      Symbol s = new VariableSymbol(id, DeclarationSite.from(varToken));
+      DeclarationSite writeSite = DeclarationSite.from(varToken);
+      Symbol s = new VariableSymbol(id, writeSite);
       Variable variable = null;
 
       try {
@@ -836,7 +854,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
         try {
           intInput = Integer.parseInt(input);
           Value val = new Value(Double.valueOf(intInput), "Integer");
-          variable = new NumericVariable(s, val);
+          variable = new NumericVariable(s, val, writeSite);
 
         } catch (NumberFormatException ne0) {
           // try to get float/real
@@ -846,14 +864,14 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
             // make Value and Variable here
             Value val = new Value(parsedArabicNumeral, "Real");
-            variable = new NumericVariable(s, val);
+            variable = new NumericVariable(s, val, writeSite);
 
           } catch (IllegalArgumentException | ParseException e) {
             // keep it as a string
             textInput = input;
             // make Value and Variable here
             Value val = new Value(textInput, "String");
-            variable = new StringVariable(s, val);
+            variable = new StringVariable(s, val, writeSite);
           }
         }
 
@@ -908,11 +926,12 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
       throw error("error.forNextVariableMismatch", DeclarationSite.from(ctx.next), id, nextVar);
     }
 
-    Symbol s = new VariableSymbol(id, DeclarationSite.from(ctx.control));
+    DeclarationSite controlWriteSite = DeclarationSite.from(ctx.control);
+    Symbol s = new VariableSymbol(id, controlWriteSite);
 
     // temp val using lower, which should be the same as counter...
     Value controlVal = new Value((double) lower, "Integer");
-    Variable controlVar = new NumericVariable(s, controlVal);
+    Variable controlVar = new NumericVariable(s, controlVal, controlWriteSite);
     // globalScope.put(id, controlVar);
 
     // Start Java while loop
@@ -920,6 +939,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     while (counter >= lower && counter <= upper) {
       // 3. store updated value FIRST
       controlVal.setVal((double) counter);
+      controlVar.markWriteFromSource(controlWriteSite);
       globalScope.put(id, controlVar);
 
       visit(ctx.block());
@@ -1001,6 +1021,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
         new FunctionVariable(
             s,
             new Value(null, "Function"),
+            DeclarationSite.from(ctx.funcName),
             argumentPlaceholder,
             argDeclarationSite,
             functionExpression));
@@ -1048,7 +1069,9 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     globalScope.put(
         fnVar.getArg(),
         new Variable(
-            new VariableSymbol(fnVar.getArg(), fnVar.getArgDeclarationSite()), argValue));
+            new VariableSymbol(fnVar.getArg(), fnVar.getArgDeclarationSite()),
+            argValue,
+            DeclarationSite.from(ctx.variable())));
     // ?? TODO needs to replicate switch to make it the right sub-type of Variable
 
     // 5. apply the raw value to the functionExpression context
