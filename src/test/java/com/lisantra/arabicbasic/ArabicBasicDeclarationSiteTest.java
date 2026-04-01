@@ -113,4 +113,21 @@ class ArabicBasicDeclarationSiteTest {
         ex.getMessage().contains("السطر"),
         () -> "expected Arabic source prefix in: " + ex.getMessage());
   }
+
+  @Test
+  void forNextVariableMismatch_reportsNextVariableSite() {
+    String source =
+        """
+        لكل س = ١ حتى ٣
+        اطبع س
+        التالي ص
+        """;
+    ArabicBasicRuntimeException ex = interpretExpectingFailure(source);
+    DeclarationSite site = ex.getDeclarationSite();
+    assertFalse(site.isUnknown(), "site should be known: " + ex.getMessage());
+    DeclarationSite expected = firstTokenSite(source, 3, "ص");
+    assertEquals(expected.line(), site.line());
+    assertEquals(expected.charPositionInLine(), site.charPositionInLine());
+    assertTrue(ex.getMessage().contains("NEXT variable"), () -> "message: " + ex.getMessage());
+  }
 }

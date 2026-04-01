@@ -903,6 +903,11 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
     // 1. instantiate control variable = "lower" and add it to var table
     String id = ctx.control.getText();
+    String nextVar = ctx.next.getText();
+    if (!id.equals(nextVar)) {
+      throw error("error.forNextVariableMismatch", DeclarationSite.from(ctx.next), id, nextVar);
+    }
+
     Symbol s = new VariableSymbol(id, DeclarationSite.from(ctx.control));
 
     // temp val using lower, which should be the same as counter...

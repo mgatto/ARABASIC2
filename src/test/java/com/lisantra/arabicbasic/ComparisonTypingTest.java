@@ -136,7 +136,7 @@ class ComparisonTypingTest {
   void arrayInComparison_reportsUnsupportedType() {
     String source =
         """
-        مصفوفة م(2)
+        مصفوفة م[2]
         صار ا = ١
         اذا م = م ثم
         اطبع "x"
@@ -151,7 +151,7 @@ class ComparisonTypingTest {
   void functionInComparison_reportsUnsupportedType() {
     String source =
         """
-        عرّف وظيفة ف(س) = س^2
+        عرّف دالّة ف(س) = س^2
         صار ا = ١
         اذا ف = ف ثم
         اطبع "x"
