@@ -24,6 +24,8 @@ Helpful links:
 
 The grammar in `src/main/antlr4/ArabicBASIC.g4` defines the current syntax—for example assignments with **صار**, conditionals with **اذا** / **ثم** / **ختام اذا**, **اطبع** for output, **ادخل** for input, **مصفوفة** for arrays, and Arabic **IDENTIFIER** tokens.
 
+Boolean and predicate wording conventions are documented in [`docs/boolean-style-guide.md`](docs/boolean-style-guide.md) (for example, canonical `صحيح` / `خطأ` literals and `...؟` predicate naming).
+
 **Working examples** that match the current parser live under **`examples/`** (see [`examples/README.md`](examples/README.md)), alongside older numbered demos:
 
 | Scripts (Arabic syntax) | Rough purpose |

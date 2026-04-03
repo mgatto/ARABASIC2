@@ -136,7 +136,7 @@ class ComparisonTypingTest {
   void arrayInComparison_reportsUnsupportedType() {
     String source =
         """
-        مصفوفة م[2]
+        صار م = مصفوفة(2)
         صار ا = ١
         اذا م = م ثم
         اطبع "x"

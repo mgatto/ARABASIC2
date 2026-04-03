@@ -458,31 +458,21 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     return new Value(ctx.STRING().getText(), "String");
   }
 
-  public Void visitArrayCreation(ArabicBASICParser.ArrayCreationContext ctx) {
+  public Value visitArrayCreation(ArabicBASICParser.ArrayCreationContext ctx) {
     if (showDebug)
       System.out.println("I visited Array Creation");
 
-    // 2. get array_size
+    // get array_size
     Integer size = (Integer) visit(ctx.arraySize());
 
-    // 1. get identifier
-    String id = ctx.IDENTIFIER().getText();
-    DeclarationSite writeSite = DeclarationSite.from(ctx.IDENTIFIER().getSymbol());
-    Symbol s = new VariableSymbol(id, writeSite);
-
-    // 3. wrap in Value; the type of List's elements are unknowable at this stage.
+    // wrap in Value; the type of List's elements are unknowable at this stage.
     List<Value> newArray = new ArrayList<>(size);
     for (int i = 0; i < size; i++) {
       // add blank Value as placeholder
       newArray.add(new Value(null, ""));
     }
 
-    Value arr = new Value(newArray, "Array");
-    ArrayVariable var = new ArrayVariable(s, arr, writeSite);
-    var.setUpperBound((size > 0) ? size - 1 : 0);
-
-    globalScope.put(id, var);
-    return null;
+    return new Value(newArray, "Array");
   }
 
   public Integer visitArraySize(ArabicBASICParser.ArraySizeContext ctx) {

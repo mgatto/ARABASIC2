@@ -10,7 +10,6 @@ statement:  COMMENT // shouldn't have EOL because it's a terminal
             | blank // doesn't need EOL
             | simpleAssignment EOL
             | arrayAssignment EOL
-            | arrayCreation EOL
             | singleLineConditional //doesn't need EOL because it ends with a statement = already has EOL
             | conditionalBlock EOL
             | forLoop EOL
@@ -22,7 +21,7 @@ statement:  COMMENT // shouldn't have EOL because it's a terminal
             ;
 simpleAssignment: 'صار' name+=IDENTIFIER ((',' | '\u060C') name+=IDENTIFIER)* '=' expression; // Sequence with Terminator pattern
 arrayAssignment: IDENTIFIER '[' subscript ']' '=' expression;
-arrayCreation: 'مصفوفة' IDENTIFIER '[' arraySize ']';
+arrayCreation: 'مصفوفة' '(' arraySize ')';
 conditionalBlock: 'اذا' tests+=booleanExpression 'ثم' EOL block ('وإلا اذا' tests+=booleanExpression 'ثم' EOL block)* ('وإلا' EOL block)? 'ختام اذا';
 singleLineConditional: 'اذا' booleanExpression 'ثم' statement;
 //Allow expressions for upper bound at least?
@@ -44,6 +43,7 @@ expression: // List the rules from highest -> lowest precedence
             | expression op='MOD' expression            #modulus
             | expression op=('*' | '/') expression      #mulDiv
             | expression op=('+' | '-') expression      #addSub
+            | arrayCreation                              #arrayFactory
             | callFunction                              #functionCall
             //TODO get rid of  "Variable" = too many layers of abstraction
             | variable                                  #term
