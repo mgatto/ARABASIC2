@@ -22,7 +22,7 @@ Helpful links:
 
 ## Language and samples
 
-The grammar in `src/main/antlr4/ArabicBASIC.g4` defines the current syntax—for example assignments with **صار**, conditionals with **اذا** / **ثم** / **ختام اذا**, **اطبع** for output, **ادخل** for input, **مصفوفة** for arrays, and Arabic **IDENTIFIER** tokens.
+The grammar in `src/main/antlr4/ArabicBASIC.g4` defines the current syntax—for example assignments with **صار**, conditionals with **اذا** / **ثم** / **ختام اذا**, **اطبع** for output, **ادخل** for input, **مصفوفة(...)** for array construction, **مكدس()** + `ادفع`/`اسحب`/`انظر`/`فارغ؟` for stacks, and Arabic **IDENTIFIER** tokens.
 
 Boolean and predicate wording conventions are documented in [`docs/boolean-style-guide.md`](docs/boolean-style-guide.md) (for example, canonical `صحيح` / `خطأ` literals and `...؟` predicate naming).
 
@@ -33,6 +33,7 @@ Boolean and predicate wording conventions are documented in [`docs/boolean-style
 | `examples/CONDITIONAL_Ar.bas` | Simple `اذا` / `ختام اذا` |
 | `examples/INPUT_Ar.bas` | `ادخل`, loop, array |
 | `examples/LOOP_Ar.bas` | Loop-style sample |
+| `examples/STACK_Ar.bas` | Native stack builtins: `مكدس`, `ادفع`, `اسحب`, `انظر`, `فارغ؟` |
 
 Many **`test_*.bas`** files in **`examples/`** still use **legacy Latin** keywords (`LET`, `IF`, `PRINT`, …). They do **not** match the current Arabic grammar; use them only with a build that still exposes that syntax, or after updating them to the Arabic forms.
 
