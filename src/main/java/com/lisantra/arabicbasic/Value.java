@@ -44,6 +44,11 @@ public class Value {
     return originalType;
   }
 
+  /** Internal enum mapping for runtime bookkeeping. */
+  public RuntimeType getRuntimeType() {
+    return RuntimeType.fromLegacyTag(originalType);
+  }
+
   /**
    * Needed for updating an Array's element type
    *

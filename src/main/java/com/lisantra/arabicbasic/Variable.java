@@ -10,6 +10,9 @@ public class Variable {
   /** */
   private Value value;
 
+  /** Current runtime type tag; this may change when the variable is reassigned. */
+  private RuntimeType runtimeType;
+
   /** Classification for future scope/call-frame behavior. */
   private final Lifetime lifetime;
 
@@ -42,6 +45,7 @@ public class Variable {
   public Variable(Symbol symbol, Value value, Lifetime lifetime, DeclarationSite writeSite) {
     this.symbol = Objects.requireNonNull(symbol, "symbol");
     this.value = Objects.requireNonNull(value, "value");
+    this.runtimeType = this.value.getRuntimeType();
     this.lifetime = Objects.requireNonNull(lifetime, "lifetime");
     this.lastWriteSite = Objects.requireNonNull(writeSite, "writeSite");
     this.initialized = true;
@@ -65,6 +69,10 @@ public class Variable {
     return lifetime;
   }
 
+  public RuntimeType getRuntimeType() {
+    return runtimeType;
+  }
+
   public boolean isInitialized() {
     return initialized;
   }
@@ -76,6 +84,7 @@ public class Variable {
   /** Source-driven assignment path; requires a concrete (non-UNKNOWN) site. */
   public void assignFromSource(Value value, DeclarationSite sourceWriteSite) {
     this.value = Objects.requireNonNull(value, "value");
+    this.runtimeType = this.value.getRuntimeType();
     this.lastWriteSite = requireConcreteSite(sourceWriteSite);
     this.initialized = true;
   }
@@ -83,6 +92,7 @@ public class Variable {
   /** Synthetic/system assignment path; may use {@link DeclarationSite#UNKNOWN}. */
   public void assignSynthetic(Value value, DeclarationSite syntheticWriteSite) {
     this.value = Objects.requireNonNull(value, "value");
+    this.runtimeType = this.value.getRuntimeType();
     this.lastWriteSite = Objects.requireNonNull(syntheticWriteSite, "syntheticWriteSite");
     this.initialized = true;
   }

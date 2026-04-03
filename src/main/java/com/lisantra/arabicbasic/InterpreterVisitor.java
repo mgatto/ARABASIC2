@@ -3,9 +3,11 @@ package com.lisantra.arabicbasic;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayDeque;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
@@ -115,6 +117,19 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
           av.setUpperBound(n > 0 ? n - 1 : 0);
           var = av;
         }
+          break;
+
+        case "Stack":
+          var = new StackVariable(s, val, writeSite);
+          break;
+
+        case "Boolean":
+          var = new Variable(s, val, writeSite);
+          break;
+
+        case "":
+        case "Unknown":
+          var = new Variable(s, val, writeSite);
           break;
 
         case "Function":
@@ -458,6 +473,11 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     return new Value(ctx.STRING().getText(), "String");
   }
 
+  public Value visitBool(ArabicBASICParser.BoolContext ctx) {
+    boolean bool = "صحيح".equals(ctx.getText());
+    return new Value(bool, "Boolean");
+  }
+
   public Value visitArrayCreation(ArabicBASICParser.ArrayCreationContext ctx) {
     if (showDebug)
       System.out.println("I visited Array Creation");
@@ -532,14 +552,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     for (int i = 0; i < testCount; i++) {
       // it could be Boolean or Value from atomicBoolean rule
       Object conditionalExpr = visit(ctx.booleanExpression(i));
-      if (conditionalExpr instanceof Boolean) {
-        condition = (Boolean) conditionalExpr;
-        // special condition for an atomic of a constant or variable all by itself in
-        // the condition
-      } else if (conditionalExpr instanceof Value) {
-        // any non-null value true; else we'd get an undefined exception
-        condition = true;
-      }
+      condition = coerceCondition(conditionalExpr);
       if (showDebug)
         System.out.println(
             "condition #" + i + ": " + ctx.booleanExpression(i).getText() + " is " + condition);
@@ -586,13 +599,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     Boolean condition = null;
 
     Object conditionalExpr = visit(ctx.booleanExpression()); // it could be Boolean or Value from atomicBoolean rule
-    if (conditionalExpr instanceof Boolean) {
-      condition = (Boolean) conditionalExpr;
-      // special condition for a constant or variable all by itself in the condition
-    } else if (conditionalExpr instanceof Value) {
-      // any non-null value true; else we'd get an undefined exception
-      condition = true;
-    }
+    condition = coerceCondition(conditionalExpr);
 
     if (showDebug)
       System.out.println(
@@ -675,8 +682,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
   @Override
   public Boolean visitLogicalAnd(ArabicBASICParser.LogicalAndContext ctx) {
-    Boolean left = (Boolean) visit(ctx.booleanExpression(0));
-    Boolean right = (Boolean) visit(ctx.booleanExpression(1));
+    Boolean left = coerceCondition(visit(ctx.booleanExpression(0)));
+    Boolean right = coerceCondition(visit(ctx.booleanExpression(1)));
 
     if (showDebug)
       System.out.println(left);
@@ -688,8 +695,8 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
   @Override
   public Boolean visitLogicalOr(ArabicBASICParser.LogicalOrContext ctx) {
-    Boolean left = (Boolean) visit(ctx.booleanExpression(0));
-    Boolean right = (Boolean) visit(ctx.booleanExpression(1));
+    Boolean left = coerceCondition(visit(ctx.booleanExpression(0)));
+    Boolean right = coerceCondition(visit(ctx.booleanExpression(1)));
 
     if (showDebug)
       System.out.println(left);
@@ -701,12 +708,12 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
 
   @Override
   public Boolean visitNestedBoolean(ArabicBASICParser.NestedBooleanContext ctx) {
-    return (Boolean) visit(ctx.booleanExpression());
+    return coerceCondition(visit(ctx.booleanExpression()));
   }
 
   @Override
   public Boolean visitNegatingBoolean(ArabicBASICParser.NegatingBooleanContext ctx) {
-    Boolean test = (Boolean) visit(ctx.booleanExpression());
+    Boolean test = coerceCondition(visit(ctx.booleanExpression()));
     return !test; // TODO should I copy by value? or does it even matter?
   }
 
@@ -778,6 +785,9 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
       switch (exprToPrint.getOriginalType()) {
         case "String":
           System.out.print(boxedPrimitive + spacingSeparator);
+          break;
+        case "Boolean":
+          System.out.print((Boolean.TRUE.equals(boxedPrimitive) ? "صحيح" : "خطأ") + spacingSeparator);
           break;
         case "Real":
           arabicNumberFormat = NumberFormat.getNumberInstance(this.arabicLocale);
@@ -962,14 +972,7 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     // it could be Boolean or Value from atomicBoolean rule
     while (condition) {
       Object conditionalExpr = visit(ctx.booleanExpression());
-      if (conditionalExpr instanceof Boolean) {
-        condition = (Boolean) conditionalExpr;
-      } else if (conditionalExpr instanceof Value) {
-        // special condition for an atomic of a constant or variable all by itself in
-        // the condition
-        // any non-null value true; else we'd get an undefined exception
-        condition = true;
-      }
+      condition = coerceCondition(conditionalExpr);
       if (showDebug)
         System.out.println("condition: " + ctx.booleanExpression().getText() + " is " + condition);
 
@@ -1264,5 +1267,83 @@ public class InterpreterVisitor extends ArabicBASICBaseVisitor<Object> {
     }
 
     return DeclarationSite.UNKNOWN;
+  }
+
+  @SuppressWarnings("unchecked")
+  private Deque<Value> requireStack(ArabicBASICParser.VariableContext ctx, DeclarationSite site) {
+    Object visited = visit(ctx);
+    if (!(visited instanceof Value stackValue)) {
+      throw error("error.notAStack", site, ctx.getText());
+    }
+    if (!"Stack".equals(stackValue.getOriginalType()) || !(stackValue.getVal() instanceof Deque<?>)) {
+      throw error("error.notAStack", site, ctx.getText());
+    }
+    return (Deque<Value>) stackValue.getVal();
+  }
+
+  private void markStackWriteIfNamed(
+      ArabicBASICParser.VariableContext ctx, DeclarationSite sourceWriteSite) {
+    if (ctx instanceof ArabicBASICParser.NameContext nameCtx) {
+      String id = nameCtx.IDENTIFIER().getText();
+      Variable v = globalScope.get(id);
+      if (v != null) {
+        v.markWriteFromSource(sourceWriteSite);
+      }
+    }
+  }
+
+  private static Value copyValue(Value v) {
+    return new Value(v.getVal(), v.getOriginalType());
+  }
+
+  private static Boolean coerceCondition(Object conditionalExpr) {
+    if (conditionalExpr instanceof Boolean b) {
+      return b;
+    }
+    if (conditionalExpr instanceof Value v) {
+      if ("Boolean".equals(v.getOriginalType()) && v.getVal() instanceof Boolean b) {
+        return b;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  public Value visitStackFactory(ArabicBASICParser.StackFactoryContext ctx) {
+    return new Value(new ArrayDeque<Value>(), "Stack");
+  }
+
+  public Value visitStackPushFunction(ArabicBASICParser.StackPushFunctionContext ctx) {
+    DeclarationSite site = DeclarationSite.from(ctx);
+    Deque<Value> stack = requireStack(ctx.stack, site);
+    Value pushed = (Value) visit(ctx.value);
+    stack.addLast(copyValue(pushed));
+    markStackWriteIfNamed(ctx.stack, site);
+    return new Value((double) stack.size(), "Integer");
+  }
+
+  public Value visitStackPopFunction(ArabicBASICParser.StackPopFunctionContext ctx) {
+    DeclarationSite site = DeclarationSite.from(ctx);
+    Deque<Value> stack = requireStack(ctx.stack, site);
+    Value popped = stack.pollLast();
+    markStackWriteIfNamed(ctx.stack, site);
+    if (popped == null) {
+      return new Value(null, "");
+    }
+    return copyValue(popped);
+  }
+
+  public Value visitStackPeekFunction(ArabicBASICParser.StackPeekFunctionContext ctx) {
+    Deque<Value> stack = requireStack(ctx.stack, DeclarationSite.from(ctx));
+    Value peeked = stack.peekLast();
+    if (peeked == null) {
+      return new Value(null, "");
+    }
+    return copyValue(peeked);
+  }
+
+  public Value visitStackEmptyFunction(ArabicBASICParser.StackEmptyFunctionContext ctx) {
+    Deque<Value> stack = requireStack(ctx.stack, DeclarationSite.from(ctx));
+    return new Value(stack.isEmpty(), "Boolean");
   }
 }
