@@ -111,11 +111,27 @@ variable:
 	| ('صحيح' | 'خطأ')	# bool;
 COMMENT: '//' ~[\r\n]* EOL -> channel(HIDDEN);
 STRING: '"' (~'"' | '\\"')* '"';
-//see U0600.pdf from the unicode consortium:
+// Arabic-script letters used across Arabic/Persian/Urdu (letters only; punctuation excluded).
+fragment ARABIC_LETTER:
+	[\u0621-\u063A\u0641-\u064A\u066E-\u066F\u0671-\u06D3\u06D5\u06EE-\u06EF\u06FA-\u06FC\u06FF]
+		;
+// Arabic combining marks/diacritics.
+fragment ARABIC_MARK:
+	[\u064B-\u065F\u0670\u06D6-\u06ED\u08D3-\u08E1\u08E3-\u08FF];
+// Join controls (not whitespace): ZWNJ, ZWJ.
+fragment JOIN_CONTROL: [\u200C\u200D];
+// Western + Arabic-Indic + Eastern Arabic-Indic digits.
+fragment ID_DIGIT: [0-9\u0660-\u0669\u06F0-\u06F9];
+// Start with an Arabic-script letter, then allow letters/marks/digits/_/tatweel which is \u0640
 IDENTIFIER:
-	[\u0621-\u064A] [\u0621-\u064A\u0640\u064B-\u0655\u0670\u0660-\u0669_]*;
-//prevents accidentally including a comma in an identifier, etc. = explicit Arabic letters +
-// selected combining marks + tatweel + Arabic-Indic digits + _
+	ARABIC_LETTER (
+		ARABIC_LETTER
+		| ARABIC_MARK
+		| JOIN_CONTROL
+		| ID_DIGIT
+		| '_'
+		| '\u0640'
+	)*;
 COMMA: [,\u060C];
 REAL: DIGIT [.,\u060C\u066B] DIGIT+;
 //Western Arabic numbers are increasingly in use throughout the Arabic-speaking world.
