@@ -120,7 +120,7 @@ class ArabicBasicDeclarationSiteTest {
         """
         لكل س = ١ حتى ٣
         اطبع س
-        التالي ص
+        ص التالي
         """;
     ArabicBasicRuntimeException ex = interpretExpectingFailure(source);
     DeclarationSite site = ex.getDeclarationSite();
