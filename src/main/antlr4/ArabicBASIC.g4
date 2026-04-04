@@ -136,9 +136,18 @@ COMMA: [,\u060C];
 REAL: DIGIT [.,\u060C\u066B] DIGIT+;
 //Western Arabic numbers are increasingly in use throughout the Arabic-speaking world.
 INTEGER: [0\u0660] | [1-9\u0661-\u0669] DIGIT*;
-EOL: ('\r'? '\n' | '\u2028'); // end of statement marker
+EOL:
+	'\r\n'
+	| '\n'
+	| '\r'
+	| '\u0085' // NEL
+	| '\u2028' // Line Separator
+	| '\u2029' // Paragraph Separator
+	;
 WS:
-	[ \t] -> skip; //TODO replace with unicode whitespace class minus NEWLINE
+	[\u0009\u000B\u000C\u0020\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]+ -> skip;
+// Optional: tolerate BOM if present in source files.
+BOM: '\uFEFF' -> skip;
 // fragments are not token themselves, but non-atomic components of tokens
 fragment DIGIT: [0-9\u0660-\u0669];
 //wierdly, this will allow intermixing, when I really want Western OR Eastern Arabic numbers
