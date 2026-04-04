@@ -23,12 +23,15 @@ simpleAssignment:
 	'صار' name += IDENTIFIER (COMMA name += IDENTIFIER)* '=' expression;
 // Sequence with Terminator pattern
 arrayAssignment: IDENTIFIER '[' subscript ']' '=' expression;
-arrayCreation: 'مصفوفة' '(' arraySize ')';
+// accept taa marbuta/haa drift in array factory keyword.
+arrayCreation: ('مصفوفة' | 'مصفوفه') '(' arraySize ')';
 conditionalBlock:
-	'اذا' tests += booleanExpression 'ثم' EOL block (
-		'وإلا اذا' tests += booleanExpression 'ثم' EOL block
+	// tolerate hamza spelling variants in IF / ELSE IF forms.
+	('اذا' | 'إذا') tests += booleanExpression 'ثم' EOL block (
+		('وإلا اذا' | 'وإلا إذا') tests += booleanExpression 'ثم' EOL block
 	)* ('وإلا' EOL block)? 'ختام اذا';
-singleLineConditional: 'اذا' booleanExpression 'ثم' statement;
+// tolerate hamza spelling variants in single-line IF.
+singleLineConditional: ('اذا' | 'إذا') booleanExpression 'ثم' statement;
 //Allow expressions for upper bound at least?
 forLoop:
 	'لكل' control = IDENTIFIER '=' lower = INTEGER 'حتى' upper = expression (
@@ -38,17 +41,23 @@ whileLoop:
 	'طالما' test = booleanExpression EOL block 'ختام طالما';
 // حدِّد might be better! used in qalb
 defineSingleLineFunction:
-	'دالّة' funcName = IDENTIFIER '(' arg = variable ')' '=' expression; //DEF FN cube(a) = a^3
+	// V1 alias: accept both دالّة and دالة spellings.
+	('دالّة' | 'دالة') funcName = IDENTIFIER '(' arg = variable ')' '=' expression;
+//DEF FN cube(a) = a^3
 callFunction:
-	'اجري' funcName = IDENTIFIER '(' variable ')'; //this looks too much like arrayAccess!
+	// V1 alias: imperative verb accepts hamza/no-hamza forms.
+	('اجري' | 'إجري') funcName = IDENTIFIER '(' variable ')';
+//this looks too much like arrayAccess!
 print:
-	'اطبع' expression (
+	// V1 alias: imperative verb accepts hamza/no-hamza forms.
+	('اطبع' | 'إطبع') expression (
 		spacer += (COMMA | ';' | '\u061B') expression
 	)*;
 input:
-	'ادخل' (prompt = STRING (spacer = (COMMA | ';' | '\u061B')))? var += IDENTIFIER (
-		COMMA var += IDENTIFIER
-	)*;
+	// V1 alias: imperative verb accepts hamza/no-hamza forms.
+	('ادخل' | 'أدخل') (
+		prompt = STRING (spacer = (COMMA | ';' | '\u061B'))
+	)? var += IDENTIFIER (COMMA var += IDENTIFIER)*;
 blank: WS* EOL;
 expression: // List the rules from highest -> lowest precedence
 	// Put built-in function matches here BEFORE identifier to take advantage of first-match
@@ -65,20 +74,23 @@ expression: // List the rules from highest -> lowest precedence
 	) '(' expression ')' # mathFunction
 	| name = ('LEFT' | 'RIGHT' | 'MID' | 'LEN' | 'CHR' | 'ORD') '(' arg += variable (
 		COMMA arg += variable
-	)? ')'															# stringFunction
-	| 'مكدس' '(' ')'												# stackFactory
-	| 'ادفع' '(' stack = variable (COMMA value = expression) ')'	# stackPushFunction
-	| 'اسحب' '(' stack = variable ')'								# stackPopFunction
-	| 'انظر' '(' stack = variable ')'								# stackPeekFunction
-	| 'فارغ؟' '(' stack = variable ')'								# stackEmptyFunction
-	| IDENTIFIER '[' subscript ']'									# arrayAccess
-	| '-' expression												# unary
-	| <assoc = right>expression '^' expression						# exponentation
-	| expression op = 'MOD' expression								# modulus
-	| expression op = ('*' | '/') expression						# mulDiv
-	| expression op = ('+' | '-') expression						# addSub
-	| arrayCreation													# arrayFactory
-	| callFunction													# functionCall
+	)? ')'				# stringFunction
+	| 'مكدس' '(' ')'	# stackFactory
+	// stack imperative verbs accept hamza/no-hamza forms.
+	| ('ادفع' | 'إدفع') '(' stack = variable (
+		COMMA value = expression
+	) ')'											# stackPushFunction
+	| ('اسحب' | 'إسحب') '(' stack = variable ')'	# stackPopFunction
+	| ('انظر' | 'أنظر') '(' stack = variable ')'	# stackPeekFunction
+	| 'فارغ؟' '(' stack = variable ')'				# stackEmptyFunction
+	| IDENTIFIER '[' subscript ']'					# arrayAccess
+	| '-' expression								# unary
+	| <assoc = right>expression '^' expression		# exponentation
+	| expression op = 'MOD' expression				# modulus
+	| expression op = ('*' | '/') expression		# mulDiv
+	| expression op = ('+' | '-') expression		# addSub
+	| arrayCreation									# arrayFactory
+	| callFunction									# functionCall
 	//TODO get rid of  "Variable" = too many layers of abstraction
 	| variable				# term
 	| '(' expression ')'	# nested;
@@ -99,11 +111,11 @@ booleanExpression: // does not support "expression" in the terms because of left
 	| 'ليس' booleanExpression # negatingBoolean
 	//  و   ضرب
 	| booleanExpression 'ايضاً' booleanExpression # logicalAnd
-	//او   جمع
-	| booleanExpression 'ام' booleanExpression	# logicalOr
-	| expression								# expressionBoolean
-	| variable									# atomicBoolean //variable: "Like in C, any non-zero value is interpreted as True"
-	| '(' booleanExpression ')'					# nestedBoolean;
+	//او جمع allow OR spelling variants commonly typed by Arabic users.
+	| booleanExpression ('ام' | 'او' | 'أو') booleanExpression	# logicalOr
+	| expression												# expressionBoolean
+	| variable													# atomicBoolean //variable: "Like in C, any non-zero value is interpreted as True"
+	| '(' booleanExpression ')'									# nestedBoolean;
 variable:
 	IDENTIFIER			# name
 	| (INTEGER | REAL)	# numeric
@@ -113,8 +125,7 @@ COMMENT: '//' ~[\r\n]* EOL -> channel(HIDDEN);
 STRING: '"' (~'"' | '\\"')* '"';
 // Arabic-script letters used across Arabic/Persian/Urdu (letters only; punctuation excluded).
 fragment ARABIC_LETTER:
-	[\u0621-\u063A\u0641-\u064A\u066E-\u066F\u0671-\u06D3\u06D5\u06EE-\u06EF\u06FA-\u06FC\u06FF]
-		;
+	[\u0621-\u063A\u0641-\u064A\u066E-\u066F\u0671-\u06D3\u06D5\u06EE-\u06EF\u06FA-\u06FC\u06FF];
 // Arabic combining marks/diacritics.
 fragment ARABIC_MARK:
 	[\u064B-\u065F\u0670\u06D6-\u06ED\u08D3-\u08E1\u08E3-\u08FF];
@@ -133,18 +144,20 @@ IDENTIFIER:
 		| '\u0640'
 	)*;
 COMMA: [,\u060C];
+// Arabic and ASCII commas are both accepted for argument/identifier lists.
 REAL: DIGIT [.,\u060C\u066B] DIGIT+;
 //Western Arabic numbers are increasingly in use throughout the Arabic-speaking world.
 INTEGER: [0\u0660] | [1-9\u0661-\u0669] DIGIT*;
 EOL:
+	// Extended Unicode line separators improve copy/paste robustness.
 	'\r\n'
 	| '\n'
 	| '\r'
 	| '\u0085' // NEL
 	| '\u2028' // Line Separator
-	| '\u2029' // Paragraph Separator
-	;
+	| '\u2029'; // Paragraph Separator
 WS:
+	// Unicode-aware whitespace skipping (excluding line terminators handled by EOL).
 	[\u0009\u000B\u000C\u0020\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]+ -> skip;
 // Optional: tolerate BOM if present in source files.
 BOM: '\uFEFF' -> skip;
