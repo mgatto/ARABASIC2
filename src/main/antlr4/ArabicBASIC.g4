@@ -36,7 +36,7 @@ singleLineConditional: ('اذا' | 'إذا') booleanExpression 'ثم' statement;
 forLoop:
 	'لكل' control = IDENTIFIER '=' lower = INTEGER 'حتى' upper = expression (
 		'درجة' '=' step = INTEGER
-	)? EOL block 'التالي' next = IDENTIFIER;
+	)? EOL block next = IDENTIFIER 'التالي';
 whileLoop:
 	'طالما' test = booleanExpression EOL block 'ختام طالما';
 // حدِّد might be better! used in qalb
