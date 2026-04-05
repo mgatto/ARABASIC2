@@ -36,7 +36,7 @@ singleLineConditional: ('اذا' | 'إذا') booleanExpression 'ثم' statement;
 forLoop:
 	'لكل' control = IDENTIFIER '=' lower = INTEGER 'حتى' upper = expression (
 		'درجة' '=' step = INTEGER
-	)? EOL block next = IDENTIFIER ('التالي' | 'التالية');
+	)? EOL block next = IDENTIFIER NEXT_ADJ;
 whileLoop:
 	'طالما' test = booleanExpression EOL block 'ختام طالما';
 // حدِّد might be better! used in qalb
@@ -82,8 +82,8 @@ expression: // List the rules from highest -> lowest precedence
 	) ')'											# stackPushFunction
 	| ('اسحب' | 'إسحب') '(' stack = variable ')'	# stackPopFunction
 	| ('انظر' | 'أنظر') '(' stack = variable ')'	# stackPeekFunction
-	// predicate adjective accepts masculine/feminine forms (strict Arabic question mark only).
-	| ('فارغ؟' | 'فارغة؟') '(' stack = variable ')'	# stackEmptyFunction
+	// predicate adjective uses dedicated lexer token (strict Arabic question mark only).
+	| STACK_EMPTY_PRED '(' stack = variable ')'	# stackEmptyFunction
 	| IDENTIFIER '[' subscript ']'					# arrayAccess
 	| '-' expression								# unary
 	| <assoc = right>expression '^' expression		# exponentation
@@ -124,6 +124,12 @@ variable:
 	| ('صحيح' | 'خطأ')	# bool;
 COMMENT: '//' ~[\r\n]* EOL -> channel(HIDDEN);
 STRING: '"' (~'"' | '\\"')* '"';
+// Shared morphology fragments for adjectival/predicate keyword variants.
+fragment FEM_SUFFIX: 'ة';
+fragment QMARK_AR: '؟';
+// Keep keyword-token introduction minimal to avoid broad lexer-priority shifts vs IDENTIFIER.
+NEXT_ADJ: 'التالي' FEM_SUFFIX?;
+STACK_EMPTY_PRED: 'فارغ' FEM_SUFFIX? QMARK_AR;
 // Arabic-script letters used across Arabic/Persian/Urdu (letters only; punctuation excluded).
 fragment ARABIC_LETTER:
 	[\u0621-\u063A\u0641-\u064A\u066E-\u066F\u0671-\u06D3\u06D5\u06EE-\u06EF\u06FA-\u06FC\u06FF];
