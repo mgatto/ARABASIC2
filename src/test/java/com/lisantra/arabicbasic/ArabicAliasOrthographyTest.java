@@ -36,6 +36,13 @@ class ArabicAliasOrthographyTest {
     assertEquals(0, parser.getNumberOfSyntaxErrors(), source);
   }
 
+  private static void assertHasSyntaxError(String source) {
+    ArabicBASICLexer lexer = new ArabicBASICLexer(CharStreams.fromString(source, "<test>"));
+    ArabicBASICParser parser = new ArabicBASICParser(new CommonTokenStream(lexer));
+    parser.program();
+    assertTrue(parser.getNumberOfSyntaxErrors() > 0, source);
+  }
+
   @Test
   void conditionAndOrAliases_areAcceptedAndExecuted() {
     String source =
@@ -125,5 +132,38 @@ class ArabicAliasOrthographyTest {
         """;
     Map<String, Variable> scope = interpret(source);
     assertEquals(2, ((Double) scope.get("ن").getValue().getVal()).intValue());
+  }
+
+  @Test
+  void feminineAdjectivalAliases_areAccepted() {
+    String source =
+        """
+        صار م = ٠
+        لكل س = ١ حتى ٣
+        صار م = م + س
+        س التالية
+        صار ك = مكدس()
+        صار ف = فارغة؟(ك)
+        """;
+    Map<String, Variable> scope = interpret(source);
+    assertEquals(6, ((Double) scope.get("م").getValue().getVal()).intValue());
+    assertEquals("Boolean", scope.get("ف").getValue().getOriginalType());
+    assertTrue((Boolean) scope.get("ف").getValue().getVal());
+  }
+
+  @Test
+  void predicateWithoutArabicQuestionMark_isRejected() {
+    String masculineMissingQuestionMark =
+        """
+        صار ك = مكدس()
+        صار ف = فارغ(ك)
+        """;
+    String feminineMissingQuestionMark =
+        """
+        صار ك = مكدس()
+        صار ف = فارغة(ك)
+        """;
+    assertHasSyntaxError(masculineMissingQuestionMark);
+    assertHasSyntaxError(feminineMissingQuestionMark);
   }
 }

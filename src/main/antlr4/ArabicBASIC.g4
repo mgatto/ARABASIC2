@@ -36,7 +36,7 @@ singleLineConditional: ('اذا' | 'إذا') booleanExpression 'ثم' statement;
 forLoop:
 	'لكل' control = IDENTIFIER '=' lower = INTEGER 'حتى' upper = expression (
 		'درجة' '=' step = INTEGER
-	)? EOL block next = IDENTIFIER 'التالي';
+	)? EOL block next = IDENTIFIER ('التالي' | 'التالية');
 whileLoop:
 	'طالما' test = booleanExpression EOL block 'ختام طالما';
 // حدِّد might be better! used in qalb
@@ -82,7 +82,8 @@ expression: // List the rules from highest -> lowest precedence
 	) ')'											# stackPushFunction
 	| ('اسحب' | 'إسحب') '(' stack = variable ')'	# stackPopFunction
 	| ('انظر' | 'أنظر') '(' stack = variable ')'	# stackPeekFunction
-	| 'فارغ؟' '(' stack = variable ')'				# stackEmptyFunction
+	// predicate adjective accepts masculine/feminine forms (strict Arabic question mark only).
+	| ('فارغ؟' | 'فارغة؟') '(' stack = variable ')'	# stackEmptyFunction
 	| IDENTIFIER '[' subscript ']'					# arrayAccess
 	| '-' expression								# unary
 	| <assoc = right>expression '^' expression		# exponentation
